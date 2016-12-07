@@ -7,7 +7,7 @@ DIR_SELF = os.path.dirname(os.path.abspath(__file__))
 
 
 DIR_SCAN = os.path.normpath(os.path.join(DIR_SELF, "..", "..", "sdir"))
-
+FILE_JSON = os.path.normpath(os.path.join(DIR_SELF, "..", "..", "sdir.json"))
 
 
 def get(s):

@@ -3,8 +3,8 @@
 import os
 from os.path import join, getsize
 
-from app.rc import DIR_SCAN
-from .nstree import NSTree
+from app.rc import DIR_SCAN, FILE_JSON
+from .nstree import NSTree, print_tree1
 
 
 
@@ -25,10 +25,10 @@ class Walker(object):
 
 
     def start(self):
-        print("start")
+
         for root, dirs, files in os.walk(self.folder_path):
             # print(root[root_size:])
-            print(root)
+            # print(root)
 
             o_root = root[self.folder_path_len:]
             # print(o_root)
@@ -37,23 +37,28 @@ class Walker(object):
             else:
                 root_path = "root" + o_root
 
-            print(root_path)
+            # print(root_path)
             root_path_array = self.__unpack_path(root_path)
-            print(root_path_array)
+            # print(root_path_array)
 
             node = self.tree.get_node_tree_path(root_path_array)
-            print("node_name ->", node.name)
+            # print("node_name ->", node.name)
             
 
 
             #--- add dirs
             for dir_item in dirs:
+                # print("add dir", node.name, dir_item)
                 self.tree.create_node_dir(node, dir_item)
 
 
             #--- add files
             for file_item in files:
-                self.tree.create_node_file(node, file_item)
+                # print("add file", node.name, file_item)
+                file_size = getsize(os.path.join(root, file_item))
+                # print(file_size)
+                node_item = self.tree.create_node_file(node, file_item)
+                node_item.size = file_size
 
 
     def __unpack_path(self, path):
@@ -66,11 +71,25 @@ class Walker(object):
 
 
 
+
+
+
+
+
 if __name__ == '__main__':
+
+    import json
+
     walker = Walker(DIR_SCAN)
     walker.start()
 
-    walker.tree.print_nodes()
+    # walker.tree.print_nodes()
+    # print_tree1(walker.tree.nodes)
+
+    data = walker.tree.export()
+    print()
+    with open(FILE_JSON, "w") as fd:
+        fd.write(json.dumps(data))
 
     # root_size = len(DIR_SCAN)
     # for root, dirs, files in os.walk(DIR_SCAN):
