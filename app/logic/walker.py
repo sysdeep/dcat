@@ -84,7 +84,7 @@ if __name__ == '__main__':
     walker.start()
 
     # walker.tree.print_nodes()
-    # print_tree1(walker.tree.nodes)
+    print_tree1(walker.tree.nodes)
 
     data = walker.tree.export()
     print()
