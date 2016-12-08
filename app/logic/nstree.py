@@ -11,7 +11,7 @@ class NSTree(object):
 		self.__set_new()
 
 	def set_nodes(self, nodes_list):
-		# print(nodes_list)
+		self.nodes = []
 		nodes_list.sort(key=lambda a: a["tree_lk"])
 
 		for node_data in nodes_list:
@@ -143,6 +143,11 @@ class NSTree(object):
 
 		return data
 
+
+
+	def set_empty(self):
+		self.nodes = []
+		self.__set_new()
 
 
 

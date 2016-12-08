@@ -7,6 +7,7 @@ from PyQt5.QtGui import QIcon, QStandardItemModel, QStandardItem
 
 from app.logic import get_tree
 from app.rc import get_icon_path
+from . import events
 
 
 class Tree(QTreeView):
@@ -22,6 +23,12 @@ class Tree(QTreeView):
 
 		self.tree = get_tree()
 
+		events.on("update_tree", self.__update_tree)
+
+
+	def __update_tree(self):
+		self.model.clear()
+		self.__make_tree()
 
 
 	def update_tree(self):
@@ -32,7 +39,6 @@ class Tree(QTreeView):
 
 		#--- запуск обхода дерева
 		root_items = self.tree.get_nodes_level(1)		# все элементы корня
-		print(root_items)
 		for item in root_items:
 			self.__wnode(item, self.model)
 

@@ -11,16 +11,23 @@ from PyQt5.QtCore import QTimer, pyqtSignal
 from app import log
 from .MainFrame import MainFrame
 from app.logic import get_tree, load_tree, load_tree_demo
+from .Controller import Controller
 
 
+from .utils.WalkerDispatcher import WalkerDispatcher
 # from ..logic import get_server, get_project
 # from .modals import LoginWindow
 # from ..storage import ulog
 # from app.rc import get_font_path
-# from .BarMenu import BarMenu
+from .BarMenu import BarMenu
 # from .SystemTray import SystemTray
 # from . import events
 
+from app.logic import twalker
+from app.rc import DIR_SCAN
+
+
+from .ModalScan import ModalScan
 
 class MainWindow(QMainWindow):
 	def __init__(self):
@@ -52,6 +59,21 @@ class MainWindow(QMainWindow):
 		# QFontDatabase.addApplicationFont(get_font_path("roboto", "RobotoMono-Regular.ttf"))
 
 
+
+		self.controller = Controller()
+
+
+		#
+		# self.walker_dispatcher = WalkerDispatcher(self)
+		# self.walker_dispatcher.msg.connect(lambda x: print(x))
+		#
+		#
+		#
+		# self.walker_dispatcher.start()
+
+
+
+
 		self.__init_gui()
 
 
@@ -74,7 +96,7 @@ class MainWindow(QMainWindow):
 		# self.setGeometry(300, 300, 300, 300)
 
 		#--- main menu
-		# BarMenu(self)
+		menu = BarMenu(self)
 
 		#--- mnemo bar
 		self.__make_main()
@@ -145,8 +167,14 @@ class MainWindow(QMainWindow):
 		# bottom_field.addWidget(quit_btn)
 
 
+		btn = QPushButton("New scan")
+		btn.clicked.connect(self.__start_scan)
+		central_box.addWidget(btn)
 
 
+		btn = QPushButton("Exit")
+		btn.clicked.connect(self.exit)
+		central_box.addWidget(btn)
 
 		# #--- mnemo
 		# #-- временно корректируем на момент отладки штоб не появлялись ползунки
@@ -165,6 +193,27 @@ class MainWindow(QMainWindow):
 		load_tree_demo()
 
 		main_frame.update_tree()
+
+
+
+	def __start_scan(self):
+		# twalker.start(DIR_SCAN)
+
+		modal = ModalScan(self)
+		modal.show()
+
+
+
+
+	#
+	#
+	# def customEvent(self, event):
+	# 	#process idle_queue_dispatcher events
+	# 	# event.callback()
+	# 	print(event.data)
+
+
+
 
 
 
