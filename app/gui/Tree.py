@@ -7,7 +7,7 @@ from PyQt5.QtGui import QIcon, QStandardItemModel, QStandardItem
 
 from app.logic import get_tree
 from app.rc import get_icon_path
-from . import events
+from . import events, qicon
 
 
 class Tree(QTreeView):
@@ -49,9 +49,12 @@ class Tree(QTreeView):
 				рекурсивный обход элементов и добавление их на форму
 			"""
 			if node.ntype == "f":
-				icon = QIcon(get_icon_path("document-properties.png"))
+				# icon = QIcon(get_icon_path("document-properties.png"))
+				icon = qicon("empty.png")
 			elif node.ntype == "d":
-				icon = QIcon(get_icon_path("document-open.png"))
+				icon = qicon("folder.png")
+				# icon = QIcon(get_icon_path("document-open.png"))
+				# icon = QIcon(get_icon_path("document-open.png"))
 			else:
 				icon = QIcon(get_icon_path("list-remove.png"))
 

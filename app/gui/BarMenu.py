@@ -1,9 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from PyQt5.QtWidgets import QAction, QFileDialog
-# from app.rc import set_scan_dir
+# from PyQt5.QtGui import QIcon, QStandardItemModel, QStandardItem
 
-from . import events
+# from app.rc import get_icon_path
+
+from . import events, qicon
 
 # from .icons import qicon
 # from app.logic import get_project
@@ -31,6 +33,7 @@ class BarMenu(object):
 
 
 		file_open_action = QAction("Open", self.parent)
+		file_open_action.setIcon(qicon("document_open.png"))
 		file_open_action.triggered.connect(lambda: self.__file_open())
 		file_menu.addAction(file_open_action)
 
