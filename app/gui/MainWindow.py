@@ -9,8 +9,8 @@ from PyQt5.QtCore import QTimer, pyqtSignal
 
 
 from app import log
-from .TreeBar import TreeBar
-
+from .MainFrame import MainFrame
+from app.logic import get_tree, load_tree, load_tree_demo
 
 
 # from ..logic import get_server, get_project
@@ -53,6 +53,8 @@ class MainWindow(QMainWindow):
 
 
 		self.__init_gui()
+
+
 
 
 		#--- system tray
@@ -129,8 +131,8 @@ class MainWindow(QMainWindow):
 
 
 
-		tree_bar = TreeBar()
-		central_box.addWidget(tree_bar)
+		main_frame = MainFrame()
+		central_box.addWidget(main_frame)
 
 
 		# #--- bottom_field
@@ -157,6 +159,12 @@ class MainWindow(QMainWindow):
 
 		# central_box.addWidget(self.mnemo)
 		# central_box.addLayout(bottom_field)
+
+
+		# tree = get_tree()
+		load_tree_demo()
+
+		main_frame.update_tree()
 
 
 

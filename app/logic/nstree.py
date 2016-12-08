@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
+from app import log
 
 
 class NSTree(object):
@@ -11,7 +11,29 @@ class NSTree(object):
 		self.__set_new()
 
 	def set_nodes(self, nodes_list):
-		self.nodes = nodes_list
+		# print(nodes_list)
+		nodes_list.sort(key=lambda a: a["tree_lk"])
+
+		for node_data in nodes_list:
+			if node_data["ntype"] == "f":
+				node = NodeFile()
+
+			elif node_data["ntype"] == "d":
+				node = NodeDir()
+			else:
+				log.error("set_nodes - неизвестный тип ноды: {}".format(node_data["ntype"]))
+				node = None
+
+
+			if node:
+				node.load(node_data)
+				self.nodes.append(node)
+
+
+
+
+		# self.nodes = sorted(nodes_list, key=lambda a: a["tree_lk"])
+		# self.nodes = nodes_list
 
 
 	def print_nodes(self):
@@ -109,6 +131,10 @@ class NSTree(object):
 				and node.tree_level - 1 == parent_node.tree_level]
 		return childrens
 
+	def get_nodes_level(self, level):
+
+		return [node for node in self.nodes if node.tree_level == level]
+
 	def export(self):
 		data = []
 		for node in self.nodes:
@@ -141,6 +167,12 @@ class Node(object):
 		}
 
 		return data
+
+	def load(self, data):
+		self.tree_lk 	= data["tree_lk"]
+		self.tree_rk 	= data["tree_rk"]
+		self.tree_level = data["tree_level"]
+		self.name 		= data["name"]
 
 class NodeDir(Node):
 	def __init__(self):
