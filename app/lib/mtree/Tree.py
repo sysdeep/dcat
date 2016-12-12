@@ -81,6 +81,9 @@ class Tree(object):
 	def get_nodes_count(self):
 		return len(self.__nodes_dict)
 
+	def get_nodes(self):
+		return self.__nodes_dict
+
 
 
 	#--- prints ---------------------------------------------------------------

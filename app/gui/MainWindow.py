@@ -145,10 +145,13 @@ class MainWindow(QMainWindow):
 		# bottom_field.addWidget(quit_btn)
 
 
+		controls = QHBoxLayout()
+		central_box.addLayout(controls)
 
 		btn = QPushButton("Exit")
 		btn.clicked.connect(self.exit)
-		central_box.addWidget(btn)
+		controls.addStretch()
+		controls.addWidget(btn)
 
 		# #--- mnemo
 		# #-- временно корректируем на момент отладки штоб не появлялись ползунки

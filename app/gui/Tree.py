@@ -14,6 +14,9 @@ class Tree(QTreeView):
 	def __init__(self, parent=None):
 		super(Tree, self).__init__(parent)
 
+
+		self.select_cb = None
+
 		self.model = QStandardItemModel()
 		self.model.setHorizontalHeaderLabels(['name'])
 		self.setModel(self.model)
@@ -24,6 +27,8 @@ class Tree(QTreeView):
 		self.tree = get_tree()
 
 		events.on("update_tree", self.__update_tree)
+
+		self.clicked.connect(self.__select)
 
 
 	def __update_tree(self):
@@ -65,6 +70,9 @@ class Tree(QTreeView):
 			# row.com_sys_id = node["sys_id"]					# определяем свой атрибут(нужен при выборе)
 			row.setIcon(icon)				# icon
 			row.setEditable(False)							# editable - false
+
+			row.setData(node.id, Qt.UserRole+1)
+
 			parent.appendRow(row)							# добавляем
 
 
@@ -79,3 +87,14 @@ class Tree(QTreeView):
 			#--- для каждого из деток вызываем рекурсию
 			for node in child_items:
 				self.__wnode(node, row)
+
+
+	def __select(self, index):
+		
+		selected_id = index.data(Qt.UserRole+1)
+		# print(d)
+
+		if self.select_cb:
+			self.select_cb(selected_id)
+
+
