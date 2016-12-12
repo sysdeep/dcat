@@ -113,8 +113,11 @@ class Tree(object):
 
 
 			for d in dirs:
-				item = self.create_node(node, d)
 				full_path = os.path.join(root, d)
+				if not os.path.exists(full_path):
+					continue
+
+				item = self.create_node(node, d)
 				st = os.stat(full_path)
 				item.ntype 		= "d"
 				item.st_size 	= st.st_size
@@ -123,8 +126,10 @@ class Tree(object):
 				item.st_ctime 	= st.st_ctime
 
 			for f in files:
-				item = self.create_node(node, f)
 				full_path = os.path.join(root, f)
+				if not os.path.exists(full_path):
+					continue
+				item = self.create_node(node, f)
 				st = os.stat(full_path)
 				item.ntype 		= "f"
 				item.st_size 	= st.st_size

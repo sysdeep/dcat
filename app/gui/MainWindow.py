@@ -27,7 +27,6 @@ from app.logic import twalker
 from app.rc import DIR_SCAN
 
 
-from .ModalScan import ModalScan
 
 class MainWindow(QMainWindow):
 	def __init__(self):
@@ -115,27 +114,6 @@ class MainWindow(QMainWindow):
 
 	def __make_main(self):
 
-		"""
-			---------------------------------------
-			| central_widget
-			|	-------------------------
-			|	| central_box			|
-			|	|	---------			|
-			|	|	| mnemo	|			|
-			|	|	---------			|
-			|	|						|
-			|	|	-----------------	|
-			|	|	| bottom_field	|	|
-			|	|	-----------------	|
-			|	|						|
-			|	-------------------------
-			|
-			----------------------------------------
-
-		"""
-
-
-
 		#--- central_widget
 		central_widget = QWidget(self)
 		# central_widget.setContentsMargins(0, 0, 0, 0)
@@ -167,10 +145,6 @@ class MainWindow(QMainWindow):
 		# bottom_field.addWidget(quit_btn)
 
 
-		btn = QPushButton("New scan")
-		btn.clicked.connect(self.__start_scan)
-		central_box.addWidget(btn)
-
 
 		btn = QPushButton("Exit")
 		btn.clicked.connect(self.exit)
@@ -196,11 +170,6 @@ class MainWindow(QMainWindow):
 
 
 
-	def __start_scan(self):
-		# twalker.start(DIR_SCAN)
-
-		modal = ModalScan(self)
-		modal.show()
 
 
 
