@@ -1,11 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from .nstree import NSTree
+from app.lib.nstree import NSTree
+from app.lib.mtree import Tree
 from .fs import load_file
 from app.rc import FILE_JSON
 
-TREE = NSTree()
+
+
+
+
+# TREE = NSTree()
+TREE = Tree()
 
 
 

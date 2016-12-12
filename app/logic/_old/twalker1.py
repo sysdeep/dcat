@@ -36,6 +36,8 @@ class TWalker(threading.Thread):
 		self.tree 			= get_tree()
 
 		self.__start_time 	= None
+		self.__scan_items 	= []
+		self.__scan_items_count = 0
 		self.__progress 	= 0
 
 
@@ -49,7 +51,7 @@ class TWalker(threading.Thread):
 
 
 		self.__scan()
-		# self.__make_tree()
+		self.__make_tree()
 		self.__event_finish()
 
 
@@ -62,22 +64,81 @@ class TWalker(threading.Thread):
 		self.__start_time 		= datetime.now()
 		self.__event_start_scan()
 
-		# walker = Walker(self.tree, self.scan_path)
-		# walker.start()
+		folder_path_len = len(self.scan_path)
+		for root, dirs, files in os.walk(self.scan_path):
 
-		self.tree.start_scan(self.scan_path)
+			# log.warn(root)
+
+
+			o_root = root[folder_path_len:]
+			if len(o_root) == 0:
+				o_root = "root"
+			else:
+				o_root = "root" + o_root
+
+			#--- add dirs
+			for dir_item in dirs:
+				item = os.path.join(o_root, dir_item)
+
+				self.__scan_items.append((item, 0))
+
+
+			#--- add files
+			for file_item in files:
+				item = os.path.join(o_root, file_item)
+				self.__scan_items.append((item, 1))
+
+
+			# continue
+			#
+			# o_root = root[folder_path_len:]
+			# if len(o_root) == 0:
+			# 	o_root = "root"
+			# else:
+			# 	o_root = "root" + o_root
+			#
+			# root_path_array = o_root.split(os.sep)
+			# parent_node = self.tree.get_node_tree_path(root_path_array)
+			#
+			#
+			# #--- add dirs
+			# for dir_item in dirs:
+			# 	self.tree.create_node_dir(parent_node, dir_item)
+			# 	item = os.path.join(o_root, dir_item)
+			# 	# print(item)
+			# 	# self.__push_dir(item)
+			# 	# print("add dir", node.name, dir_item)
+			# 	# tree.create_node_dir(node, dir_item)
+			#
+			#
+			# #--- add files
+			# for file_item in files:
+			# 	self.tree.create_node_file(parent_node, file_item)
+			# 	item = os.path.join(o_root, file_item)
+			# 	# print(item)
+			# 	# self.__push_file(item)
+			# 	# print("add file", node.name, file_item)
+			# 	# file_path = os.path.join(root, file_item)
+			# 	# try:
+			# 	# 	file_size = getsize(file_path)
+			# 	# except:
+			# 	# 	continue
+			# 	# # print(file_size)
+			# 	# node_item = tree.create_node_file(node, file_item)
+			# 	# node_item.size = file_size
+
 
 		end_time = datetime.now()
 
 
 		qqq = end_time - self.__start_time
-		# items_count = len(self.__scan_items)
-		# self.__scan_items_count = items_count
+		items_count = len(self.__scan_items)
+		self.__scan_items_count = items_count
 
 
 		log.info("finish scan: {}".format(qqq.seconds))
-		log.info("items: {}".format(walker.scan_items_count))
-		self.__event_finish_scan(qqq.seconds, walker.scan_items_count)
+		log.info("items: {}".format(items_count))
+		self.__event_finish_scan(qqq.seconds, items_count)
 
 
 

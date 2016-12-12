@@ -12,42 +12,42 @@ from .nstree import NSTree, print_tree1
 
 
 
-def start(scan_path, tree):
-	folder_path_len = len(scan_path)
+# def start(scan_path, tree):
+# 	folder_path_len = len(scan_path)
 
-	for root, dirs, files in os.walk(scan_path):
-		o_root = root[folder_path_len:]
-		if len(o_root) == 0:
-			root_path = "root"
-		else:
-			root_path = "root" + o_root
+# 	for root, dirs, files in os.walk(scan_path):
+# 		o_root = root[folder_path_len:]
+# 		if len(o_root) == 0:
+# 			root_path = "root"
+# 		else:
+# 			root_path = "root" + o_root
 
-		# print(root_path)
-		root_path_array = root_path.split(os.sep)
-		# print(root_path_array)
+# 		# print(root_path)
+# 		root_path_array = root_path.split(os.sep)
+# 		# print(root_path_array)
 
-		node = tree.get_node_tree_path(root_path_array)
-		# print("node_name ->", node.name)
-
-
-
-		#--- add dirs
-		for dir_item in dirs:
-			# print("add dir", node.name, dir_item)
-			tree.create_node_dir(node, dir_item)
+# 		node = tree.get_node_tree_path(root_path_array)
+# 		# print("node_name ->", node.name)
 
 
-		#--- add files
-		for file_item in files:
-			# print("add file", node.name, file_item)
-			file_path = os.path.join(root, file_item)
-			try:
-				file_size = getsize(file_path)
-			except:
-				continue
-			# print(file_size)
-			node_item = tree.create_node_file(node, file_item)
-			node_item.size = file_size
+
+# 		#--- add dirs
+# 		for dir_item in dirs:
+# 			# print("add dir", node.name, dir_item)
+# 			tree.create_node_dir(node, dir_item)
+
+
+# 		#--- add files
+# 		for file_item in files:
+# 			# print("add file", node.name, file_item)
+# 			file_path = os.path.join(root, file_item)
+# 			try:
+# 				file_size = getsize(file_path)
+# 			except:
+# 				continue
+# 			# print(file_size)
+# 			node_item = tree.create_node_file(node, file_item)
+# 			node_item.size = file_size
 
 
 
