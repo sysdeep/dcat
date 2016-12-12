@@ -71,13 +71,13 @@ class TWalker(threading.Thread):
 
 
 		qqq = end_time - self.__start_time
-		# items_count = len(self.__scan_items)
+		items_count = self.tree.get_nodes_count()
 		# self.__scan_items_count = items_count
 
 
 		log.info("finish scan: {}".format(qqq.seconds))
-		log.info("items: {}".format(walker.scan_items_count))
-		self.__event_finish_scan(qqq.seconds, walker.scan_items_count)
+		log.info("items: {}".format(items_count))
+		self.__event_finish_scan(qqq.seconds, items_count)
 
 
 

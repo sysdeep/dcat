@@ -38,7 +38,10 @@ class Tree(QTreeView):
 	def __make_tree(self):
 
 		#--- запуск обхода дерева
-		root_items = self.tree.get_nodes_level(1)		# все элементы корня
+		# root_items = self.tree.get_nodes_level(1)		# все элементы корня
+		root = self.tree.get_root()
+		root_items = root.childrens
+
 		for item in root_items:
 			self.__wnode(item, self.model)
 
@@ -69,7 +72,8 @@ class Tree(QTreeView):
 			# child_items = [node for node in simple_obj_list
 			# 			   if (node["tree_lk"] > node_lk) and (node["tree_rk"] < node_rk) and(node["tree_level"] == node_level+1)]
 
-			child_items = self.tree.get_childrens(node)
+			# child_items = self.tree.get_childrens(node)
+			child_items = node.childrens
 
 
 			#--- для каждого из деток вызываем рекурсию

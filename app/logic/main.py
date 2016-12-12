@@ -3,7 +3,7 @@
 
 from app.lib.nstree import NSTree
 from app.lib.mtree import Tree
-from .fs import load_file
+from .fs import load_file, store_file
 from app.rc import FILE_JSON
 
 
@@ -24,7 +24,16 @@ def get_tree():
 def load_tree(file):
 	file_data = load_file(file)
 	global TREE
-	TREE.set_nodes(file_data)
+	TREE.start_import(file_data)
+	# TREE.set_nodes(file_data)
+
+
+
+def store_tree(file_path):
+	global TREE
+	data = TREE.start_export()
+	store_file(file_path, data)
+
 
 
 def load_tree_demo():

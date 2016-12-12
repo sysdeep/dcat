@@ -9,7 +9,7 @@ from . import events
 from app.rc import set_scan_dir, get_scan_dir
 from app import log
 from .utils.WalkerDispatcher import WalkerDispatcher
-from app.logic import walker, twalker
+from app.logic import twalker
 
 class ModalScan(QDialog):
 	def __init__(self, parent=None):
