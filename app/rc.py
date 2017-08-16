@@ -9,6 +9,7 @@ DIR_MEDIA = os.path.normpath(os.path.join(DIR_SELF, "..", "media"))
 DIR_ICONS = os.path.join(DIR_MEDIA, "icons")
 
 DIR_SCAN = os.path.normpath(os.path.join(DIR_SELF, "..", "..", "sdir"))
+# FILE_JSON = os.path.normpath(os.path.join(DIR_SELF, "..", "sdir.json"))
 FILE_JSON = os.path.normpath(os.path.join(DIR_SELF, "..", "..", "sdir.json"))
 
 
