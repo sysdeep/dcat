@@ -10,7 +10,7 @@ from .utils.events import select_tree_item
 from . import qicon
 
 from .StackFrame import StackFrame
-
+from .explorer.NavBar import NavBar
 
 
 class StackItem(object):
@@ -32,6 +32,9 @@ class Explorer(tkinter.Frame):
 		self.stack_frame = StackFrame(self)
 		self.stack_frame.pack()
 		self.stack_frame.on_change(self.__go_history)
+
+		self.nav_bar = NavBar(self)
+		self.nav_bar.pack()
 
 		columns=('size', 'rights', "owner", "group", "ctime", "atime", "mtime")
 		self.__tree = ttk.Treeview(self, show="tree headings", selectmode='browse', columns=columns)
@@ -69,6 +72,7 @@ class Explorer(tkinter.Frame):
 		root_stack_item = StackItem("0|r", "root")
 		self.history_stack = [root_stack_item]
 		self.stack_frame.update_items(self.history_stack)
+		self.nav_bar.update_history(self.history_stack)
 
 
 

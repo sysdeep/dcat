@@ -6,18 +6,18 @@ import uuid
 
 from app.storage import FType, make_frow
 
-from pwd import getpwuid, getpwall
-from grp import getgrgid, getgrall
+# from pwd import getpwuid, getpwall
+# from grp import getgrgid, getgrall
 
 
 USERS = {}
 GROUPS = {}
 
-for item in getpwall():
-	USERS[item.pw_uid] = item.pw_name
+# for item in getpwall():
+#	USERS[item.pw_uid] = item.pw_name
 
-for item in getgrall():
-	GROUPS[item.gr_gid] = item.gr_name
+# for item in getgrall():
+#	GROUPS[item.gr_gid] = item.gr_name
 
 
 
@@ -97,8 +97,10 @@ class SWalker(object):
 				# row["rights"] = oct(st.st_mode & 777)
 				row["rights"] = st.st_mode
 
-				row["owner"] = USERS[st.st_uid]
-				row["group"] = GROUPS[st.st_gid]
+				row["owner"] = st.st_uid
+				row["group"] = st.st_gid
+				#row["owner"] = USERS[st.st_uid]
+				#row["group"] = GROUPS[st.st_gid]
 
 				self.storage.create_file_row(row)
 
@@ -134,8 +136,10 @@ class SWalker(object):
 				row["mtime"] = st.st_mtime
 				row["rights"] = st.st_mode
 
-				row["owner"] = USERS[st.st_uid]
-				row["group"] = GROUPS[st.st_gid]
+				row["owner"] = st.st_uid
+				row["group"] = st.st_gid
+				#row["owner"] = USERS[st.st_uid]
+				#row["group"] = GROUPS[st.st_gid]
 
 				self.storage.create_file_row(row)
 
@@ -152,10 +156,15 @@ class SWalker(object):
 if __name__ == "__main__":
 
 	from app.storage import get_storage
-
-	FILE_PATH = "/home/nia/Development/_Python/_DCat/dcat/tests/s1.db"
+	
+	from app.rc import FILE_DB_TEST
+	
+	
+	# FILE_PATH = "/home/nia/Development/_Python/_DCat/dcat/tests/s1.db"
+	FILE_PATH = FILE_DB_TEST
 	SCAN_PATH = "/home/nia/Development/_Python/_DCat/sdir"
 	SCAN_PATH = "/home/nia/Development/_Python"
+	SCAN_PATH = "G:\_Wrk\_Python\_DCat\sdir"
 	
 	swalker = SWalker()
 	swalker.storage = get_storage()

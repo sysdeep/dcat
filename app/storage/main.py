@@ -20,8 +20,9 @@ def get_storage():
 
 if __name__ == "__main__":
 
-
-    FILE_PATH = "/home/nia/Development/_Python/_DCat/dcat/tests/s1.db"
+    from app.rc import FILE_DB_TEST
+    # FILE_PATH = "/home/nia/Development/_Python/_DCat/dcat/tests/s1.db"
+    FILE_PATH = FILE_DB_TEST
 
 
     storage = get_storage()
