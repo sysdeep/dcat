@@ -2,6 +2,10 @@
 # -*- coding: utf-8 -*-
 
 
+class FType():
+    DIR     = 0
+    FILE    = 1
+
 
 
 class FRow():

@@ -1,16 +1,18 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import tkinter
-from tkinter import ttk
+from tkinter import ttk, PhotoImage
 
 from app.logic import get_tree, load_tree_demo
-from app.storage import get_storage, VRow, FRow
+from app.storage import get_storage, VRow, FRow, FType
 
+from . import qicon
 
 class TreeFrame(tkinter.Frame):
 	def __init__(self, parent, *args, **kwargs):
 		super(TreeFrame, self).__init__(parent, *args, **kwargs)
+
 
 
 		label = tkinter.Label(self, text="tree")
@@ -32,6 +34,11 @@ class TreeFrame(tkinter.Frame):
 
 		self.storage = get_storage()
 
+
+		self.icon_folder = qicon("folder.png")
+		self.icon_file = qicon("empty.png")
+		self.icon_volume = qicon("document_save.png")
+
 		self.__make_tree()
 		
 
@@ -47,15 +54,23 @@ class TreeFrame(tkinter.Frame):
 		for item in volumes:
 			volume_id = item[VRow.UUID]
 			volume_name = item[VRow.NAME]
-			self.__tree.insert('', 'end', volume_id, text=volume_name, tags=("simple", ))
+
+
+			self.__tree.insert('', 'end', volume_id, text=volume_name, tags=("simple", ), image=self.icon_volume)
 
 			childrens = self.__find_childrens(volume_id, "0")
 			for f in childrens:
 
-				self.__tree.insert(volume_id, 'end', f[FRow.UUID], text=f[FRow.NAME], tags=("simple", ))
+				if f[FRow.TYPE] == FType.DIR:
+					icon = self.icon_folder
+				else:
+					icon = self.icon_file
 
-				if f[FRow.TYPE] == "d":
+				self.__tree.insert(volume_id, 'end', f[FRow.UUID], text=f[FRow.NAME], tags=("simple", ), image=icon)
+
+				if f[FRow.TYPE] == FType.DIR:
 					self.__wnode(volume_id, f[FRow.UUID])
+					
 			
 
 
@@ -72,9 +87,15 @@ class TreeFrame(tkinter.Frame):
 			childrens = self.__find_childrens(volume_id, parent_id)
 
 			for f in childrens:
-				self.__tree.insert(parent_id, 'end', f[FRow.UUID], text=f[FRow.NAME], tags=("simple", ), open=False)
 
-				if f[FRow.TYPE] == "d":
+				if f[FRow.TYPE] == FType.DIR:
+					icon = self.icon_folder
+				else:
+					icon = self.icon_file
+
+				self.__tree.insert(parent_id, 'end', f[FRow.UUID], text=f[FRow.NAME], tags=("simple", ), open=False, image=icon)
+
+				if f[FRow.TYPE] == FType.DIR:
 					self.__wnode(volume_id, f[FRow.UUID])
 
 			

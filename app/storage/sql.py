@@ -10,8 +10,8 @@ CREATE_TABLE_FILES = """
         "volume_id"     INTEGER NOT NULL,
         "uuid"          VARCHAR(64),
         "parent_id"     VARCHAR(64),
-        "name"          VARCHAR(64),
-        "type"          VARCHAR(64)
+        "name"          VARCHAR(64) NOT NULL,
+        "type"          INTEGER NOT NULL
     );
 """
 

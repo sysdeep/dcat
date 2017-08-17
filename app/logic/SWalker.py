@@ -4,6 +4,8 @@
 import os
 import uuid
 
+from app.storage import FType
+
 class SWalker(object):
     def __init__(self):
         self.storage = None
@@ -48,7 +50,7 @@ class SWalker(object):
                     "uuid"      : rid,
                     "parent_id" : parent,
                     "name"      : d,
-                    "type"      : "d"
+                    "type"      : FType.DIR
                 }
 
                 self.storage.create_file_row(row)
@@ -64,7 +66,7 @@ class SWalker(object):
                     "uuid"      : rid,
                     "parent_id" : parent,
                     "name"      : f,
-                    "type"      : "f"
+                    "type"      : FType.FILE
                 }
 
                 self.storage.create_file_row(row)

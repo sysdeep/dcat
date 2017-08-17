@@ -3,4 +3,4 @@
 
 
 from .main import get_storage
-from .enums import VRow, FRow
+from .enums import VRow, FRow, FType
