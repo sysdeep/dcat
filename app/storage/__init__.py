@@ -4,3 +4,4 @@
 
 from .main import get_storage
 from .enums import VRow, FRow, FType
+from .models import make_frow

@@ -2,4 +2,4 @@
 # -*- coding: utf-8 -*-
 
 from .lib.logger import log
-from .App import Application
+# from .App import Application

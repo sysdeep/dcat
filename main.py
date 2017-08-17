@@ -3,7 +3,7 @@
 
 
 
-from app import Application
+from app.App import Application
 
 my_app = Application()
 my_app.start()

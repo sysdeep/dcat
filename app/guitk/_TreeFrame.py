@@ -9,15 +9,6 @@ from app.storage import get_storage, VRow, FRow, FType
 from .utils.events import select_tree_item
 from . import qicon
 
-
-class Node(object):
-	def __init__(self, uuid, ntype):
-		self.uuid = uuid
-		self.ntype = ntype
-		self.loaded = False
-
-
-
 class TreeFrame(tkinter.Frame):
 	def __init__(self, parent, *args, **kwargs):
 		super(TreeFrame, self).__init__(parent, *args, **kwargs)
@@ -38,7 +29,6 @@ class TreeFrame(tkinter.Frame):
 
 		self.__tree.column("#0", width=300)
 		self.__tree.tag_bind("simple", "<<TreeviewSelect>>", self.__select_row)
-		# self.__tree.tag_bind("simple", "<<TreeviewOpen>>", self.__open_row)
 
 
 
@@ -49,12 +39,6 @@ class TreeFrame(tkinter.Frame):
 		self.icon_file = qicon("empty.png")
 		self.icon_volume = qicon("document_save.png")
 
-
-		self.treemap = {}
-		self.need_load_files = []
-
-
-
 		self.__make_tree()
 		
 
@@ -62,7 +46,7 @@ class TreeFrame(tkinter.Frame):
 
 
 	def __make_tree(self):
-		self.need_load_files = []
+		
 		volumes = self.storage.fetch_volumes()
 		
 		
@@ -74,18 +58,20 @@ class TreeFrame(tkinter.Frame):
 			item_volume_id = volume_id + "|" + "v"
 
 			self.__tree.insert('', 'end', item_volume_id, text=volume_name, tags=("simple", ), image=self.icon_volume)
-			node = Node(volume_id, FType.VOLUME)
-			node.loaded = False
-			self.treemap[volume_id] = node
 
 			volume_root_files = self.storage.fetch_volume_files(volume_id)
+			print(volume_root_files)
+			
+			continue
 
-			for f in volume_root_files:
+
+			childrens = self.storage.find_volume_items(volume_id, "0")
+
+			for f in childrens:
 
 				if f[FRow.TYPE] == FType.DIR:
 					icon = self.icon_folder
 					item_id = f[FRow.UUID] + "|" + "d"
-					self.need_load_files.append(f[FRow.UUID])
 				else:
 					icon = self.icon_file
 					item_id = f[FRow.UUID] + "|" + "f"
@@ -94,21 +80,10 @@ class TreeFrame(tkinter.Frame):
 				# self.__tree.insert(item_volume_id, 'end', f[FRow.UUID], text=f[FRow.NAME], tags=("simple", ), image=icon)
 				self.__tree.insert(item_volume_id, 'end', item_id, text=f[FRow.NAME], tags=("simple", ), image=icon)
 
-				node = Node(f[FRow.UUID], f[FRow.TYPE])
-				node.loaded = False
-				self.treemap[f[FRow.UUID]] = node
-
-
-
-			
-
-				# if f[FRow.TYPE] == FType.DIR:
-				# 	self.__wnode(f[FRow.UUID], item_id)
+				if f[FRow.TYPE] == FType.DIR:
+					self.__wnode(f[FRow.UUID], item_id)
 					
-			self.__load_items()
-			# print(self.treemap)
-
-
+	
 	def __wnode(self, parent_id, item_id):
 		"""
 			рекурсивный обход элементов и добавление их на форму
@@ -157,53 +132,6 @@ class TreeFrame(tkinter.Frame):
 			item_type = FType.UNKNOWN
 
 		select_tree_item(item_id, item_type)
-
-		node = self.treemap[item_id]
-		if (node.ntype == FType.DIR) and (not node.loaded):
-			# print("need load")
-			self.__load_items()
-
-
-	def __open_row(self, e):
-		selected_item = self.__tree.selection()[0]
-		print("open", selected_item)
-
-
-
-
-
-
-	def __load_items(self):
-		print(self.need_load_files)
-
-		
-		need_load_files_tmp = []
-		for parent_id in self.need_load_files:
-			files = self.storage.fetch_parent_files(parent_id)
-			print(files)
-			print("----------------------------")
-
-
-			# for f in files:
-
-			# 	if f[FRow.TYPE] == FType.DIR:
-			# 		icon = self.icon_folder
-			# 		item_id = f[FRow.UUID] + "|" + "d"
-			# 		# need_load_files_tmp.append(f[FRow.UUID])
-			# 	else:
-			# 		icon = self.icon_file
-			# 		item_id = f[FRow.UUID] + "|" + "f"
-
-				
-			# 	# self.__tree.insert(item_volume_id, 'end', f[FRow.UUID], text=f[FRow.NAME], tags=("simple", ), image=icon)
-			# 	self.__tree.insert(parent_id, 'end', item_id, text=f[FRow.NAME], tags=("simple", ), image=icon)
-
-			# 	node = Node(f[FRow.UUID], f[FRow.TYPE])
-			# 	node.loaded = False
-			# 	self.treemap[f[FRow.UUID]] = node
-
-
-
 
 
 

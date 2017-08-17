@@ -63,6 +63,22 @@ class DB(object):
         return rows
 
 
+    def get_volume_root_files(self, volume_id):
+        cursor = self.connection.cursor()
+        cursor.execute(sql.GET_VOLUME_ROOT_FILES, (volume_id, ))
+        # cursor.execute("SELECT * FROM files WHERE volume_id=? AND parent_id='0'", (volume_id, ))
+        rows = cursor.fetchall()
+        return rows
+
+
+    def get_parent_files(self, parent_id):
+        cursor = self.connection.cursor()
+        cursor.execute(sql.GET_PARENT_FILES, (parent_id, ))
+        # cursor.execute("SELECT * FROM files WHERE volume_id=? AND parent_id='0'", (volume_id, ))
+        rows = cursor.fetchall()
+        return rows
+
+
     def create_volume_row(self, vdata, commit=False):
         ivalues = (
             vdata["uuid"],
@@ -84,10 +100,26 @@ class DB(object):
             fdata["parent_id"],
             fdata["uuid"],
             fdata["name"],
-            fdata["type"]
+            fdata["type"],
+
+            fdata["rights"],
+
+            fdata["owner"],
+            fdata["group"],
+            
+            fdata["size"],
+
+            fdata["ctime"],
+            fdata["atime"],
+            fdata["mtime"],
+            fdata["category"],
+            fdata["description"]
+
         )
+
         cursor = self.connection.cursor()
-        cursor.execute("INSERT INTO files(volume_id, parent_id, uuid, name, type) VALUES(?,?,?,?,?)", ivalues)
+        # cursor.execute("INSERT INTO files(volume_id, parent_id, uuid, name, type) VALUES(?,?,?,?,?)", ivalues)
+        cursor.execute(sql.CREATE_FILE_ROW, ivalues)
         row_id = cursor.lastrowid
 
         if commit:

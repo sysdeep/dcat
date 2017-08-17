@@ -2,70 +2,134 @@
 # -*- coding: utf-8 -*-
 
 from .DB import DB
+from .enums import FRow, VRow, FType
+
+from app import log
 
 class Storage(object):
-    def __init__(self):
+	def __init__(self):
 
-        self.storage_path = None
-        self.db = DB()
-        self.is_open = False
+		self.storage_path = None
+		self.db = DB()
+		self.is_open = False
 
-
-    def open_storage(self, file_path):
-        self.storage_path = file_path
-        self.db.open_db(self.storage_path)
-        self.is_open = True
+		self.volumes = []
+		self.files = []
 
 
-    def close_storage(self):
-        self.db.close_db()
-        self.is_open = False
+	def open_storage(self, file_path):
+		log.info("open storage: " + file_path)
+		self.storage_path = file_path
+		self.db.open_db(self.storage_path)
+		self.is_open = True
+		# self.__load_storage()
+
+		
 
 
-    def create_storage(self, file_path):
-
-        if self.is_open:
-            self.close_storage()
-
-        self.storage_path = file_path
-        self.db.create_db(self.storage_path)
-        self.is_open = True
+	def close_storage(self):
+		self.db.close_db()
+		self.volumes = []
+		self.files = []
+		self.is_open = False
 
 
-    def get_volumes(self):
-        if not self.is_open:
-            return []
+	def create_storage(self, file_path):
+		log.info("создание базы: " + file_path)
+		if self.is_open:
+			self.close_storage()
 
-        volumes = self.db.get_volumes()
+		self.storage_path = file_path
+		self.db.create_db(self.storage_path)
+		self.is_open = True
 
-        return volumes
-        
-
-    def get_files(self, volume=None):
-        if not self.is_open:
-            return []
-
-        if volume:
-            files = self.db.get_volume_files(volume)
-        else:
-            files = self.db.get_files_all()
-
-
-        return files
-
-    
+		# self.__load_storage()
 
 
 
-    def create_volume_row(self, vdata, commit=False):
-        volume_id = self.db.create_volume_row(vdata, commit)
-        return volume_id
+
+	# def __load_storage(self):
+	# 	log.info("загрузка данны из базы")
+	# 	self.volumes = self.__load_volumes()
+	# 	self.files = self.__load_files()
 
 
-    def create_file_row(self, fdata, commit=False):
-        file_id = self.db.create_file_row(fdata, commit)
-        return file_id
+	def fetch_volumes(self):
+		log.debug("fetch volumes")
+		if not self.is_open:
+			return []
+
+		volumes = self.db.get_volumes()
+
+		return volumes
+		
+
+	def fetch_volume_files(self, volime_id):
+		log.debug("fetch volume files")
+		if not self.is_open:
+			return []
+
+		files = self.db.get_volume_root_files(volime_id)
+		return files
 
 
-    def commit(self):
-        self.db.commit()
+	def fetch_parent_files(self, parent_id):
+		log.debug("fetch files")
+		if not self.is_open:
+			return []
+
+		files = self.db.get_parent_files(parent_id)
+		return files
+
+
+
+
+
+
+
+
+
+	def __load_files(self, volume=None):
+		if not self.is_open:
+			return []
+
+		if volume:
+			files = self.db.get_volume_files(volume)
+		else:
+			files = self.db.get_files_all()
+
+
+		return files
+
+	
+
+
+
+	def create_volume_row(self, vdata, commit=False):
+		volume_id = self.db.create_volume_row(vdata, commit)
+		return volume_id
+
+
+	def create_file_row(self, fdata, commit=False):
+		file_id = self.db.create_file_row(fdata, commit)
+		return file_id
+
+
+	def commit(self):
+		self.db.commit()
+
+
+	def get_volumes(self):
+		return self.volumes
+
+	def get_files(self):
+		return self.files
+
+
+	def find_childrens(self, parent_id):
+		result = [file for file in self.files if file[FRow.PARENT] == parent_id]
+		return result
+
+	def find_volume_items(self, volume_id, parent_id):
+		result = [file for file in self.files if (file[FRow.PARENT] == parent_id) and (file[FRow.VOLUME] == volume_id)]
+		return result
