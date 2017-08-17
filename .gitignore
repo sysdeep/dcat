@@ -1,6 +1,7 @@
 # vendor/*
 .idea
 .vscode
+tests
 get_project.sh
 ### Python template
 # Byte-compiled / optimized / DLL files

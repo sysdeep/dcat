@@ -11,7 +11,7 @@ DIR_ICONS = os.path.join(DIR_MEDIA, "icons")
 DIR_SCAN = os.path.normpath(os.path.join(DIR_SELF, "..", "..", "sdir"))
 # FILE_JSON = os.path.normpath(os.path.join(DIR_SELF, "..", "sdir.json"))
 FILE_JSON = os.path.normpath(os.path.join(DIR_SELF, "..", "..", "sdir.json"))
-
+FILE_DB_TEST = "/home/nia/Development/_Python/_DCat/dcat/tests/s1.db"
 
 
 
