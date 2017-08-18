@@ -7,15 +7,9 @@ from tkinter import ttk, PhotoImage
 from app.logic import get_tree, load_tree_demo
 from app.storage import get_storage, VRow, FRow, FType
 from ..utils.events import select_tree_item
-from ..utils import qicon
+from ..utils import qicon, conv
 
 from .NavBar import NavBar
-
-
-class StackItem(object):
-	def __init__(self, uuid, name):
-		self.uuid = uuid
-		self.name = name
 
 
 
@@ -40,8 +34,13 @@ class Explorer(tkinter.Frame):
 		self.nav_bar.set_cb_root(self.__remake_tree)
 		self.nav_bar.set_cb_go(self.__go_history)
 
+
+
+		self.__sort_dir = False
+
 		columns=('size', 'rights', "owner", "group", "ctime", "atime", "mtime")
 		self.__tree = ttk.Treeview(self, show="tree headings", selectmode='browse', columns=columns)
+		# self.__tree.heading("size", text="Размер", command=lambda c="size": self.__sort(c))
 		self.__tree.heading("size", text="Размер")
 		self.__tree.heading("rights", text="Права")
 		self.__tree.heading("owner", text="Владелец")
@@ -50,6 +49,20 @@ class Explorer(tkinter.Frame):
 		self.__tree.heading("atime", text="Доступ")
 		self.__tree.heading("mtime", text="Модификация")
 		self.__tree.heading('#0', text='Название')
+
+		self.__tree.column("#0", minwidth=200, width=200)
+		self.__tree.column("size", minwidth=50, width=60)
+		self.__tree.column("rights", minwidth=40, width=50)
+		self.__tree.column("owner", minwidth=80, width=80)
+		self.__tree.column("group", minwidth=80, width=80)
+		self.__tree.column("ctime", minwidth=90, width=90)
+		self.__tree.column("atime", minwidth=90, width=90)
+		self.__tree.column("mtime", minwidth=100, width=100)
+
+
+		# for c in columns:
+		# 	self.__tree.heading(c, text=c, command=lambda c=c: self.__sort(c))
+
 		self.__tree.pack(side="left", expand=True, fill="both")
 
 
@@ -59,8 +72,8 @@ class Explorer(tkinter.Frame):
 		ysb.pack(side="right", expand=False, fill="y")
 
 		self.__tree.column("#0", width=300)
-		# self.__tree.tag_bind("simple", "<<TreeviewSelect>>", self.__select_row)
-		self.__tree.bind("<Double-1>", self.__select_row)
+		self.__tree.tag_bind("simple", "<<TreeviewSelect>>", self.__select_row)
+		self.__tree.bind("<Double-1>", self.__open_row)
 		# self.__tree.tag_bind("simple", "<<TreeviewOpen>>", self.__open_row)
 
 
@@ -143,10 +156,20 @@ class Explorer(tkinter.Frame):
 				file_row[FRow.RIGHTS],
 				file_row[FRow.OWNER],
 				file_row[FRow.GROUP],
-				file_row[FRow.CTIME],
-				file_row[FRow.ATIME],
-				file_row[FRow.MTIME],
+				conv.convert_ctime(file_row[FRow.CTIME]),
+				conv.convert_ctime(file_row[FRow.ATIME]),
+				conv.convert_ctime(file_row[FRow.MTIME]),
 			)
+
+		# ivalues = (
+		# 		str(file_row[FRow.SIZE]),
+		# 		file_row[FRow.RIGHTS],
+		# 		file_row[FRow.OWNER],
+		# 		file_row[FRow.GROUP],
+		# 		file_row[FRow.CTIME],
+		# 		file_row[FRow.ATIME],
+		# 		file_row[FRow.MTIME],
+		# 	)
 
 		# self.__tree.insert("", 'end', item_id, text=file_row[FRow.NAME], tags=("simple", ), image=icon, values=ivalues)
 		self.__tree.insert("", 'end', file_id, text=file_row[FRow.NAME], tags=("simple", ), image=icon, values=ivalues)
@@ -231,83 +254,23 @@ class Explorer(tkinter.Frame):
 
 
 
-	def __update_list1(self, vuuid):
-		# self.current_items = {}
-		selected_item = vuuid
-
-		is_back = False
-
-		if selected_item == "back_id|back_id":
-			is_back = True
-
-			#--- drop last
-			self.history_stack.pop()
-			self.stack_frame.update_items(self.history_stack)
-
-			#--- get last
-			stack_item = self.history_stack[-1]
-
-			#--- if this is root
-			if stack_item.name == "root":
-				selected_item = "0|r"
-			else:
-				selected_item = stack_item.uuid
-
-
-		if selected_item == "0|r":
-			print("correct ctack")
-			# print(self.history_stack)
-			# self.history_stack = self.history_stack[:1]
-			root_stack_item = StackItem("0|r", "root")
-			self.history_stack = [root_stack_item]
-			self.stack_frame.update_items(self.history_stack)
-
-
-		sarray = selected_item.split("|")
-		item_id = sarray[0]
-		item_type = sarray[1]
-
-		print("-------------")
-		print(self.current_items)
-		print("-------------")
-		if is_back is False:
-
-			if selected_item != "0|r":
-
-				item_name = self.current_items[selected_item]
-				stack_item = StackItem(selected_item, item_name)
-				# stack_item = StackItem(selected_item, item_id)
-				self.history_stack.append(stack_item)
-				self.stack_frame.update_items(self.history_stack)
-
-
-
-		
-
-
-		
-
-
-		if item_type == "v":
-			item_type = FType.VOLUME
-			self.__clear()
-			self.__insert_root_files(item_id)
-		elif item_type == "d":
-			item_type = FType.DIR
-			self.__clear()
-			self.__insert_parent_files(item_id)
-		elif item_type == "f":
-			item_type = FType.FILE
-			# self.__insert_back()
-		elif item_type == "r":
-			self.__clear()
-			self.__insert_volumes()
-		else:
-			item_type = FType.UNKNOWN
-
-
-
 	def __select_row(self, e):
+		selection = self.__tree.selection()
+		if len(selection) == 0:
+			return False
+		
+		
+
+		selected_item = self.__tree.selection()[0]
+
+		if selected_item == "back_id":
+			return False
+
+		item = self.litems[selected_item]
+
+		select_tree_item(item)
+
+	def __open_row(self, e):
 		selection = self.__tree.selection()
 		if len(selection) == 0:
 			return False
@@ -320,6 +283,7 @@ class Explorer(tkinter.Frame):
 
 
 		item = self.litems[selected_item]
+
 
 		if item.ftype == "file":
 			return False
@@ -389,3 +353,26 @@ class Explorer(tkinter.Frame):
 		self.history_stack = self.history_stack[:index+1]
 		self.nav_bar.update_history(self.history_stack)
 		return item
+
+
+
+
+
+
+
+
+	# def __sort(self, col):
+	# 	"""соктировка"""
+	# 	# grab values to sort as a list of tuples (column value, column id)
+	# 	# e.g. [('Argentina', 'I001'), ('Australia', 'I002'), ('Brazil', 'I003')]
+	# 	data = [(self.__tree.set(child, col), child) for child in self.__tree.get_children('')]
+
+	# 	# reorder data
+	# 	# tkinter looks after moving other items in
+	# 	# the same row
+	# 	# data.sort(reverse=descending)
+	# 	data.sort(reverse=self.__sort_dir)
+	# 	for indx, item in enumerate(data):
+	# 		self.__tree.move(item[1], '', indx)   # item[1] = item Identifier
+
+	# 	self.__sort_dir = not self.__sort_dir

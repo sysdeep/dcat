@@ -8,6 +8,7 @@ from .Menu import BarMenu
 # from .TreeFrame import TreeFrame
 # from .DataFrame import DataFrame
 from .explorer import Explorer
+from .InfoFrame import InfoFrame
 
 from app.logic import load_tree_demo
 
@@ -24,12 +25,12 @@ class MainWindow(tkinter.Tk):
 		# self.tree_frame = TreeFrame(self, width=800)
 		# self.tree_frame.pack(side="left", fill="both", expand=False)
 
-		self.explorer_frame = Explorer(self, width=800)
+		self.explorer_frame = Explorer(self)
 		self.explorer_frame.pack(side="left", fill="both", expand=False)
 
 
-		# self.data_frame = DataFrame(self)
-		# self.data_frame.pack(side="right", fill="both", expand=True)
+		self.info_frame = InfoFrame(self)
+		self.info_frame.pack(side="right", fill="both", expand=True)
 
 		# self.__main_bar = None						# main bar - top
 		# self.__mnemo_bar = None

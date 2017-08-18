@@ -19,8 +19,8 @@ def on(event_name, cb):
 
 
 
-def select_tree_item(item_id, item_type):
-    emitter.emit(Event.TREE_SELECT, item_id, item_type)
+def select_tree_item(item):
+    emitter.emit(Event.TREE_SELECT, item)
 
 
 

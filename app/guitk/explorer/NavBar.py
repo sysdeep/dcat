@@ -15,14 +15,17 @@ class NavBar(tkinter.Frame):
 		self.cb_root = None
 
 		
+		self.__stack_items_count = 0
+
 		controls_frame = tkinter.Frame(self)
 		controls_frame.pack(fill="both", side="left", padx=10, pady=10)
 
-		label = tkinter.Label(controls_frame, text="stack")
-		label.pack(side="left")
+		# label = tkinter.Label(controls_frame, text="stack")
+		# label.pack(side="left")
 
-		btn_back = tkinter.Button(controls_frame, text="back", command=self.__go_back)
-		btn_back.pack(side="left")
+		self.btn_back = tkinter.Button(controls_frame, text="back", command=self.__go_back)
+		self.btn_back.pack(side="left")
+		self.btn_back.configure(state="disabled")
 
 
 		self.stack_frame = tkinter.Frame(self)
@@ -34,14 +37,23 @@ class NavBar(tkinter.Frame):
 		
 		self.__clear_stack()
 
+		
+
+		inames = [item.name for item in items]
+		self.__stack_items_count = len(inames)
+		self.__update_btn_back()
+
 		btn = tkinter.Button(self.stack_frame, text="root", command=self.__go_root )
 		btn.pack(side="left")
 
-		inames = [item.name for item in items]
+		__last_btn = None
 		for i, iname in enumerate(inames):
 			btn = tkinter.Button(self.stack_frame, text=iname, command=lambda x=i: self.__go(x), compound="left" )
 			btn.pack(side="left")
-		
+			__last_btn = btn
+
+		if __last_btn:
+			__last_btn.configure(state="disabled")		
 
 
 	def __clear_stack(self):
@@ -75,7 +87,11 @@ class NavBar(tkinter.Frame):
 
 	
 
-
+	def __update_btn_back(self):
+		if self.__stack_items_count == 0:
+			self.btn_back.configure(state="disabled")
+		else:
+			self.btn_back.configure(state="normal")
 
 
 
