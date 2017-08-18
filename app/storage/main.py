@@ -26,14 +26,14 @@ if __name__ == "__main__":
 
 
     storage = get_storage()
-    storage.create_storage(FILE_PATH)
-    # storage.open_storage(FILE_PATH)
-    # volumes = storage.get_volumes()
+    # storage.create_storage(FILE_PATH)
+    storage.open_storage(FILE_PATH)
+    volumes = storage.fetch_volumes()
     # files = storage.get_files()
 
 
-    # print("volumes:")
-    # print(volumes)
+    print("volumes:")
+    print(volumes)
 
     # for v in volumes:
     #     files = storage.get_files(volume=v[1])

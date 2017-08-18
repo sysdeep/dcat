@@ -5,9 +5,9 @@
 import tkinter
 
 from .Menu import BarMenu
-from .TreeFrame import TreeFrame
-from .DataFrame import DataFrame
-from .Explorer import Explorer
+# from .TreeFrame import TreeFrame
+# from .DataFrame import DataFrame
+from .explorer import Explorer
 
 from app.logic import load_tree_demo
 

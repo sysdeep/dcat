@@ -6,11 +6,10 @@ from tkinter import ttk, PhotoImage
 
 from app.logic import get_tree, load_tree_demo
 from app.storage import get_storage, VRow, FRow, FType
-from .utils.events import select_tree_item
-from . import qicon
+from ..utils.events import select_tree_item
+from ..utils import qicon
 
-from .StackFrame import StackFrame
-from .explorer.NavBar import NavBar
+from .NavBar import NavBar
 
 
 class StackItem(object):
@@ -20,21 +19,26 @@ class StackItem(object):
 
 
 
+class LNode(object):
+	def __init__(self, uuid, ftype):
+		self.uuid = uuid
+		self.ftype = ftype
+		self.name = ""
+
+		self.data = None
+
+
+
 class Explorer(tkinter.Frame):
 	def __init__(self, parent, *args, **kwargs):
 		super(Explorer, self).__init__(parent, *args, **kwargs)
 
 
-
-		label = tkinter.Label(self, text="explorer")
-		label.pack()
-
-		self.stack_frame = StackFrame(self)
-		self.stack_frame.pack()
-		self.stack_frame.on_change(self.__go_history)
-
 		self.nav_bar = NavBar(self)
-		self.nav_bar.pack()
+		self.nav_bar.pack(side="top", fill="x")
+		self.nav_bar.set_cb_back(self.__go_back)
+		self.nav_bar.set_cb_root(self.__remake_tree)
+		self.nav_bar.set_cb_go(self.__go_history)
 
 		columns=('size', 'rights', "owner", "group", "ctime", "atime", "mtime")
 		self.__tree = ttk.Treeview(self, show="tree headings", selectmode='browse', columns=columns)
@@ -69,25 +73,49 @@ class Explorer(tkinter.Frame):
 		self.icon_volume = qicon("document_save.png")
 
 
-		root_stack_item = StackItem("0|r", "root")
-		self.history_stack = [root_stack_item]
-		self.stack_frame.update_items(self.history_stack)
-		self.nav_bar.update_history(self.history_stack)
+		# root_stack_item = StackItem("0|r", "root")
+		# self.history_stack = [root_stack_item]
+		self.history_stack = []
+		# self.stack_frame.update_items(self.history_stack)
+		# self.nav_bar.update_history(self.history_stack)
 
 
 
 
 		self.current_items = {}
+		self.litems = {}
 
-		self.__make_tree()
+		self.__remake_tree()
 		
 
+
+	def __remake_tree(self):
+		self.__clear()
+		self.__history_clear()
+		self.__insert_volumes()
+
+
+
+
+
+
 	def __insert_volume(self, volume_row):
-		volume_id = volume_row[VRow.UUID]
-		volume_name = volume_row[VRow.NAME]
-		item_volume_id = volume_id + "|" + "v"
-		self.__tree.insert('', 'end', item_volume_id, text=volume_name, tags=("simple", ), image=self.icon_volume)
-		self.current_items[item_volume_id] = volume_name
+		volume_id = volume_row["uuid"]
+		volume_name = volume_row["name"]
+		# item_volume_id = volume_id + "|" + "v"
+		# self.__tree.insert('', 'end', item_volume_id, text=volume_name, tags=("simple", ), image=self.icon_volume)
+		self.__tree.insert('', 'end', volume_id, text=volume_name, tags=("simple", ), image=self.icon_volume)
+		
+		# self.current_items[item_volume_id] = volume_name
+
+		lnode = LNode(volume_id, "volume")
+		lnode.data = volume_row
+		lnode.name = volume_name
+		self.litems[volume_id] = lnode
+
+
+
+
 
 	def __insert_volumes(self):
 		volumes = self.storage.fetch_volumes()
@@ -96,10 +124,16 @@ class Explorer(tkinter.Frame):
 
 
 	def __insert_file(self, file_row):
+
+		file_id = file_row[FRow.UUID]
+		file_name = file_row[FRow.NAME]
+
 		if file_row[FRow.TYPE] == FType.DIR:
+			ftype = "dir"
 			icon = self.icon_folder
 			item_id = file_row[FRow.UUID] + "|" + "d"
 		else:
+			ftype = "file"
 			icon = self.icon_file
 			item_id = file_row[FRow.UUID] + "|" + "f"
 
@@ -114,13 +148,20 @@ class Explorer(tkinter.Frame):
 				file_row[FRow.MTIME],
 			)
 
-		self.__tree.insert("", 'end', item_id, text=file_row[FRow.NAME], tags=("simple", ), image=icon, values=ivalues)
-		self.current_items[item_id] = file_row[FRow.NAME]
-		print(self.current_items)
+		# self.__tree.insert("", 'end', item_id, text=file_row[FRow.NAME], tags=("simple", ), image=icon, values=ivalues)
+		self.__tree.insert("", 'end', file_id, text=file_row[FRow.NAME], tags=("simple", ), image=icon, values=ivalues)
+		# self.current_items[item_id] = file_row[FRow.NAME]
+		# print(self.current_items)
+
+
+		lnode = LNode(file_row[FRow.UUID], ftype)
+		lnode.data = file_row
+		lnode.name = file_name
+		self.litems[file_row[FRow.UUID]] = lnode
 
 
 	def __insert_back(self):
-		self.__tree.insert("", 'end', "back_id|back_id", text="..", tags=("simple", ))
+		self.__tree.insert("", 'end', "back_id", text="..", tags=("simple", ))
 
 
 
@@ -141,9 +182,7 @@ class Explorer(tkinter.Frame):
 			self.__insert_file(item)
 
 
-	def __make_tree(self):
-
-		self.__insert_volumes()
+	
 		
 			
 
@@ -161,17 +200,38 @@ class Explorer(tkinter.Frame):
 
 	def __go_history(self, index):
 
-		item = self.history_stack[index]
+		current_item = self.__history_splice(index)
+		# item = self.history_stack[index]
 
-		self.history_stack = self.history_stack[:index]
-		# self.history_stack = self.history_stack[:index+1]
-		# self.stack_frame.update_items(self.history_stack)
+		# self.history_stack = self.history_stack[:index]
+		# # self.history_stack = self.history_stack[:index+1]
+		# # self.stack_frame.update_items(self.history_stack)
 
-		print("go history: ", item.uuid)
-		self.__update_list(item.uuid)
+		# print("go history: ", item.uuid)
+		self.__update_list(current_item)
 
 
-	def __update_list(self, vuuid):
+
+	
+	def __update_list(self, item):
+
+		if item.ftype == "volume":
+			self.__clear()
+			self.__insert_root_files(item.uuid)
+			return False
+
+
+		if item.ftype == "dir":
+			self.__clear()
+			self.__insert_parent_files(item.uuid)
+			return False
+
+
+
+
+
+
+	def __update_list1(self, vuuid):
 		# self.current_items = {}
 		selected_item = vuuid
 
@@ -254,13 +314,47 @@ class Explorer(tkinter.Frame):
 
 		selected_item = self.__tree.selection()[0]
 
-		self.__update_list(selected_item)
+		if selected_item == "back_id":
+			self.__go_back()
+			return False
+
+
+		item = self.litems[selected_item]
+
+		if item.ftype == "file":
+			return False
+
+		
+		self.__history_push(item)
+
+		self.__update_list(item)
+
+
+
+
+		
+	def __go_back(self):
+
+		# self.history_stack.pop()
+		self.__history_pop()
+		if len(self.history_stack) == 0:
+			self.__clear()
+			self.__insert_volumes()
+			return False
 
 		
 		
 
-
+		curr_item = self.__history_last()
+		self.__update_list(curr_item)
 		
+
+
+
+
+
+
+
 
 
 	def __clear(self):
@@ -268,5 +362,30 @@ class Explorer(tkinter.Frame):
 			self.__tree.delete(row)
 
 
+		self.litems = {}
 
 
+
+
+
+	def __history_push(self, item):
+		self.history_stack.append(item)
+		self.nav_bar.update_history(self.history_stack)
+
+	def __history_pop(self):
+		item = self.history_stack.pop()
+		self.nav_bar.update_history(self.history_stack)
+		return item
+
+	def __history_last(self):
+		return self.history_stack[-1]
+
+	def __history_clear(self):
+		self.history_stack = []
+		self.nav_bar.update_history(self.history_stack)
+
+	def __history_splice(self, index):
+		item = self.history_stack[index]
+		self.history_stack = self.history_stack[:index+1]
+		self.nav_bar.update_history(self.history_stack)
+		return item
