@@ -82,7 +82,14 @@ class Storage(object):
 		return files
 
 
+	def remove_volume(self, volume_uuid):
+		if not self.is_open:
+			return False
 
+		self.db.remove_volume_files(volume_uuid)
+		self.db.remove_volume(volume_uuid)
+
+		return True
 
 
 

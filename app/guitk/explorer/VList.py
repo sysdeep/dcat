@@ -14,10 +14,24 @@ class VList(tkinter.Frame):
 
 		self.storage = get_storage()
 		self.icon_volume = qicon("document_save.png")
+		self.current_volume_id = None
 		self.select_cb = None
+		self.remove_cb = None
+		self.cb_open_modal_add_volume = None
+
+
+
+		controls_frame = tkinter.Frame(self)
+		controls_frame.pack(side="top", expand=True, fill="x")
+
+		tkinter.Button(controls_frame, text="add", command=self.__add_volume).pack(side="left")
+		tkinter.Button(controls_frame, text="remove", command=self.__remove_volume).pack(side="left")
+
+
+
 
 		self.__list = ttk.Treeview(self, show="tree", selectmode='browse')
-		self.__list.pack(side="left", expand=True, fill="both")
+		self.__list.pack(side="top", expand=True, fill="both")
 
 
 		#--- vertical scroll
@@ -29,15 +43,24 @@ class VList(tkinter.Frame):
 		self.__list.tag_bind("simple", "<<TreeviewSelect>>", self.__select_row)
 		# self.__list.bind("<Double-1>", self.__open_row)
 
-
+		
 
 
 	def reload_volumes(self):
 		self.__clear()
+		self.current_volume_id = None
 		self.__insert_volumes()
+
+
 
 	def set_select_cb(self, cb):
 		self.select_cb = cb
+
+	def set_remove_cb(self, cb):
+		self.remove_cb = cb
+
+	def set_cb_open_modal_add_volume(self, cb):
+		self.cb_open_modal_add_volume = cb
 
 
 
@@ -79,6 +102,19 @@ class VList(tkinter.Frame):
 
 		selected_item = self.__list.selection()[0]
 
+		self.current_volume_id = selected_item
 
 		if self.select_cb:
 			self.select_cb(selected_item)
+
+
+	def __remove_volume(self):
+		if self.current_volume_id and self.remove_cb:
+			print(self.current_volume_id)
+			self.remove_cb(self.current_volume_id)
+
+
+
+	def __add_volume(self):
+		if self.cb_open_modal_add_volume:
+			self.cb_open_modal_add_volume()

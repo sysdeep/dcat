@@ -8,7 +8,7 @@ from app.storage import get_storage, VRow, FRow, FType
 from ..utils import qicon, conv
 
 from .LNode import LNode
-
+from .NavBar import NavBar
 
 
 
@@ -18,7 +18,10 @@ class FList(tkinter.Frame):
 		super(FList, self).__init__(parent, *args, **kwargs)
 
 
-	
+		self.nav_bar = NavBar(self)
+		self.nav_bar.pack(side="top", fill="x")
+		self.nav_bar.set_cb_back(self.__go_back)
+		self.nav_bar.set_cb_go(self.__go_history)
 
 		self.__sort_dir = False
 
@@ -47,7 +50,7 @@ class FList(tkinter.Frame):
 		# for c in columns:
 		# 	self.__tree.heading(c, text=c, command=lambda c=c: self.__sort(c))
 
-		self.__tree.pack(side="left", expand=True, fill="both")
+		self.__tree.pack(side="top", expand=True, fill="both")
 
 
 		#--- vertical scroll
@@ -68,7 +71,8 @@ class FList(tkinter.Frame):
 		self.icon_folder = qicon("folder.png")
 		self.icon_file = qicon("empty.png")
 		
-
+		self.history_stack = []
+		self.current_volume = None
 
 
 		self.litems = {}
@@ -82,6 +86,7 @@ class FList(tkinter.Frame):
 
 
 	def update_volume(self, volume_uuid):
+		self.current_volume = volume_uuid
 		self.__clear()
 		items = self.storage.fetch_volume_files(volume_uuid)
 
@@ -111,7 +116,28 @@ class FList(tkinter.Frame):
 
 
 
+	def __go_back(self):
 
+		
+		self.__history_pop()
+
+
+		if len(self.history_stack) == 0:
+			self.update_volume(self.current_volume)
+			self.nav_bar.update_history(self.history_stack)
+			return False
+
+		current_lnode = self.__history_last()
+		self.nav_bar.update_history(self.history_stack)
+		self.update_folder(current_lnode.uuid)
+
+
+
+
+	def __go_history(self, index):
+
+		current_lnode = self.__history_splice(index)
+		self.update_folder(current_lnode.uuid)
 
 
 
@@ -227,8 +253,10 @@ class FList(tkinter.Frame):
 
 		self.__update_list(lnode)
 
-		if self.open_cb:
-			self.open_cb(lnode)
+		# if self.open_cb:
+		# 	self.open_cb(lnode)
+
+		self.__history_push(lnode)
 
 
 	
@@ -247,7 +275,27 @@ class FList(tkinter.Frame):
 
 
 
+	def __history_push(self, item):
+		self.history_stack.append(item)
+		self.nav_bar.update_history(self.history_stack)
 
+	def __history_pop(self):
+		item = self.history_stack.pop()
+		self.nav_bar.update_history(self.history_stack)
+		return item
+
+	def __history_last(self):
+		return self.history_stack[-1]
+
+	def __history_clear(self):
+		self.history_stack = []
+		self.nav_bar.update_history(self.history_stack)
+
+	def __history_splice(self, index):
+		item = self.history_stack[index]
+		self.history_stack = self.history_stack[:index+1]
+		self.nav_bar.update_history(self.history_stack)
+		return item
 
 
 

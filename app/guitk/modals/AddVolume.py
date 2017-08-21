@@ -82,6 +82,7 @@ class AddVolume(tkinter.Toplevel):
 			self.select_label.config(text=self.volume_path)
 
 			volume_name = os.path.basename(self.volume_path)
+			self.volume_name_entry.delete(0, "end")
 			self.volume_name_entry.insert(0, volume_name)
 
 			# self.__start_scan(spath)

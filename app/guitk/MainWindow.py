@@ -33,6 +33,7 @@ class MainWindow(tkinter.Tk):
 
 		self.explorer_frame = Explorer(self)
 		self.explorer_frame.pack(side="left", fill="both", expand=False)
+		self.explorer_frame.v_list.set_cb_open_modal_add_volume(self.__on_open_modal_add_volume)
 
 
 		self.modal_add_volume = None
@@ -83,6 +84,17 @@ class MainWindow(tkinter.Tk):
 	def __on_scan_complete(self):
 		self.explorer_frame.refresh()
 		self.modal_add_volume = None
+
+
+
+
+
+
+
+
+
+
+
 
 
 

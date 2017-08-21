@@ -145,6 +145,20 @@ class DB(object):
 
 
 
+
+
+
+	def remove_volume_files(self, volume_uuid):
+		cursor = self.connection.cursor()
+		cursor.execute(sql.REMOVE_VOLUME_FILES, (volume_uuid, ))
+		self.connection.commit()
+
+	def remove_volume(self, volume_uuid):
+		cursor = self.connection.cursor()
+		cursor.execute(sql.REMOVE_VOLUME, (volume_uuid, ))
+		self.connection.commit()
+
+
 	def commit(self):
 		self.connection.commit()
 

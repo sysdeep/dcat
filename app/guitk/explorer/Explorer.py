@@ -30,21 +30,22 @@ class Explorer(tkinter.Frame):
 		super(Explorer, self).__init__(parent, *args, **kwargs)
 
 
-		self.nav_bar = NavBar(self)
-		self.nav_bar.pack(side="top", fill="x")
-		self.nav_bar.set_cb_back(self.__go_back)
-		self.nav_bar.set_cb_go(self.__go_history)
+		# self.nav_bar = NavBar(self)
+		# self.nav_bar.pack(side="top", fill="x")
+		# self.nav_bar.set_cb_back(self.__go_back)
+		# self.nav_bar.set_cb_go(self.__go_history)
 
 
 
 		self.v_list = VList(self)
 		self.v_list.pack(side="left", expand=True, fill="both")
 		self.v_list.set_select_cb(self.__on_select_volume)
+		self.v_list.set_remove_cb(self.__on_remove_volume)
 
 		self.f_list = FList(self)
 		self.f_list.pack(side="left", expand=True, fill="both")
 		self.f_list.set_select_cb(self.__on_select_frow)
-		self.f_list.set_open_cb(self.__on_open_frow)
+		# self.f_list.set_open_cb(self.__on_open_frow)
 
 		self.info_frame = InfoFrame(self)
 		self.info_frame.pack(side="right", expand=True, fill="both")
@@ -59,7 +60,7 @@ class Explorer(tkinter.Frame):
 
 
 		
-		self.history_stack = []
+		# self.history_stack = []
 		self.current_volume = None
 
 
@@ -82,15 +83,18 @@ class Explorer(tkinter.Frame):
 
 
 
-
+	def __on_remove_volume(self, volume_uuid):
+		
+		self.storage.remove_volume(volume_uuid)
+		self.refresh()
 
 
 	def __on_select_frow(self, lnode):
 		self.info_frame.on_select_file(lnode)
 
 
-	def __on_open_frow(self, lnode):
-		self.__history_push(lnode)
+	# def __on_open_frow(self, lnode):
+	# 	self.__history_push(lnode)
 
 
 
@@ -101,31 +105,28 @@ class Explorer(tkinter.Frame):
 
 
 
-	def __go_back(self):
+	# def __go_back(self):
 
 		
-		self.__history_pop()
+	# 	self.__history_pop()
 
 
-		if len(self.history_stack) == 0:
-			self.f_list.update_volume(self.current_volume)
-			self.nav_bar.update_history(self.history_stack)
-			return False
+	# 	if len(self.history_stack) == 0:
+	# 		self.f_list.update_volume(self.current_volume)
+	# 		self.nav_bar.update_history(self.history_stack)
+	# 		return False
 
-		current_lnode = self.__history_last()
-		self.nav_bar.update_history(self.history_stack)
-		self.f_list.update_folder(current_lnode.uuid)
-
-
-
-
-	def __go_history(self, index):
-
-		current_lnode = self.__history_splice(index)
-		self.f_list.update_folder(current_lnode.uuid)
+	# 	current_lnode = self.__history_last()
+	# 	self.nav_bar.update_history(self.history_stack)
+	# 	self.f_list.update_folder(current_lnode.uuid)
 
 
 
+
+	# def __go_history(self, index):
+
+	# 	current_lnode = self.__history_splice(index)
+	# 	self.f_list.update_folder(current_lnode.uuid)
 
 
 
@@ -137,27 +138,30 @@ class Explorer(tkinter.Frame):
 
 
 
-	def __history_push(self, item):
-		self.history_stack.append(item)
-		self.nav_bar.update_history(self.history_stack)
 
-	def __history_pop(self):
-		item = self.history_stack.pop()
-		self.nav_bar.update_history(self.history_stack)
-		return item
 
-	def __history_last(self):
-		return self.history_stack[-1]
 
-	def __history_clear(self):
-		self.history_stack = []
-		self.nav_bar.update_history(self.history_stack)
+	# def __history_push(self, item):
+	# 	self.history_stack.append(item)
+	# 	self.nav_bar.update_history(self.history_stack)
 
-	def __history_splice(self, index):
-		item = self.history_stack[index]
-		self.history_stack = self.history_stack[:index+1]
-		self.nav_bar.update_history(self.history_stack)
-		return item
+	# def __history_pop(self):
+	# 	item = self.history_stack.pop()
+	# 	self.nav_bar.update_history(self.history_stack)
+	# 	return item
+
+	# def __history_last(self):
+	# 	return self.history_stack[-1]
+
+	# def __history_clear(self):
+	# 	self.history_stack = []
+	# 	self.nav_bar.update_history(self.history_stack)
+
+	# def __history_splice(self, index):
+	# 	item = self.history_stack[index]
+	# 	self.history_stack = self.history_stack[:index+1]
+	# 	self.nav_bar.update_history(self.history_stack)
+	# 	return item
 
 
 

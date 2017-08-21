@@ -64,3 +64,13 @@ GET_PARENT_FILES = """
     SELECT uuid, parent_id, volume_id, name, type, rights, sowner, sgroup, size, ctime, atime, mtime, category, description 
         FROM files WHERE parent_id=?;
 """
+
+
+
+REMOVE_VOLUME_FILES = """
+    DELETE FROM files WHERE volume_id=?
+"""
+
+REMOVE_VOLUME = """
+    DELETE FROM volumes WHERE uuid=?
+"""
