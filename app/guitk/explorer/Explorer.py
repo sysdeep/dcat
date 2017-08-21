@@ -70,7 +70,9 @@ class Explorer(tkinter.Frame):
 
 
 	def refresh(self):
+		self.f_list.clear()
 		self.v_list.reload_volumes()
+
 
 
 

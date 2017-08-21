@@ -11,6 +11,7 @@ from .Menu import BarMenu
 # from .DataFrame import DataFrame
 from .explorer import Explorer
 # from .InfoFrame import InfoFrame
+from .modals.AddVolume import AddVolume
 
 from app.logic import load_tree_demo
 
@@ -34,6 +35,8 @@ class MainWindow(tkinter.Tk):
 		self.explorer_frame.pack(side="left", fill="both", expand=False)
 
 
+		self.modal_add_volume = None
+
 		# self.info_frame = InfoFrame(self)
 		# self.info_frame.pack(side="right", fill="both", expand=True)
 
@@ -49,6 +52,8 @@ class MainWindow(tkinter.Tk):
 
 		self.menu_bar.set_cb_create(self.__on_create_db)
 		self.menu_bar.set_cb_open(self.__on_open_db)
+
+		self.menu_bar.set_cb_open_modal_add_volume(self.__on_open_modal_add_volume)
 
 		# load_tree_demo()
 
@@ -66,6 +71,19 @@ class MainWindow(tkinter.Tk):
 		self.storage.open_storage(db_path)
 
 		self.explorer_frame.refresh()
+
+
+
+
+	def __on_open_modal_add_volume(self):
+		self.modal_add_volume = AddVolume(self)
+		self.modal_add_volume.set_cb_complete(self.__on_scan_complete)
+
+
+	def __on_scan_complete(self):
+		self.explorer_frame.refresh()
+		self.modal_add_volume = None
+
 
 
 

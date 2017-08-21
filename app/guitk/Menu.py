@@ -30,6 +30,7 @@ class BarMenu():
 
 		self.cb_create = None
 		self.cb_open = None
+		self.cb_open_modal_add_volume = None
 
 
 		#--- key bindings
@@ -58,6 +59,8 @@ class BarMenu():
 		self.menu.add_cascade(label="File", menu=file_menu)
 		file_menu.add_command(label="Open", command=self.c_open_db)
 		file_menu.add_command(label="Create", command=self.c_create_db)
+		file_menu.add_separator()
+		file_menu.add_command(label="Add volume", command=self.c_add_volume)
 		file_menu.add_separator()
 		file_menu.add_command(label="Exit", command=self.__c_exit, compound="left", accelerator="Ctrl+q")
 
@@ -123,11 +126,22 @@ class BarMenu():
 			self.cb_open(inpath)
 
 
+
+	def c_add_volume(self):
+		if self.cb_open_modal_add_volume:
+			self.cb_open_modal_add_volume()
+
+
+
 	def set_cb_create(self, cb):
 		self.cb_create = cb
 
 	def set_cb_open(self, cb):
 		self.cb_open = cb
+
+	def set_cb_open_modal_add_volume(self, cb):
+		self.cb_open_modal_add_volume = cb
+	
 
 # 	def c_iodialog(self):
 # 		IOTestDialog(self.parent)

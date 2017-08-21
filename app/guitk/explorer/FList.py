@@ -77,6 +77,10 @@ class FList(tkinter.Frame):
 
 
 
+	def clear(self):
+		self.__clear()
+
+
 	def update_volume(self, volume_uuid):
 		self.__clear()
 		items = self.storage.fetch_volume_files(volume_uuid)
