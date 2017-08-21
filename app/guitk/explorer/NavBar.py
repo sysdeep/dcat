@@ -43,8 +43,8 @@ class NavBar(tkinter.Frame):
 		self.__stack_items_count = len(inames)
 		self.__update_btn_back()
 
-		btn = tkinter.Button(self.stack_frame, text="root", command=self.__go_root )
-		btn.pack(side="left")
+		# btn = tkinter.Button(self.stack_frame, text="root", command=self.__go_root )
+		# btn.pack(side="left")
 
 		__last_btn = None
 		for i, iname in enumerate(inames):

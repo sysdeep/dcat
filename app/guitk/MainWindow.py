@@ -4,11 +4,13 @@
 
 import tkinter
 
+from app.storage import get_storage
+
 from .Menu import BarMenu
 # from .TreeFrame import TreeFrame
 # from .DataFrame import DataFrame
 from .explorer import Explorer
-from .InfoFrame import InfoFrame
+# from .InfoFrame import InfoFrame
 
 from app.logic import load_tree_demo
 
@@ -20,6 +22,9 @@ class MainWindow(tkinter.Tk):
 		self.title("DCat")
 		# self.iconphoto(self, get_icon("gnome-app-install-star"))
 
+
+		self.storage = get_storage()
+
 		self.menu_bar = BarMenu(self)
 
 		# self.tree_frame = TreeFrame(self, width=800)
@@ -29,8 +34,8 @@ class MainWindow(tkinter.Tk):
 		self.explorer_frame.pack(side="left", fill="both", expand=False)
 
 
-		self.info_frame = InfoFrame(self)
-		self.info_frame.pack(side="right", fill="both", expand=True)
+		# self.info_frame = InfoFrame(self)
+		# self.info_frame.pack(side="right", fill="both", expand=True)
 
 		# self.__main_bar = None						# main bar - top
 		# self.__mnemo_bar = None
@@ -42,9 +47,25 @@ class MainWindow(tkinter.Tk):
 		self.status_bar_text.set("--")
 
 
+		self.menu_bar.set_cb_create(self.__on_create_db)
+		self.menu_bar.set_cb_open(self.__on_open_db)
 
 		# load_tree_demo()
 
+	def __on_create_db(self, db_path):
+		print(db_path)
+
+		self.storage.close_storage()
+		self.storage.create_storage(db_path)
+
+		self.explorer_frame.refresh()
+
+
+	def __on_open_db(self, db_path):
+		self.storage.close_storage()
+		self.storage.open_storage(db_path)
+
+		self.explorer_frame.refresh()
 
 
 

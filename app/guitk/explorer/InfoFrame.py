@@ -3,7 +3,7 @@
 
 import tkinter
 from tkinter import ttk
-from .utils import events, conv
+from ..utils import events, conv
 
 # from . import qicon
 from app.storage import get_storage, FRow, FType, VRow
@@ -71,6 +71,9 @@ class InfoFrame(tkinter.Frame):
 
 		events.on(events.Event.TREE_SELECT, self.__on_tree_selected)
 
+
+	def on_select_file(self, lnode):
+		self.__on_tree_selected(lnode)
 
 
 	def __on_tree_selected(self, item):

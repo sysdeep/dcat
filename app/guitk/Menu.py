@@ -1,7 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+
+import os.path
+
 from tkinter import *
+from tkinter.filedialog import *
 # from lib.ee import main_ee
 # from .widgets.IOTestDialog import IOTestDialog
 # from .widgets.IOTableDialog import IOTableDialog
@@ -22,6 +26,10 @@ class BarMenu():
 	def __init__(self, parent):
 		self.parent = parent
 		self.menu = None
+
+
+		self.cb_create = None
+		self.cb_open = None
 
 
 		#--- key bindings
@@ -48,7 +56,8 @@ class BarMenu():
 
 		file_menu = Menu(self.menu, tearoff=0)
 		self.menu.add_cascade(label="File", menu=file_menu)
-		file_menu.add_command(label="Open", command=self.c_about)
+		file_menu.add_command(label="Open", command=self.c_open_db)
+		file_menu.add_command(label="Create", command=self.c_create_db)
 		file_menu.add_separator()
 		file_menu.add_command(label="Exit", command=self.__c_exit, compound="left", accelerator="Ctrl+q")
 
@@ -93,6 +102,32 @@ class BarMenu():
 		win = Toplevel()
 		lab = Label(win, text="Это просто программа-тест \n меню в Tkinter")
 		lab.pack()
+
+
+	def c_create_db(self):
+		title = 'Choose the output directory'
+		op = asksaveasfilename(defaultextension=".dcat", title=title)
+		if op and self.cb_create:
+			self.cb_create(op)
+
+
+
+
+	def c_open_db(self):
+		inpath = askopenfilename(
+				title=u"Select ADEPT-encrypted PDF file to decrypt",
+				defaultextension=u".dcat", filetypes=[('DCat files', '.dcat')])
+
+		if inpath and self.cb_open:
+			inpath = os.path.normpath(inpath)
+			self.cb_open(inpath)
+
+
+	def set_cb_create(self, cb):
+		self.cb_create = cb
+
+	def set_cb_open(self, cb):
+		self.cb_open = cb
 
 # 	def c_iodialog(self):
 # 		IOTestDialog(self.parent)
