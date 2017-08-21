@@ -8,20 +8,20 @@ from ..utils import events, conv
 # from . import qicon
 from app.storage import get_storage, FRow, FType, VRow
 
-class InfoFrame(tkinter.Frame):
+class InfoFrame(ttk.Frame):
 	def __init__(self, parent, *args, **kwargs):
 		super(InfoFrame, self).__init__(parent, *args, **kwargs)
 
 		self.config(width=400)
 
-		tkinter.Label(self, text="info").pack()
+		ttk.Label(self, text="info").pack()
 
 		self.storage = get_storage()
 
 		self.current_item = None
 
 
-		grid_field = tkinter.Frame(self)
+		grid_field = ttk.Frame(self)
 		grid_field.pack()
 
 
@@ -30,9 +30,9 @@ class InfoFrame(tkinter.Frame):
 
 		for i, l in enumerate(self.litems):
 			key = l + ":  "
-			tkinter.Label(grid_field, text=key).grid(row=i, column=0, sticky="e")
+			ttk.Label(grid_field, text=key).grid(row=i, column=0, sticky="e")
 
-			label = tkinter.Label(grid_field, text="")
+			label = ttk.Label(grid_field, text="")
 			label.grid(row=i, column=1, sticky="w")
 			self.labels.append(label)
 

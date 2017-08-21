@@ -21,17 +21,17 @@ class VList(tkinter.Frame):
 
 
 
-		controls_frame = tkinter.Frame(self)
-		controls_frame.pack(side="top", expand=True, fill="x")
+		controls_frame = ttk.Frame(self)
+		controls_frame.pack(side="top", expand=False, fill="x")
 
-		tkinter.Button(controls_frame, text="add", command=self.__add_volume).pack(side="left")
-		tkinter.Button(controls_frame, text="remove", command=self.__remove_volume).pack(side="left")
+		ttk.Button(controls_frame, text="add", command=self.__add_volume).pack(side="left")
+		ttk.Button(controls_frame, text="remove", command=self.__remove_volume).pack(side="left")
 
 
 
 
 		self.__list = ttk.Treeview(self, show="tree", selectmode='browse')
-		self.__list.pack(side="top", expand=True, fill="both")
+		self.__list.pack(side="left", expand=True, fill="both")
 
 
 		#--- vertical scroll

@@ -3,9 +3,10 @@
 
 
 import tkinter
+from tkinter import ttk
 
 
-class NavBar(tkinter.Frame):
+class NavBar(ttk.Frame):
 	def __init__(self, parent, *args, **kwargs):
 		super(NavBar, self).__init__(parent, *args, **kwargs)
 
@@ -17,19 +18,20 @@ class NavBar(tkinter.Frame):
 		
 		self.__stack_items_count = 0
 
-		controls_frame = tkinter.Frame(self)
-		controls_frame.pack(fill="both", side="left", padx=10, pady=10)
+		controls_frame = ttk.Frame(self)
+		controls_frame.pack(fill="both", side="left")
 
 		# label = tkinter.Label(controls_frame, text="stack")
 		# label.pack(side="left")
 
-		self.btn_back = tkinter.Button(controls_frame, text="back", command=self.__go_back)
+		self.btn_back = ttk.Button(controls_frame, text="back", command=self.__go_back)
 		self.btn_back.pack(side="left")
 		self.btn_back.configure(state="disabled")
 
 
-		self.stack_frame = tkinter.Frame(self)
-		self.stack_frame.pack(fill="both", side="left", padx=10, pady=10)
+
+		self.stack_frame = ttk.Frame(self)
+		self.stack_frame.pack(fill="both", side="left", padx=10)
 
 
 
@@ -43,12 +45,12 @@ class NavBar(tkinter.Frame):
 		self.__stack_items_count = len(inames)
 		self.__update_btn_back()
 
-		# btn = tkinter.Button(self.stack_frame, text="root", command=self.__go_root )
-		# btn.pack(side="left")
+		btn = ttk.Button(self.stack_frame, text="/", command=self.__go_root )
+		btn.pack(side="left")
 
 		__last_btn = None
 		for i, iname in enumerate(inames):
-			btn = tkinter.Button(self.stack_frame, text=iname, command=lambda x=i: self.__go(x), compound="left" )
+			btn = ttk.Button(self.stack_frame, text=iname, command=lambda x=i: self.__go(x), compound="left" )
 			btn.pack(side="left")
 			__last_btn = btn
 

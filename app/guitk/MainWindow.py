@@ -3,6 +3,7 @@
 
 
 import tkinter
+from tkinter import ttk
 
 from app.storage import get_storage
 
@@ -55,6 +56,24 @@ class MainWindow(tkinter.Tk):
 		self.menu_bar.set_cb_open(self.__on_open_db)
 
 		self.menu_bar.set_cb_open_modal_add_volume(self.__on_open_modal_add_volume)
+
+
+
+		style = ttk.Style()
+		print(style.theme_names())
+		print(style.theme_use())
+		style.theme_use("clam")
+
+		# self.tk.eval("source themes/pkgIndex.tcl")
+		# self.tk.call("package", "require", "ttkthemes")
+		# self.tk.call("ttk::setTheme", "plastik")
+		# self.tk.call("ttk::setTheme", "aquativo")
+		# self.tk.call("ttk::setTheme", "arc")
+		# self.tk.call("ttk::setTheme", "elegance")
+		# self.tk.call("ttk::setTheme", "blue")
+		# self.tk.call("ttk::setTheme", "clearlooks")
+		# self.tk.call("ttk::setTheme", "radiance")
+		# self.tk.call("ttk::setTheme", "winxpblue")
 
 		# load_tree_demo()
 

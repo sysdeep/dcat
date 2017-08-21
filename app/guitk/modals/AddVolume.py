@@ -33,15 +33,18 @@ class AddVolume(tkinter.Toplevel):
 		self.chan = Queue()
 		self.cb_complete = None
 
-		select_frame = tkinter.Frame(self)
+		self.main_frame = ttk.Frame(self)
+		self.main_frame.pack(expand=True, fill="both")
+
+		select_frame = ttk.Frame(self.main_frame)
 		select_frame.pack(fill="x", side="top", padx=10, pady=10)
 
 		ttk.Button(select_frame, text="Выбрать каталог", command=self.__show_select_dir).pack(side="left")
-		self.select_label = tkinter.Label(select_frame, text="--")
+		self.select_label = ttk.Label(select_frame, text="--")
 		self.select_label.pack(side="left")
 
 
-		edit_frame = tkinter.Frame(self)
+		edit_frame = ttk.Frame(self.main_frame)
 		edit_frame.pack(fill="x", side="top", padx=10, pady=10)
 
 		self.volume_name_entry = ttk.Entry(edit_frame, width=30, justify="left")
@@ -50,14 +53,14 @@ class AddVolume(tkinter.Toplevel):
 
 
 
-		results_frame = tkinter.Frame(self)
+		results_frame = ttk.Frame(self.main_frame)
 		results_frame.pack(fill="x", side="top", padx=10, pady=10)
 
-		self.cur_file_operate = tkinter.Label(results_frame, text="")
+		self.cur_file_operate = ttk.Label(results_frame, text="")
 		self.cur_file_operate.pack(side="left")
 
 
-		controls_frame = tkinter.Frame(self)
+		controls_frame = ttk.Frame(self.main_frame)
 		controls_frame.pack(fill="both", side="bottom", padx=10, pady=10)
 
 		# ttk.Button(controls_frame, text="Закрыть(Ctrl+w)", image=get_icon("application-exit"), compound="left", command=self.destroy).pack(side="right")

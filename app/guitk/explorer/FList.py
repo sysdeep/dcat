@@ -13,7 +13,7 @@ from .NavBar import NavBar
 
 
 
-class FList(tkinter.Frame):
+class FList(ttk.Frame):
 	def __init__(self, parent, *args, **kwargs):
 		super(FList, self).__init__(parent, *args, **kwargs)
 
@@ -22,35 +22,40 @@ class FList(tkinter.Frame):
 		self.nav_bar.pack(side="top", fill="x")
 		self.nav_bar.set_cb_back(self.__go_back)
 		self.nav_bar.set_cb_go(self.__go_history)
+		self.nav_bar.set_cb_root(self.__go_root)
 
 		self.__sort_dir = False
 
-		columns=('size', 'rights', "owner", "group", "ctime", "atime", "mtime")
+		columns=('size', 
+			# 'rights', "owner", "group", 
+			"ctime", 
+			# "atime", "mtime"
+			)
 		self.__tree = ttk.Treeview(self, show="tree headings", selectmode='browse', columns=columns)
 		# self.__tree.heading("size", text="Размер", command=lambda c="size": self.__sort(c))
 		self.__tree.heading("size", text="Размер")
-		self.__tree.heading("rights", text="Права")
-		self.__tree.heading("owner", text="Владелец")
-		self.__tree.heading("group", text="Группа")
+		# self.__tree.heading("rights", text="Права")
+		# self.__tree.heading("owner", text="Владелец")
+		# self.__tree.heading("group", text="Группа")
 		self.__tree.heading("ctime", text="Создание")
-		self.__tree.heading("atime", text="Доступ")
-		self.__tree.heading("mtime", text="Модификация")
+		# self.__tree.heading("atime", text="Доступ")
+		# self.__tree.heading("mtime", text="Модификация")
 		self.__tree.heading('#0', text='Название')
 
 		self.__tree.column("#0", minwidth=200, width=200)
 		self.__tree.column("size", minwidth=50, width=60)
-		self.__tree.column("rights", minwidth=40, width=50)
-		self.__tree.column("owner", minwidth=80, width=80)
-		self.__tree.column("group", minwidth=80, width=80)
+		# self.__tree.column("rights", minwidth=40, width=50)
+		# self.__tree.column("owner", minwidth=80, width=80)
+		# self.__tree.column("group", minwidth=80, width=80)
 		self.__tree.column("ctime", minwidth=90, width=90)
-		self.__tree.column("atime", minwidth=90, width=90)
-		self.__tree.column("mtime", minwidth=100, width=100)
+		# self.__tree.column("atime", minwidth=90, width=90)
+		# self.__tree.column("mtime", minwidth=100, width=100)
 
 
 		# for c in columns:
 		# 	self.__tree.heading(c, text=c, command=lambda c=c: self.__sort(c))
 
-		self.__tree.pack(side="top", expand=True, fill="both")
+		self.__tree.pack(side="left", expand=True, fill="both")
 
 
 		#--- vertical scroll
@@ -115,6 +120,12 @@ class FList(tkinter.Frame):
 
 
 
+	def __go_root(self):
+		self.history_stack = []
+		self.update_volume(self.current_volume)
+		self.nav_bar.update_history(self.history_stack)
+
+
 
 	def __go_back(self):
 
@@ -165,12 +176,12 @@ class FList(tkinter.Frame):
 
 		ivalues = (
 				str(file_row[FRow.SIZE]),
-				file_row[FRow.RIGHTS],
-				file_row[FRow.OWNER],
-				file_row[FRow.GROUP],
+				# file_row[FRow.RIGHTS],
+				# file_row[FRow.OWNER],
+				# file_row[FRow.GROUP],
 				conv.convert_ctime(file_row[FRow.CTIME]),
-				conv.convert_ctime(file_row[FRow.ATIME]),
-				conv.convert_ctime(file_row[FRow.MTIME]),
+				# conv.convert_ctime(file_row[FRow.ATIME]),
+				# conv.convert_ctime(file_row[FRow.MTIME]),
 			)
 
 		
