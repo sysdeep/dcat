@@ -1,4 +1,4 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from .icons import qicon
+from .icons import qicon, volume_icon

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-
+import os
 import tkinter
 from tkinter import ttk
 
@@ -24,6 +24,7 @@ class MainWindow(tkinter.Tk):
 
 
 		self.title("DCat")
+		self.minsize(1100, 400)
 		# self.iconphoto(self, get_icon("gnome-app-install-star"))
 
 		self.usettings = USettings()
@@ -33,11 +34,8 @@ class MainWindow(tkinter.Tk):
 		self.storage = get_storage()
 
 		self.menu_bar = BarMenu(self)
-
-
 		self.menu_bar.add_last_files(self.usettings.data["lastbases"])
-		# self.tree_frame = TreeFrame(self, width=800)
-		# self.tree_frame.pack(side="left", fill="both", expand=False)
+		
 
 		self.explorer_frame = Explorer(self)
 		self.explorer_frame.pack(side="top", fill="both", expand=True)
@@ -48,17 +46,6 @@ class MainWindow(tkinter.Tk):
 
 		self.modal_add_volume = None
 
-		# self.info_frame = InfoFrame(self)
-		# self.info_frame.pack(side="right", fill="both", expand=True)
-
-		# self.__main_bar = None						# main bar - top
-		# self.__mnemo_bar = None
-		# self.footer_bar = None
-		# self.__ioaction_bar = None
-
-		# status bar
-		self.status_bar_text = tkinter.StringVar()
-		self.status_bar_text.set("--")
 
 
 		self.menu_bar.set_cb_create(self.__on_create_db)
@@ -72,7 +59,8 @@ class MainWindow(tkinter.Tk):
 		if is_open_last == 1:
 			if len(self.usettings.data["lastbases"]) > 0:
 				last = self.usettings.data["lastbases"][-1]
-				self.__on_open_db(last)
+				if os.path.exists(last):
+					self.__on_open_db(last)
 
 
 		style = ttk.Style()

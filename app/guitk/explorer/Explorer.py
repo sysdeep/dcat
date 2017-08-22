@@ -32,16 +32,16 @@ class Explorer(tkinter.Frame):
 
 
 		self.v_list = VList(self)
-		self.v_list.pack(side="left", expand=True, fill="both")
+		self.v_list.pack(side="left", expand=False, fill="y")
 		self.v_list.set_select_cb(self.__on_select_volume)
 		self.v_list.set_remove_cb(self.__on_remove_volume)
 
 		self.f_list = FList(self)
-		self.f_list.pack(side="left", expand=True, fill="both")
+		self.f_list.pack(side="left", expand=False, fill="y")
 		self.f_list.set_select_cb(self.__on_select_frow)
 		# self.f_list.set_open_cb(self.__on_open_frow)
 
-		self.info_frame = InfoFrame(self)
+		self.info_frame = InfoFrame(self, width=500, height=500)
 		self.info_frame.pack(side="right", expand=True, fill="both")
 		
 

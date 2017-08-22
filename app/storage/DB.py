@@ -15,6 +15,9 @@ def make_volume(volume_data):
 	vnode = models.VNode()
 	vnode.uuid = volume_data["uuid"]
 	vnode.name = volume_data["name"]
+	vnode.vtype = volume_data["vtype"]
+	vnode.path = volume_data["path"]
+	vnode.created = volume_data["created"]
 	return vnode
 
 

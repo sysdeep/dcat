@@ -15,16 +15,12 @@ class InfoFrame(ttk.Frame):
 	def __init__(self, parent, *args, **kwargs):
 		super(InfoFrame, self).__init__(parent, *args, **kwargs)
 
-		# self.config(width=400)
 
-		ttk.Label(self, text="info").pack()
-
-
-		self.vinfo = VInfo(self)
-		self.vinfo.pack()
+		self.vinfo = VInfo(self, width=600)
+		self.vinfo.pack(side="top", fill="x", ipadx=5, ipady=5)
 
 		self.finfo = FInfo(self)
-		self.finfo.pack()
+		self.finfo.pack(side="top", fill="x", pady=20)
 
 
 		self.storage = get_storage()

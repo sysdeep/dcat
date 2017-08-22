@@ -13,6 +13,7 @@ from tkinter import ttk
 from tkinter import filedialog
 
 from app.storage import get_storage
+from app.data import VOLUME_TYPE
 from app.logic.SWalker import SWalker
 from app.logic import scaner
 
@@ -35,6 +36,7 @@ class AddVolume(tkinter.Toplevel):
 		self.volume_path = None
 		self.volume_name = ""
 		self.volume_id = ""
+		self.volume_vtype = VOLUME_TYPE[0]
 		self.chan = Queue()
 		self.cb_complete = None
 
@@ -54,6 +56,12 @@ class AddVolume(tkinter.Toplevel):
 
 		self.volume_name_entry = ttk.Entry(edit_frame, width=30, justify="left")
 		self.volume_name_entry.pack(side="left")
+
+		self.volume_type_box = ttk.Combobox(edit_frame, values=VOLUME_TYPE, state='readonly')
+		self.volume_type_box.pack(side="left")
+		self.volume_type_box.set(self.volume_vtype)
+		self.volume_type_box.bind('<<ComboboxSelected>>', self.__update_volume_vtype)
+
 		ttk.Button(edit_frame, text="Запуск", command=self.__start_scan).pack(side="right")
 
 
@@ -86,6 +94,9 @@ class AddVolume(tkinter.Toplevel):
 		tkinter.Toplevel.destroy(self)
 
 
+	def __update_volume_vtype(self, e):
+		self.volume_vtype = self.volume_type_box.get()
+		print(self.volume_vtype)
 
 
 	def __show_select_dir(self):
@@ -123,7 +134,7 @@ class AddVolume(tkinter.Toplevel):
 			"name": self.volume_name,
 			"uuid": self.volume_id,
 			"path": self.volume_path,
-			"vtype": 0,
+			"vtype": self.volume_vtype,
 			"created": now_date()
 		}
 		

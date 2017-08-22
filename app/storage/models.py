@@ -50,6 +50,9 @@ class VNode(object):
 	def __init__(self):
 		self.uuid = None
 		self.name = ""
+		self.vtype = "other"
+		self.path = ""
+		self.created = "---"
 
 
 

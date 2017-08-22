@@ -28,7 +28,7 @@ class VInfo(ttk.Frame):
         super(VInfo, self).__init__(parent, *args, **kwargs)
 
 
-        ttk.Label(self, text="Volume info").pack(side="top")
+        ttk.Label(self, text="Свойства тома").pack(side="top")
 
 
         self.grid = ttk.Frame(self)
@@ -37,6 +37,9 @@ class VInfo(ttk.Frame):
 
         self.items = (
             self.__make_irow("name", "Название"),
+            self.__make_irow("created", "Создание"),
+            self.__make_irow("path", "Путь"),
+            self.__make_irow("vtype", "Тип"),
         )
 
 

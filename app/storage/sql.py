@@ -33,7 +33,7 @@ CREATE_TABLE_VOLUMES = """
         "name"      VARCHAR(64),
         "path"      VARCHAR(256),
         "created"   DATETIME,
-        "vtype"     INTEGER NOT NULL
+        "vtype"     VARCHAR(32)
     );
 """
 
@@ -62,7 +62,7 @@ CREATE_FILE_ROW = """
 
 
 GET_VOLUMES = """
-    SELECT uuid, name FROM volumes;
+    SELECT * FROM volumes;
 """
 
 
