@@ -55,12 +55,16 @@ class BarMenu():
 		self.menu = Menu(self.parent, relief="flat")
 		self.parent.config(menu=self.menu)
 
+		self.last_menu = Menu(self.menu, tearoff=0)
+
 		file_menu = Menu(self.menu, tearoff=0)
 		self.menu.add_cascade(label="File", menu=file_menu)
 		file_menu.add_command(label="Open", command=self.c_open_db)
 		file_menu.add_command(label="Create", command=self.c_create_db)
 		file_menu.add_separator()
 		file_menu.add_command(label="Add volume", command=self.c_add_volume)
+		file_menu.add_separator()
+		file_menu.add_cascade(label="Last", menu=self.last_menu)
 		file_menu.add_separator()
 		file_menu.add_command(label="Exit", command=self.__c_exit, compound="left", accelerator="Ctrl+q")
 
@@ -93,6 +97,16 @@ class BarMenu():
 		# debug_menu.add_command(label="Exit", command=self.c_exit)
 
 
+	def add_last_files(self, last_array):
+		for item in last_array:
+			self.last_menu.add_command(label=item, command=lambda x=item: self.c_open_last(x))
+
+
+
+
+	def c_open_last(self, item):
+		if self.cb_open:
+			self.cb_open(item)
 
 
 
