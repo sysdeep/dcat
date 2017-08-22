@@ -54,7 +54,8 @@ class USettings(object):
 
 	def __make_os_file_path(self):
 		if sys.platform == 'win32':
-			return os.path.join(environ['APPDATA'], APP_NAME)
+			# print(os.environ['APPDATA'])
+			return os.path.join(os.environ['APPDATA'], APP_NAME)
 		else:
 			return os.path.expanduser(os.path.join("~", "." + APP_NAME))
 
