@@ -6,6 +6,7 @@ import threading
 import time
 from queue import Queue
 import uuid
+from datetime import datetime
 
 import tkinter
 from tkinter import ttk
@@ -70,6 +71,12 @@ class AddVolume(tkinter.Toplevel):
 
 
 
+		self.stime_start = None
+		self.stime_finish = None
+		self.files_counter = 0
+
+
+
 	def destroy(self):
 		# self.status = False
 		tkinter.Toplevel.destroy(self)
@@ -97,6 +104,11 @@ class AddVolume(tkinter.Toplevel):
 		self.volume_name = self.volume_name_entry.get()
 		print("volume_name: ", self.volume_name)
 
+		self.stime_start = datetime.now()
+		print("start scan time: ", self.stime_start.isoformat())
+
+		self.files_counter = 0
+
 		self.__start_chan_reader()
 
 
@@ -117,6 +129,19 @@ class AddVolume(tkinter.Toplevel):
 
 
 
+	def __finish_scan(self):
+		self.storage.commit()
+
+		self.stime_finish = datetime.now()
+		print("finish scan time: ", self.stime_finish.isoformat())
+		delta = self.stime_finish - self.stime_start
+		print("Scan time: ", delta.seconds)
+
+
+		if self.cb_complete:
+			self.cb_complete()
+			self.destroy()
+
 	def __start_chan_reader(self):
 		try:
 			msg = self.chan.get(block=False)
@@ -124,15 +149,20 @@ class AddVolume(tkinter.Toplevel):
 			pass
 		else:
 			if msg["type"] == "finish":
-				self.storage.commit()
-				if self.cb_complete:
-					self.cb_complete()
-					self.destroy()
+				self.__finish_scan()
 				return True
 			else:
-				print("--->", msg)
-				full_path = os.path.join(msg["root"], msg["name"])
-				self.cur_file_operate.config(text=full_path)
+				# print("--->", msg)
+
+				#--- долгие операции - 17 сек(без них - 3 сек)
+				# full_path = os.path.join(msg["root"], msg["name"])
+				# self.cur_file_operate.config(text=full_path)
+				#--- долгие операции - 17 сек(без них - 3 сек)
+
+				self.files_counter += 1
+
+				# self.cur_file_operate.config(text=msg["name"])
+				self.cur_file_operate.config(text=self.files_counter)
 
 				msg["volume_id"] = self.volume_id
 				self.storage.create_file_row(msg)

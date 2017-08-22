@@ -43,11 +43,11 @@ class FList(ttk.Frame):
 		self.__tree.heading('#0', text='Название')
 
 		self.__tree.column("#0", minwidth=200, width=200)
-		self.__tree.column("size", minwidth=50, width=60)
+		self.__tree.column("size", minwidth=90, width=90)
 		# self.__tree.column("rights", minwidth=40, width=50)
 		# self.__tree.column("owner", minwidth=80, width=80)
 		# self.__tree.column("group", minwidth=80, width=80)
-		self.__tree.column("ctime", minwidth=90, width=90)
+		self.__tree.column("ctime", minwidth=200, width=200)
 		# self.__tree.column("atime", minwidth=90, width=90)
 		# self.__tree.column("mtime", minwidth=100, width=100)
 
