@@ -28,12 +28,30 @@ CREATE_TABLE_FILES = """
 
 CREATE_TABLE_VOLUMES = """
     CREATE TABLE "volumes" (
-        "id"            INTEGER PRIMARY KEY AUTOINCREMENT,
-        "uuid"       VARCHAR(64),
-        "name"          VARCHAR(64)
+        "id"        INTEGER PRIMARY KEY AUTOINCREMENT,
+        "uuid"      VARCHAR(64),
+        "name"      VARCHAR(64),
+        "path"      VARCHAR(256),
+        "created"   DATETIME,
+        "vtype"     INTEGER NOT NULL
     );
 """
 
+CREATE_TABLE_SYSTEM = """
+    CREATE TABLE "system" (
+        "id"        INTEGER PRIMARY KEY AUTOINCREMENT,
+        "key"       VARCHAR(64),
+        "value"     VARCHAR(64)
+    );
+"""
+
+CREATE_VERSION = """
+    INSERT INTO system(key, value) VALUES("version",?)
+"""
+
+CREATE_TIMESTAMP = """
+    INSERT INTO system(key, value) VALUES("created",?)
+"""
 
 
 CREATE_FILE_ROW = """

@@ -30,12 +30,6 @@ class Explorer(tkinter.Frame):
 		super(Explorer, self).__init__(parent, *args, **kwargs)
 
 
-		# self.nav_bar = NavBar(self)
-		# self.nav_bar.pack(side="top", fill="x")
-		# self.nav_bar.set_cb_back(self.__go_back)
-		# self.nav_bar.set_cb_go(self.__go_history)
-
-
 
 		self.v_list = VList(self)
 		self.v_list.pack(side="left", expand=True, fill="both")
@@ -61,7 +55,8 @@ class Explorer(tkinter.Frame):
 
 		
 		# self.history_stack = []
-		self.current_volume = None
+		# self.current_volume = None
+		self.current_vnode = None
 
 
 		self.v_list.reload_volumes()
@@ -76,10 +71,11 @@ class Explorer(tkinter.Frame):
 
 
 
-
-	def __on_select_volume(self, volume_uuid):
-		self.current_volume = volume_uuid
-		self.f_list.update_volume(volume_uuid)
+	#--- volume actions -------------------------------------------------------
+	def __on_select_volume(self, vnode):
+		self.current_vnode = vnode
+		self.f_list.update_volume(self.current_vnode.uuid)
+		self.info_frame.update_volume(self.current_vnode)
 
 
 
@@ -87,10 +83,37 @@ class Explorer(tkinter.Frame):
 		
 		self.storage.remove_volume(volume_uuid)
 		self.refresh()
+	#--- volume actions -------------------------------------------------------
 
 
-	def __on_select_frow(self, lnode):
-		self.info_frame.on_select_file(lnode)
+
+
+
+
+
+
+
+	def __on_select_frow(self, fnode):
+		self.info_frame.update_file(fnode)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 	# def __on_open_frow(self, lnode):

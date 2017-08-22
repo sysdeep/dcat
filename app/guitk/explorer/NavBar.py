@@ -12,8 +12,10 @@ class NavBar(ttk.Frame):
 
 
 		self.cb_go = None
-		self.cb_back = None
+		# self.cb_back = None
 		self.cb_root = None
+
+		self.history_stack = []
 
 		
 		self.__stack_items_count = 0
@@ -35,13 +37,13 @@ class NavBar(ttk.Frame):
 
 
 
-	def update_history(self, items):
+	def update_history(self):
 		
 		self.__clear_stack()
 
 		
 
-		inames = [item.name for item in items]
+		inames = [item.name for item in self.history_stack]
 		self.__stack_items_count = len(inames)
 		self.__update_btn_back()
 
@@ -64,15 +66,27 @@ class NavBar(ttk.Frame):
 
 
 	def __go(self, x):
+		fnode = self.history_splice(x)
+
 		if self.cb_go:
-			self.cb_go(x)
+			self.cb_go(fnode.uuid)
 
 
 	def __go_back(self):
-		if self.cb_back:
-			self.cb_back()
+		
+		self.history_pop()
+
+		if len(self.history_stack) == 0:
+			self.cb_root()
+			return False
+
+		fnode = self.history_last()
+		if self.cb_go:
+			self.cb_go(fnode.uuid)
+
 
 	def __go_root(self):
+		self.history_clear()
 		if self.cb_root:
 			self.cb_root()
 
@@ -97,6 +111,37 @@ class NavBar(ttk.Frame):
 
 
 
+
+
+	def reinit(self):
+		self.history_stack = []
+		self.update_history()
+
+
+
+
+
+	def history_push(self, fnode):
+		self.history_stack.append(fnode)
+		self.update_history()
+
+	def history_pop(self):
+		item = self.history_stack.pop()
+		self.update_history()
+		return item
+
+	def history_last(self):
+		return self.history_stack[-1]
+
+	def history_clear(self):
+		self.history_stack = []
+		self.update_history()
+
+	def history_splice(self, index):
+		item = self.history_stack[index]
+		self.history_stack = self.history_stack[:index+1]
+		self.update_history()
+		return item
 
 
 
@@ -148,3 +193,12 @@ class StackFrame(tkinter.Frame):
 	def __go_root(self):
 		if self.cb_root:
 			self.cb_root()
+
+
+
+
+
+
+
+
+	

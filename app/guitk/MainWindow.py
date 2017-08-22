@@ -11,6 +11,7 @@ from .Menu import BarMenu
 # from .TreeFrame import TreeFrame
 # from .DataFrame import DataFrame
 from .explorer import Explorer
+from .DBInfo import DBInfo
 # from .InfoFrame import InfoFrame
 from .modals.AddVolume import AddVolume
 
@@ -33,9 +34,11 @@ class MainWindow(tkinter.Tk):
 		# self.tree_frame.pack(side="left", fill="both", expand=False)
 
 		self.explorer_frame = Explorer(self)
-		self.explorer_frame.pack(side="left", fill="both", expand=False)
+		self.explorer_frame.pack(side="top", fill="both", expand=True)
 		self.explorer_frame.v_list.set_cb_open_modal_add_volume(self.__on_open_modal_add_volume)
 
+		self.db_info = DBInfo(self)
+		self.db_info.pack(side="bottom", fill="x", expand=False)
 
 		self.modal_add_volume = None
 
@@ -77,13 +80,22 @@ class MainWindow(tkinter.Tk):
 
 		# load_tree_demo()
 
+
+	def __update_db_info(self):
+		"""обновление информации по базе"""
+		self.db_info.set_path(self.storage.storage_path)
+		self.db_info.set_sysinfo(self.storage.fetch_system())
+
+
+
+
 	def __on_create_db(self, db_path):
-		print(db_path)
 
 		self.storage.close_storage()
 		self.storage.create_storage(db_path)
 
 		self.explorer_frame.refresh()
+		self.__update_db_info()
 
 
 	def __on_open_db(self, db_path):
@@ -91,6 +103,7 @@ class MainWindow(tkinter.Tk):
 		self.storage.open_storage(db_path)
 
 		self.explorer_frame.refresh()
+		self.__update_db_info()
 
 
 

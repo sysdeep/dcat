@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-
+import time
 
 
 def make_frow():
@@ -30,34 +30,41 @@ def make_frow():
 
 
 
-class Node(object):
+
+
+
+
+
+
+
+# class Node(object):
+# 	def __init__(self):
+# 		self.is_volume = False
+# 		self.is_dir = False
+# 		self.is_file = False
+
+
+
+
+class VNode(object):
 	def __init__(self):
-		self.is_volume = False
-		self.is_dir = False
-		self.is_file = False
-
-
-class Volume(Node):
-	def __init__(self):
-		super(Volume, self).__init__()
-		self.is_volume = True
-
 		self.uuid = None
 		self.name = ""
 
 
 
 
-class CommonFile(Node):
+class FNode(object):
 	def __init__(self):
-		super(CommonFile, self).__init__()
+		self.uuid = None
+		self.name = ""
 
 
 		self.volume_id	= ""
 		self.parent_id	= ""
 		self.uuid	= ""
 		self.name	= ""
-		self.type	= 0
+		self.ftype	= 0
 
 		self.rights	= 0
 
@@ -75,21 +82,70 @@ class CommonFile(Node):
 
 
 
+	def is_file(self):
+		return self.ftype == 1
+
+	def is_dir(self):
+		return self.ftype == 0
+
+
+	def fctime(self):
+		return self.__format_date(self.ctime)
+
+	def fmtime(self):
+		return self.__format_date(self.mtime)
+	
+	def fatime(self):
+		return self.__format_date(self.atime)
+
+	def __format_date(self, ctime):
+		t = time.gmtime(ctime)
+		result = time.strftime("%Y-%m-%d %H:%M:%S", t)
+		return result
+
+
+# class CommonFile(Node):
+# 	def __init__(self):
+# 		super(CommonFile, self).__init__()
+
+
+# 		self.volume_id	= ""
+# 		self.parent_id	= ""
+# 		self.uuid	= ""
+# 		self.name	= ""
+# 		self.type	= 0
+
+# 		self.rights	= 0
+
+# 		self.owner	= ""
+# 		self.group	= ""
+			
+# 		self.ctime	= 0
+# 		self.atime	= 0
+# 		self.mtime	= 0
+
+# 		self.category	= 0
+# 		self.description	= ""
+
+# 		self.size	= 0
 
 
 
 
-class VDir(CommonFile):
-	def __init__(self):
-		super(VDir, self).__init__()
-		self.is_dir = True
 
 
 
-class VFile(CommonFile):
-	def __init__(self):
-		super(VFile, self).__init__()
-		self.is_file = True
+# class VDir(CommonFile):
+# 	def __init__(self):
+# 		super(VDir, self).__init__()
+# 		self.is_dir = True
+
+
+
+# class VFile(CommonFile):
+# 	def __init__(self):
+# 		super(VFile, self).__init__()
+# 		self.is_file = True
 
 
 

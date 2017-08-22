@@ -19,7 +19,7 @@ class VList(tkinter.Frame):
 		self.remove_cb = None
 		self.cb_open_modal_add_volume = None
 
-
+		self.__volumes_map = {}
 
 		controls_frame = ttk.Frame(self)
 		controls_frame.pack(side="top", expand=False, fill="x")
@@ -49,6 +49,7 @@ class VList(tkinter.Frame):
 	def reload_volumes(self):
 		self.__clear()
 		self.current_volume_id = None
+		self.__volumes_map = {}
 		self.__insert_volumes()
 
 
@@ -63,27 +64,11 @@ class VList(tkinter.Frame):
 		self.cb_open_modal_add_volume = cb
 
 
-
-	def __insert_volume(self, volume_row):
-		volume_id = volume_row["uuid"]
-		volume_name = volume_row["name"]
-		self.__list.insert('', 'end', volume_id, text=volume_name, tags=("simple", ), image=self.icon_volume)
-		
-		# # self.current_items[item_volume_id] = volume_name
-
-		# lnode = LNode(volume_id, "volume")
-		# lnode.data = volume_row
-		# lnode.name = volume_name
-		# self.litems[volume_id] = lnode
-
-
-
-
-
 	def __insert_volumes(self):
 		volumes = self.storage.fetch_volumes()
-		for item in volumes:
-			self.__insert_volume(item)
+		for vnode in volumes:
+			self.__list.insert('', 'end', vnode.uuid, text=vnode.name, tags=("simple", ), image=self.icon_volume)
+			self.__volumes_map[vnode.uuid] = vnode
 
 
 
@@ -100,12 +85,19 @@ class VList(tkinter.Frame):
 		
 		
 
-		selected_item = self.__list.selection()[0]
+		vnode_uuid = self.__list.selection()[0]
 
-		self.current_volume_id = selected_item
+
+		if self.current_volume_id == vnode_uuid:
+			return False
+
+		self.current_volume_id = vnode_uuid
+
+		vnode = self.__volumes_map[vnode_uuid]
 
 		if self.select_cb:
-			self.select_cb(selected_item)
+			# self.select_cb(selected_item)
+			self.select_cb(vnode)
 
 
 	def __remove_volume(self):

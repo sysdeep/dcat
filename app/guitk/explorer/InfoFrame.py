@@ -36,6 +36,15 @@ class InfoFrame(ttk.Frame):
 		# events.on(events.Event.TREE_SELECT, self.__on_tree_selected)
 
 
+
+	def update_volume(self, vnode):
+		self.vinfo.update_info(vnode)
+
+
+	def update_file(self, fnode):
+		self.finfo.update_info(fnode)
+
+
 	def on_select_file(self, lnode):
 		self.finfo.update_info(lnode.data)
 		# self.__on_tree_selected(lnode)

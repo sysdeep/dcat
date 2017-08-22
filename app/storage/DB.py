@@ -2,16 +2,52 @@
 # -*- coding: utf-8 -*-
 
 import sqlite3
+import time
 from . import sql
+from . import models
+
+VERSION = "1.0"
+
+def now_date():
+	return time.strftime("%Y-%m-%d %H:%M:%S")
+
+def make_volume(volume_data):
+	vnode = models.VNode()
+	vnode.uuid = volume_data["uuid"]
+	vnode.name = volume_data["name"]
+	return vnode
 
 
-
-def make_result(rows):
+def make_volumes(volumes_array):
 	result = []
-	for row in rows:
-		result.append(dict(row))
+	for volume_data in volumes_array:
+		result.append(make_volume(volume_data))
 
 	return result
+
+
+
+def make_fnode(file_data):
+	fnode = models.FNode()
+	fnode.uuid = file_data["uuid"]
+	fnode.volume_id = file_data["volume_id"]
+	fnode.parent_id = file_data["parent_id"]
+	fnode.name = file_data["name"]
+	fnode.size = file_data["size"]
+	fnode.ctime = file_data["ctime"]
+	fnode.ftype = file_data["type"]
+	return fnode
+
+
+def make_fnodes(files_array):
+	result = []
+	for file_data in files_array:
+		result.append(make_fnode(file_data))
+
+	return result
+
+
+
 
 
 
@@ -47,61 +83,79 @@ class DB(object):
 
 
 	def create_db(self, db_path):
+		"""создание новой базы данных"""
 		self.db_path = db_path
 		self.__connect()
 		self.cursor = self.connection.cursor()
 		self.cursor.execute(sql.CREATE_TABLE_FILES)
 		self.cursor.execute(sql.CREATE_TABLE_VOLUMES)
+		self.cursor.execute(sql.CREATE_TABLE_SYSTEM)
+		self.cursor.execute(sql.CREATE_VERSION, (VERSION,))
+		self.cursor.execute(sql.CREATE_TIMESTAMP, (now_date(),))
 		self.connection.commit()
 
 
 
+	def get_system(self):
+		"""получить системную информацию о базе"""
+		cursor = self.connection.cursor()
+		cursor.execute("SELECT * FROM system")
+		rows = cursor.fetchall()
+		return rows
+
 
 	def get_volumes(self):
+		"""получить список всех томов"""
 		cursor = self.connection.cursor()
 		cursor.execute(sql.GET_VOLUMES)
 		rows = cursor.fetchall()
-		result = make_result(rows)
+		result = make_volumes(rows)
 		return result
+		
 
 
-	def get_files_all(self):
-		cursor = self.connection.cursor()
-		cursor.execute(sql.GET_FILES_ALL)
-		rows = cursor.fetchall()
-		return rows
+	# def get_files_all(self):
+	# 	cursor = self.connection.cursor()
+	# 	cursor.execute(sql.GET_FILES_ALL)
+	# 	rows = cursor.fetchall()
+	# 	return rows
 
 
-	def get_volume_files(self, volume_id):
-		cursor = self.connection.cursor()
-		cursor.execute("SELECT * FROM files WHERE volume_id=?", (volume_id, ))
-		rows = cursor.fetchall()
-		return rows
+	# def get_volume_files(self, volume_id):
+	# 	cursor = self.connection.cursor()
+	# 	cursor.execute("SELECT * FROM files WHERE volume_id=?", (volume_id, ))
+	# 	rows = cursor.fetchall()
+	# 	return rows
 
 
 	def get_volume_root_files(self, volume_id):
+		"""получить список файлов первого уровня для заданного тома"""
 		cursor = self.connection.cursor()
 		cursor.execute(sql.GET_VOLUME_ROOT_FILES, (volume_id, ))
-		# cursor.execute("SELECT * FROM files WHERE volume_id=? AND parent_id='0'", (volume_id, ))
 		rows = cursor.fetchall()
-		return rows
+		result = make_fnodes(rows)
+		return result
 
 
 	def get_parent_files(self, parent_id):
+		"""получить список файлов для заданной директории"""
 		cursor = self.connection.cursor()
 		cursor.execute(sql.GET_PARENT_FILES, (parent_id, ))
-		# cursor.execute("SELECT * FROM files WHERE volume_id=? AND parent_id='0'", (volume_id, ))
 		rows = cursor.fetchall()
-		return rows
+		result = make_fnodes(rows)
+		return result
 
 
 	def create_volume_row(self, vdata, commit=False):
 		ivalues = (
 			vdata["uuid"],
-			vdata["name"]
+			vdata["name"],
+			vdata["path"],
+			vdata["vtype"],
+			vdata["created"],
 		)
 		cursor = self.connection.cursor()
-		cursor.execute("INSERT INTO volumes(uuid, name) VALUES(?,?)", ivalues)
+		cursor.execute("INSERT INTO volumes(uuid, name, path, vtype, created) VALUES(?,?,?,?,?)", ivalues)
 		volume_id = cursor.lastrowid
 		
 		if commit:

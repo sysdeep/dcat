@@ -50,8 +50,14 @@ class VInfo(ttk.Frame):
 
 
 
-    def update_info(self):
-        pass
+    def update_info(self, vnode):
+        for irow in self.items:
+            try:
+                value = getattr(vnode, irow.name)
+            except:
+                value = "---"
+
+            irow.update(value)
 
 
 

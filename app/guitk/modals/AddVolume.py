@@ -16,6 +16,10 @@ from app.storage import get_storage
 from app.logic.SWalker import SWalker
 from app.logic import scaner
 
+
+def now_date():
+	return time.strftime("%Y-%m-%d %H:%M:%S")
+
 class AddVolume(tkinter.Toplevel):
 	def __init__(self, master=None, *args, **kwargs):
 		super(AddVolume, self).__init__(master, *args, **kwargs)
@@ -117,7 +121,10 @@ class AddVolume(tkinter.Toplevel):
 		self.volume_id = str(uuid.uuid4())
 		vdata = {
 			"name": self.volume_name,
-			"uuid": self.volume_id
+			"uuid": self.volume_id,
+			"path": self.volume_path,
+			"vtype": 0,
+			"created": now_date()
 		}
 		
 		self.storage.create_volume_row(vdata)

@@ -43,15 +43,12 @@ class Storage(object):
 		self.db.create_db(self.storage_path)
 		self.is_open = True
 
-		# self.__load_storage()
+	
+	
 
 
-
-
-	# def __load_storage(self):
-	# 	log.info("загрузка данны из базы")
-	# 	self.volumes = self.__load_volumes()
-	# 	self.files = self.__load_files()
+	def fetch_system(self):
+		return self.db.get_system()
 
 
 	def fetch_volumes(self):

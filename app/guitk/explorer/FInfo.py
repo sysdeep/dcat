@@ -39,6 +39,7 @@ class FInfo(ttk.Frame):
             self.__make_irow("name", "Название"),
             self.__make_irow("size", "Размер"),
             self.__make_irow("ctime", "Создание"),
+            self.__make_irow("mtime", "Модификация"),
         )
 
 
@@ -52,11 +53,24 @@ class FInfo(ttk.Frame):
 
 
 
-    def update_info(self, data):
-        print(data)
+    def update_info(self, fnode):
+        
 
         for irow in self.items:
-            value = data[irow.name]
+
+            if irow.name == "ctime":
+                irow.update(fnode.fctime())
+                continue
+
+            if irow.name == "mtime":
+                irow.update(fnode.fmtime())
+                continue
+
+            try:
+                value = getattr(fnode, irow.name)
+            except:
+                value = "---"
+
             irow.update(value)
 
 

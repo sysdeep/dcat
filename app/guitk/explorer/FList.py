@@ -20,7 +20,6 @@ class FList(ttk.Frame):
 
 		self.nav_bar = NavBar(self)
 		self.nav_bar.pack(side="top", fill="x")
-		self.nav_bar.set_cb_back(self.__go_back)
 		self.nav_bar.set_cb_go(self.__go_history)
 		self.nav_bar.set_cb_root(self.__go_root)
 
@@ -76,11 +75,10 @@ class FList(ttk.Frame):
 		self.icon_folder = qicon("folder.png")
 		self.icon_file = qicon("empty.png")
 		
-		self.history_stack = []
 		self.current_volume = None
 
 
-		self.litems = {}
+		self.litems = {}				# список загруженных нод
 		self.open_cb = None
 		self.select_cb = None
 
@@ -93,6 +91,7 @@ class FList(ttk.Frame):
 	def update_volume(self, volume_uuid):
 		self.current_volume = volume_uuid
 		self.__clear()
+		self.nav_bar.reinit()
 		items = self.storage.fetch_volume_files(volume_uuid)
 
 		for item in items:
@@ -107,8 +106,8 @@ class FList(ttk.Frame):
 
 
 
-	def set_open_cb(self, cb):
-		self.open_cb = cb
+	# def set_open_cb(self, cb):
+	# 	self.open_cb = cb
 
 
 	def set_select_cb(self, cb):
@@ -121,34 +120,10 @@ class FList(ttk.Frame):
 
 
 	def __go_root(self):
-		self.history_stack = []
 		self.update_volume(self.current_volume)
-		self.nav_bar.update_history(self.history_stack)
 
-
-
-	def __go_back(self):
-
-		
-		self.__history_pop()
-
-
-		if len(self.history_stack) == 0:
-			self.update_volume(self.current_volume)
-			self.nav_bar.update_history(self.history_stack)
-			return False
-
-		current_lnode = self.__history_last()
-		self.nav_bar.update_history(self.history_stack)
-		self.update_folder(current_lnode.uuid)
-
-
-
-
-	def __go_history(self, index):
-
-		current_lnode = self.__history_splice(index)
-		self.update_folder(current_lnode.uuid)
+	def __go_history(self, fnode_uuid):
+		self.update_folder(fnode_uuid)
 
 
 
@@ -159,75 +134,49 @@ class FList(ttk.Frame):
 
 	
 
-	def __insert_file(self, file_row):
+	def __insert_file(self, fnode):
 
-		file_id = file_row[FRow.UUID]
-		file_name = file_row[FRow.NAME]
-
-		if file_row[FRow.TYPE] == FType.DIR:
+		if fnode.is_dir():
 			ftype = "dir"
 			icon = self.icon_folder
-			item_id = file_row[FRow.UUID] + "|" + "d"
 		else:
 			ftype = "file"
 			icon = self.icon_file
-			item_id = file_row[FRow.UUID] + "|" + "f"
 
 
 		ivalues = (
-				str(file_row[FRow.SIZE]),
+				fnode.size,
 				# file_row[FRow.RIGHTS],
 				# file_row[FRow.OWNER],
 				# file_row[FRow.GROUP],
-				conv.convert_ctime(file_row[FRow.CTIME]),
+				conv.convert_ctime(fnode.ctime),
 				# conv.convert_ctime(file_row[FRow.ATIME]),
 				# conv.convert_ctime(file_row[FRow.MTIME]),
 			)
 
 		
-		# self.__tree.insert("", 'end', item_id, text=file_row[FRow.NAME], tags=("simple", ), image=icon, values=ivalues)
-		self.__tree.insert("", 'end', file_id, text=file_row[FRow.NAME], tags=("simple", ), image=icon, values=ivalues)
-		# self.current_items[item_id] = file_row[FRow.NAME]
-		# print(self.current_items)
+		self.__tree.insert("", 'end', fnode.uuid, text=fnode.name, tags=("simple", ), image=icon, values=ivalues)
 
-
-		lnode = LNode(file_row[FRow.UUID], ftype)
-		lnode.data = file_row
-		lnode.name = file_name
-		self.litems[file_row[FRow.UUID]] = lnode
-
-
-	# def __insert_back(self):
-	# 	self.__tree.insert("", 'end', "back_id", text="..", tags=("simple", ))
-
-
-
-	# def __insert_root_files(self, volume_id):
-	# 	items = self.storage.fetch_volume_files(volume_id)
-
-	# 	self.__insert_back()
-	# 	for item in items:
-	# 		self.__insert_file(item)
+		self.litems[fnode.uuid] = fnode
 
 
 
 	def __insert_parent_files(self, parent_id):
-		items = self.storage.fetch_parent_files(parent_id)
+		fnodes = self.storage.fetch_parent_files(parent_id)
 
-		# self.__insert_back()
-		for item in items:
-			self.__insert_file(item)
+		for fnode in fnodes:
+			self.__insert_file(fnode)
 
 
 	
 		
 
 	
-	def __update_list(self, item):
+	def __update_list(self, fnode):
 
-		if item.ftype == "dir":
+		if fnode.is_dir():
 			self.__clear()
-			self.__insert_parent_files(item.uuid)
+			self.__insert_parent_files(fnode.uuid)
 			return False
 
 
@@ -242,10 +191,10 @@ class FList(ttk.Frame):
 		
 
 		selected_item = self.__tree.selection()[0]
-		lnode = self.litems[selected_item]
+		fnode = self.litems[selected_item]
 
 		if self.select_cb:
-			self.select_cb(lnode)
+			self.select_cb(fnode)
 
 
 
@@ -257,17 +206,14 @@ class FList(ttk.Frame):
 			return False
 
 		selected_item = self.__tree.selection()[0]
-		lnode = self.litems[selected_item]
+		fnode = self.litems[selected_item]
 
-		if lnode.ftype == "file":
+		if fnode.is_file():
 			return False
 
-		self.__update_list(lnode)
-
-		# if self.open_cb:
-		# 	self.open_cb(lnode)
-
-		self.__history_push(lnode)
+		self.__update_list(fnode)
+		
+		self.nav_bar.history_push(fnode)
 
 
 	
@@ -284,49 +230,3 @@ class FList(ttk.Frame):
 		self.litems = {}
 
 
-
-
-	def __history_push(self, item):
-		self.history_stack.append(item)
-		self.nav_bar.update_history(self.history_stack)
-
-	def __history_pop(self):
-		item = self.history_stack.pop()
-		self.nav_bar.update_history(self.history_stack)
-		return item
-
-	def __history_last(self):
-		return self.history_stack[-1]
-
-	def __history_clear(self):
-		self.history_stack = []
-		self.nav_bar.update_history(self.history_stack)
-
-	def __history_splice(self, index):
-		item = self.history_stack[index]
-		self.history_stack = self.history_stack[:index+1]
-		self.nav_bar.update_history(self.history_stack)
-		return item
-
-
-
-
-
-
-
-
-	# def __sort(self, col):
-	# 	"""соктировка"""
-	# 	# grab values to sort as a list of tuples (column value, column id)
-	# 	# e.g. [('Argentina', 'I001'), ('Australia', 'I002'), ('Brazil', 'I003')]
-	# 	data = [(self.__tree.set(child, col), child) for child in self.__tree.get_children('')]
-
-	# 	# reorder data
-	# 	# tkinter looks after moving other items in
-	# 	# the same row
-	# 	# data.sort(reverse=descending)
-	# 	data.sort(reverse=self.__sort_dir)
-	# 	for indx, item in enumerate(data):
-	# 		self.__tree.move(item[1], '', indx)   # item[1] = item Identifier
-
-	# 	self.__sort_dir = not self.__sort_dir

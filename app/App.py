@@ -8,8 +8,8 @@ from app.storage import get_storage
 
 
 
-storage = get_storage()
-storage.open_storage(FILE_DB_TEST)
+# storage = get_storage()
+# storage.open_storage(FILE_DB_TEST)
 
 
 
