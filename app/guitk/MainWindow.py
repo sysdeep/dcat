@@ -4,6 +4,7 @@
 import os
 import tkinter
 from tkinter import ttk
+from tkinter.filedialog import *
 
 from app.storage import get_storage
 
@@ -14,8 +15,8 @@ from .explorer import Explorer
 from .DBInfo import DBInfo
 # from .InfoFrame import InfoFrame
 from .modals.AddVolume import AddVolume
+# from .ToolBar import ToolBar
 
-from app.logic import load_tree_demo
 from app.lib.USettings import USettings
 
 class MainWindow(tkinter.Tk):
@@ -35,11 +36,15 @@ class MainWindow(tkinter.Tk):
 
 		self.menu_bar = BarMenu(self)
 		self.menu_bar.add_last_files(self.usettings.data["lastbases"])
-		
+
+
+		# self.tool_bar = ToolBar(self)
+		# self.tool_bar.pack(side="top", expand=False, fill="x")
 
 		self.explorer_frame = Explorer(self)
 		self.explorer_frame.pack(side="top", fill="both", expand=True)
 		self.explorer_frame.v_list.set_cb_open_modal_add_volume(self.__on_open_modal_add_volume)
+		self.explorer_frame.v_list.set_cb_open_db(self.__on_show_open_db)
 
 		self.db_info = DBInfo(self)
 		self.db_info.pack(side="bottom", fill="x", expand=False)
@@ -49,7 +54,7 @@ class MainWindow(tkinter.Tk):
 
 
 		self.menu_bar.set_cb_create(self.__on_create_db)
-		self.menu_bar.set_cb_open(self.__on_open_db)
+		self.menu_bar.set_cb_show_open_db(self.__on_show_open_db)
 
 		self.menu_bar.set_cb_open_modal_add_volume(self.__on_open_modal_add_volume)
 
@@ -99,7 +104,7 @@ class MainWindow(tkinter.Tk):
 
 
 	def __on_create_db(self, db_path):
-
+		"""запрос создания базы по заданному пути"""
 		self.storage.close_storage()
 		self.storage.create_storage(db_path)
 
@@ -109,6 +114,7 @@ class MainWindow(tkinter.Tk):
 
 
 	def __on_open_db(self, db_path):
+		"""запрос на открытие базы по заданному пути"""
 		self.storage.close_storage()
 		self.storage.open_storage(db_path)
 
@@ -130,6 +136,17 @@ class MainWindow(tkinter.Tk):
 		self.modal_add_volume = None
 
 
+	def __on_show_open_db(self):
+		"""отобразить модал выбора базы для открытия"""
+		inpath = askopenfilename(
+				title=u"Select ADEPT-encrypted PDF file to decrypt",
+				defaultextension=u".dcat", filetypes=[('DCat files', '.dcat')])
+
+		if inpath:
+			inpath = os.path.normpath(inpath)
+			self.__on_open_db(inpath)
+
+
 
 
 
@@ -145,16 +162,5 @@ class MainWindow(tkinter.Tk):
 
 if __name__ == "__main__":
 
-
-	# from .dummyloop import dummyloop
-
-	# from base.iodum import iodum
-	# from base.sender import sender
-
-
 	app = MainWindow()
 	app.mainloop()
-
-
-
-# 	# root.geometry("350x250+300+300")

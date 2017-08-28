@@ -15,9 +15,11 @@ class VList(tkinter.Frame):
 		self.storage = get_storage()
 		self.icon_volume = qicon("document_save.png")
 		self.current_volume_id = None
+
 		self.select_cb = None
 		self.remove_cb = None
 		self.cb_open_modal_add_volume = None
+		self.cb_open_db = None
 
 		self.is_locked = True
 
@@ -31,8 +33,13 @@ class VList(tkinter.Frame):
 		self.icon_remove = qicon("edittrash.png")
 		self.icon_unlock = qicon("decrypted.png")
 		self.icon_add = qicon("edit_add.png")
+		self.icon_open = qicon("document_open.png")
 
-		self.btn_lock = ttk.Button(controls_frame, text="unlock", command=self.__toggle_lock, image=self.icon_unlock )
+
+		self.btn_open = ttk.Button(controls_frame, text="open", command=self.__open_db, image=self.icon_open)
+		self.btn_open.pack(side="left")
+
+		self.btn_lock = ttk.Button(controls_frame, text="unlock", command=self.__toggle_lock, image=self.icon_unlock)
 		self.btn_lock.pack(side="left")
 
 		self.btn_add_volume = ttk.Button(controls_frame, text="add", command=self.__add_volume, image=self.icon_add)
@@ -136,6 +143,10 @@ class VList(tkinter.Frame):
 		self.is_locked = not self.is_locked
 		self.__update_buttons_state()
 
+
+	def __open_db(self):
+		if self.cb_open_db:
+			self.cb_open_db()
 	#--- toolbar actions ------------------------------------------------------
 		
 
@@ -166,4 +177,7 @@ class VList(tkinter.Frame):
 
 	def set_cb_open_modal_add_volume(self, cb):
 		self.cb_open_modal_add_volume = cb
+
+	def set_cb_open_db(self, cb):
+		self.cb_open_db = cb
 	#--- set cbs --------------------------------------------------------------

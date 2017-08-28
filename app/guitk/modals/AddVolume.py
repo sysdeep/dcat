@@ -43,26 +43,39 @@ class AddVolume(tkinter.Toplevel):
 		self.main_frame = ttk.Frame(self)
 		self.main_frame.pack(expand=True, fill="both")
 
-		select_frame = ttk.Frame(self.main_frame)
-		select_frame.pack(fill="x", side="top", padx=10, pady=10)
+		# select_frame = ttk.Frame(self.main_frame)
+		# select_frame.pack(fill="x", side="top", padx=10, pady=10)
 
-		ttk.Button(select_frame, text="Выбрать каталог", command=self.__show_select_dir).pack(side="left")
-		self.select_label = ttk.Label(select_frame, text="--")
-		self.select_label.pack(side="left")
+		# ttk.Button(select_frame, text="Выбрать каталог", command=self.__show_select_dir).pack(side="left")
+		# self.select_label = ttk.Label(select_frame, text="--")
+		# self.select_label.pack(side="left")
 
 
 		edit_frame = ttk.Frame(self.main_frame)
 		edit_frame.pack(fill="x", side="top", padx=10, pady=10)
 
-		self.volume_name_entry = ttk.Entry(edit_frame, width=30, justify="left")
-		self.volume_name_entry.pack(side="left")
 
+
+		row = 0
+		ttk.Label(edit_frame, text="Каталог: ").grid(row=row, column=0, sticky="e")
+		self.scan_path_entry = ttk.Entry(edit_frame, width=30, justify="left")
+		self.scan_path_entry.grid(row=row, column=1, sticky="w")
+		ttk.Button(edit_frame, text="Выбрать каталог", command=self.__show_select_dir).grid(row=row, column=2, sticky="w")
+
+		row += 1
+		ttk.Label(edit_frame, text="Название тома: ").grid(row=row, column=0, sticky="e")
+		self.volume_name_entry = ttk.Entry(edit_frame, width=30, justify="left")
+		self.volume_name_entry.grid(row=row, column=1, sticky="w")
+
+		row += 1
+		ttk.Label(edit_frame, text="Иконка: ").grid(row=row, column=0, sticky="e")
 		self.volume_type_box = ttk.Combobox(edit_frame, values=VOLUME_TYPE, state='readonly')
-		self.volume_type_box.pack(side="left")
+		self.volume_type_box.grid(row=row, column=1, sticky="w")
 		self.volume_type_box.set(self.volume_vtype)
 		self.volume_type_box.bind('<<ComboboxSelected>>', self.__update_volume_vtype)
 
-		ttk.Button(edit_frame, text="Запуск", command=self.__start_scan).pack(side="right")
+
+
 
 
 
@@ -77,6 +90,7 @@ class AddVolume(tkinter.Toplevel):
 		controls_frame.pack(fill="both", side="bottom", padx=10, pady=10)
 
 		# ttk.Button(controls_frame, text="Закрыть(Ctrl+w)", image=get_icon("application-exit"), compound="left", command=self.destroy).pack(side="right")
+		ttk.Button(controls_frame, text="Запуск", command=self.__start_scan).pack(side="left")
 		ttk.Button(controls_frame, text="Закрыть(Ctrl+w)", command=self.destroy).pack(side="right")
 
 		self.bind_all("<Control-w>", lambda e: self.destroy())
@@ -104,11 +118,14 @@ class AddVolume(tkinter.Toplevel):
 		if spath:
 			spath = os.path.normpath(spath)
 			self.volume_path = spath
-			self.select_label.config(text=self.volume_path)
+			# self.select_label.config(text=self.volume_path)
 
 			volume_name = os.path.basename(self.volume_path)
 			self.volume_name_entry.delete(0, "end")
 			self.volume_name_entry.insert(0, volume_name)
+
+			self.scan_path_entry.delete(0, "end")
+			self.scan_path_entry.insert(0, self.volume_path)
 
 			# self.__start_scan(spath)
 
