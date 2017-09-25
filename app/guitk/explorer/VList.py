@@ -56,6 +56,7 @@ class VList(tkinter.Frame):
 
 		self.__list = ttk.Treeview(self, show="tree", selectmode='browse')
 		self.__list.pack(side="left", expand=True, fill="both")
+		self.__list.bind("<Button-3>", self.__make_cmenu)
 
 
 		#--- vertical scroll
@@ -67,7 +68,26 @@ class VList(tkinter.Frame):
 		self.__list.tag_bind("simple", "<<TreeviewSelect>>", self.__select_row)
 		# self.__list.bind("<Double-1>", self.__open_row)
 
-		
+
+		self.cmenu = tkinter.Menu(self, tearoff=0)
+		self.cmenu.add_command(label="Свойства", command=self.__show_info)
+		self.cmenu.add_separator()
+		self.cmenu.add_command(label="Закрыть", command=self.__hide_cmenu)
+		self.cmenu_selection = None
+
+
+	def __make_cmenu(self, e):
+		"""отображение контекстного меню"""
+		self.cmenu_selection = self.__list.identify_row(e.y)
+		if self.cmenu_selection:
+			self.cmenu.post(e.x_root, e.y_root)
+
+	def __show_info(self):
+		print("__show_info!!!")
+		print(self.cmenu_selection)
+
+	def __hide_cmenu(self):
+		pass
 
 
 	def reload_volumes(self):
