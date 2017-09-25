@@ -5,8 +5,9 @@
 import tkinter
 from tkinter import ttk
 
+from ..utils import qicon
 
-class NavBar(ttk.Frame):
+class NavBar(tkinter.Frame):
 	def __init__(self, parent, *args, **kwargs):
 		super(NavBar, self).__init__(parent, *args, **kwargs)
 
@@ -26,7 +27,9 @@ class NavBar(ttk.Frame):
 		# label = tkinter.Label(controls_frame, text="stack")
 		# label.pack(side="left")
 
-		self.btn_back = ttk.Button(controls_frame, text="back", command=self.__go_back)
+		self.icon_back = qicon("back.png")
+
+		self.btn_back = tkinter.Button(controls_frame, text="back", command=self.__go_back, image=self.icon_back, relief="flat")
 		self.btn_back.pack(side="left")
 		self.btn_back.configure(state="disabled")
 
@@ -47,12 +50,13 @@ class NavBar(ttk.Frame):
 		self.__stack_items_count = len(inames)
 		self.__update_btn_back()
 
-		btn = ttk.Button(self.stack_frame, text="/", command=self.__go_root )
+		btn = tkinter.Button(self.stack_frame, text="/", command=self.__go_root, relief="flat")
 		btn.pack(side="left")
 
 		__last_btn = None
 		for i, iname in enumerate(inames):
-			btn = ttk.Button(self.stack_frame, text=iname, command=lambda x=i: self.__go(x), compound="left" )
+			# btn = ttk.Button(self.stack_frame, text=iname, command=lambda x=i: self.__go(x), compound="left" )
+			btn = tkinter.Button(self.stack_frame, text=iname, command=lambda x=i: self.__go(x), compound="left", relief="flat")
 			btn.pack(side="left")
 			__last_btn = btn
 

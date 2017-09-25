@@ -29,11 +29,21 @@ VOLUME_ICONS = {
     "other"     : "contents.png"
 }
 
-
-
-
 def volume_icon(name):
     file_name = VOLUME_ICONS.get(name)
     if file_name is None:
         file_name = "contents.png"
     return PhotoImage(file=get_icon_path("volumes", file_name))
+
+
+ALIACES = {
+    # "close"     : "list-remove.png",
+    "close"     : "exit.png",
+    "error"     : "error.png"
+}
+
+def aqicon(name):
+    if name in ALIACES:
+        return qicon(ALIACES[name])
+
+    return qicon("error")

@@ -25,7 +25,7 @@ class VList(tkinter.Frame):
 
 		self.__volumes_map = {}
 
-		controls_frame = ttk.Frame(self)
+		controls_frame = tkinter.Frame(self)
 		controls_frame.pack(side="top", expand=False, fill="x")
 
 		self.volume_icons = []
@@ -36,17 +36,18 @@ class VList(tkinter.Frame):
 		self.icon_open = qicon("document_open.png")
 
 
-		self.btn_open = ttk.Button(controls_frame, text="open", command=self.__open_db, image=self.icon_open)
+		self.btn_open = tkinter.Button(controls_frame, text="open", command=self.__open_db, image=self.icon_open, relief="flat")
+		# self.btn_open = ttk.Button(controls_frame, text="open", command=self.__open_db, image=self.icon_open)
 		self.btn_open.pack(side="left")
 
-		self.btn_lock = ttk.Button(controls_frame, text="unlock", command=self.__toggle_lock, image=self.icon_unlock)
+		self.btn_lock = tkinter.Button(controls_frame, text="unlock", command=self.__toggle_lock, image=self.icon_unlock, relief="flat")
 		self.btn_lock.pack(side="left")
 
-		self.btn_add_volume = ttk.Button(controls_frame, text="add", command=self.__add_volume, image=self.icon_add)
+		self.btn_add_volume = tkinter.Button(controls_frame, text="add", command=self.__add_volume, image=self.icon_add, relief="flat")
 		self.btn_add_volume.pack(side="left")
 		self.btn_add_volume.config(state="disabled")
 		
-		self.btn_remove_volume = ttk.Button(controls_frame, text="remove", command=self.__remove_volume, image=self.icon_remove)
+		self.btn_remove_volume = tkinter.Button(controls_frame, text="remove", command=self.__remove_volume, image=self.icon_remove, relief="flat")
 		self.btn_remove_volume.pack(side="left")
 		self.btn_remove_volume.config(state="disabled")
 
