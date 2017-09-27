@@ -81,18 +81,6 @@ class MainWindow(tkinter.Tk):
 
 
 
-
-		#--- если в настройках флаг открывать последний
-		is_open_last = self.usettings.data["open_last"]
-		if is_open_last == 1:
-			print("open last")
-			if len(self.usettings.data["lastbases"]) > 0:
-				last = self.usettings.data["lastbases"][-1]
-				print(last)
-				if os.path.exists(last):
-					self.__on_open_db(last)
-
-
 		# style = ttk.Style()
 		# print(style.theme_names())
 		# print(style.theme_use())
@@ -109,11 +97,29 @@ class MainWindow(tkinter.Tk):
 		# self.tk.call("ttk::setTheme", "radiance")
 		# self.tk.call("ttk::setTheme", "winxpblue")
 
-		# load_tree_demo()
 
 
 		dbus.eon(dbus.SHOW_ABOUT_VOLUME, self.__on_show_modal_about_volume)
 		dbus.eon(dbus.SHOW_ABOUT_FILE, self.__on_show_modal_about_file)
+
+
+		#--- открываем последний
+		self.__check_open_last()
+
+
+
+	def __check_open_last(self):
+		#--- если в настройках флаг открывать последний
+		is_open_last = self.usettings.data["open_last"]
+		if is_open_last == 0:
+			return False
+
+		last = self.usettings.get_last_base()
+
+		if last:
+			self.__on_open_db(last)
+
+
 
 
 	def __update_db_info(self):
@@ -122,13 +128,7 @@ class MainWindow(tkinter.Tk):
 		self.db_info.set_sysinfo(self.storage.fetch_system())
 
 
-	def __update_lastbases(self, db_path):
-		"""обновление списка недавних баз"""
-		if db_path not in self.usettings.data["lastbases"]:
-			if len(self.usettings.data["lastbases"]) > 10:
-				self.usettings.data["lastbases"].pop()
-			self.usettings.data["lastbases"].append(db_path)
-			self.usettings.save()
+
 
 
 
@@ -144,7 +144,7 @@ class MainWindow(tkinter.Tk):
 
 			self.explorer_frame.refresh()
 			self.__update_db_info()
-			self.__update_lastbases(db_path)
+			self.usettings.update_last_base(db_path)
 
 
 
@@ -152,13 +152,19 @@ class MainWindow(tkinter.Tk):
 
 	def __on_open_db(self, db_path):
 		"""запрос на открытие базы по заданному пути"""
+
+		#--- проверка существования базы
+		if not os.path.exists(db_path):
+			self.usettings.remove_last(db_path)
+			return False
+
 		self.storage.close_storage()
 		self.storage.open_storage(db_path)
 
 		self.explorer_frame.refresh()
 		self.__update_db_info()
 
-		self.__update_lastbases(db_path)
+		self.usettings.update_last_base(db_path)
 		
 
 

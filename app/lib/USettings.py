@@ -52,6 +52,32 @@ class USettings(object):
 
 
 
+	def update_last_base(self, value):
+		if value in self.data["lastbases"]:
+			self.data["lastbases"].remove(value)
+
+		if len(self.data["lastbases"]) > 10:
+			self.data["lastbases"].pop()
+
+		self.data["lastbases"].append(value)
+
+		self.save()
+
+
+
+	def get_last_base(self):
+		if len(self.data["lastbases"]) > 0:
+			return self.data["lastbases"][-1]
+		return None
+
+
+	def remove_last(self, item):
+		if item in self.data["lastbases"]:
+			self.data["lastbases"].remove(item)
+			self.save()
+
+
+
 	def __make_os_file_path(self):
 		if sys.platform == 'win32':
 			# print(os.environ['APPDATA'])
