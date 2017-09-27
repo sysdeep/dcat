@@ -94,10 +94,8 @@ class BarMenu():
 
 
 	def c_create_db(self):
-		title = 'Choose the output directory'
-		op = asksaveasfilename(defaultextension=".dcat", title=title)
-		if op and self.cb_create:
-			self.cb_create(op)
+		if self.cb_create:
+			self.cb_create()
 
 
 

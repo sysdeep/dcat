@@ -55,6 +55,7 @@ class MainWindow(tkinter.Tk):
 		self.tool_bar = ToolBar(self)
 		self.tool_bar.pack(side="top", expand=False, fill="x")
 		self.tool_bar.cb_open_db = self.__on_show_open_db
+		self.tool_bar.cb_create_db = self.__on_create_db
 
 		self.explorer_frame = Explorer(self)
 		self.explorer_frame.pack(side="top", fill="both", expand=True)
@@ -70,7 +71,6 @@ class MainWindow(tkinter.Tk):
 
 		self.menu_bar.set_cb_create(self.__on_create_db)
 		self.menu_bar.set_cb_show_open_db(self.__on_show_open_db)
-
 		self.menu_bar.set_cb_open_modal_add_volume(self.__on_open_modal_add_volume)
 
 
@@ -83,10 +83,10 @@ class MainWindow(tkinter.Tk):
 					self.__on_open_db(last)
 
 
-		style = ttk.Style()
-		print(style.theme_names())
-		print(style.theme_use())
-		style.theme_use("clam")
+		# style = ttk.Style()
+		# print(style.theme_names())
+		# print(style.theme_use())
+		# style.theme_use("clam")
 
 		# self.tk.eval("source themes/pkgIndex.tcl")
 		# self.tk.call("package", "require", "ttkthemes")
@@ -121,14 +121,22 @@ class MainWindow(tkinter.Tk):
 
 
 
-	def __on_create_db(self, db_path):
-		"""запрос создания базы по заданному пути"""
-		self.storage.close_storage()
-		self.storage.create_storage(db_path)
+	def __on_create_db(self):
+		"""запрос создания базы"""
 
-		self.explorer_frame.refresh()
-		self.__update_db_info()
-		self.__update_lastbases(db_path)
+		title = 'Расположение новой базы'
+		db_path = asksaveasfilename(defaultextension=".dcat", title=title)
+		if db_path:
+
+			self.storage.close_storage()
+			self.storage.create_storage(db_path)
+
+			self.explorer_frame.refresh()
+			self.__update_db_info()
+			self.__update_lastbases(db_path)
+
+
+
 
 
 	def __on_open_db(self, db_path):
