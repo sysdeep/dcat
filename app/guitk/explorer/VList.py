@@ -5,7 +5,46 @@ import tkinter
 from tkinter import ttk
 
 from app.storage import get_storage
-from ..utils import qicon, volume_icon
+from app.lib import dbus
+from ..utils import qicon, aqicon, volume_icon
+
+
+
+
+
+class Toolbar(tkinter.Frame):
+	def __init__(self, parent, *args, **kwargs):
+		super(Toolbar, self).__init__(parent, *args, **kwargs)
+
+		self.cb_add_volume = None
+		self.cb_remove_volume = None
+		self.cb_show_info = None
+
+		self.icon_add = qicon("edit_add.png")
+		self.icon_remove = qicon("edittrash.png")
+		self.icon_info = aqicon("info")
+
+		self.btn_add_volume = tkinter.Button(self, text="add", command=self.__add_volume, image=self.icon_add, relief="flat")
+		self.btn_add_volume.pack(side="left")
+
+		self.btn_show_info = tkinter.Button(self, text="info", command=self.__show_info, image=self.icon_info, relief="flat")
+		self.btn_show_info.pack(side="left")
+
+		self.btn_remove_volume = tkinter.Button(self, text="remove", command=self.__remove_volume, image=self.icon_remove, relief="flat")
+		self.btn_remove_volume.pack(side="right")
+
+
+	def __add_volume(self):
+		self.cb_add_volume()
+
+	def __remove_volume(self):
+		self.cb_remove_volume()
+
+	def __show_info(self):
+		self.cb_show_info()
+
+
+
 
 class VList(tkinter.Frame):
 	def __init__(self, parent, *args, **kwargs):
@@ -13,54 +52,28 @@ class VList(tkinter.Frame):
 
 
 		self.storage = get_storage()
-		self.icon_volume = qicon("document_save.png")
 		self.current_volume_id = None
 
 		self.select_cb = None
 		self.remove_cb = None
 		self.cb_open_modal_add_volume = None
-		self.cb_open_db = None
 
-		self.is_locked = True
 
 		self.__volumes_map = {}
-
-		controls_frame = tkinter.Frame(self)
-		controls_frame.pack(side="top", expand=False, fill="x")
-
 		self.volume_icons = []
 
-		self.icon_remove = qicon("edittrash.png")
-		self.icon_unlock = qicon("decrypted.png")
-		self.icon_add = qicon("edit_add.png")
-		self.icon_open = qicon("document_open.png")
 
 
-		self.btn_open = tkinter.Button(controls_frame, text="open", command=self.__open_db, image=self.icon_open, relief="flat")
-		# self.btn_open = ttk.Button(controls_frame, text="open", command=self.__open_db, image=self.icon_open)
-		self.btn_open.pack(side="left")
+		list_frame = tkinter.Frame(self)
+		list_frame.pack(side="top", expand=True, fill="both")
 
-		self.btn_lock = tkinter.Button(controls_frame, text="unlock", command=self.__toggle_lock, image=self.icon_unlock, relief="flat")
-		self.btn_lock.pack(side="left")
-
-		self.btn_add_volume = tkinter.Button(controls_frame, text="add", command=self.__add_volume, image=self.icon_add, relief="flat")
-		self.btn_add_volume.pack(side="left")
-		self.btn_add_volume.config(state="disabled")
-		
-		self.btn_remove_volume = tkinter.Button(controls_frame, text="remove", command=self.__remove_volume, image=self.icon_remove, relief="flat")
-		self.btn_remove_volume.pack(side="left")
-		self.btn_remove_volume.config(state="disabled")
-
-
-
-
-		self.__list = ttk.Treeview(self, show="tree", selectmode='browse')
+		self.__list = ttk.Treeview(list_frame, show="tree", selectmode='browse')
 		self.__list.pack(side="left", expand=True, fill="both")
 		self.__list.bind("<Button-3>", self.__make_cmenu)
 
 
 		#--- vertical scroll
-		ysb = ttk.Scrollbar(self, orient="vertical", command= self.__list.yview)
+		ysb = ttk.Scrollbar(list_frame, orient="vertical", command= self.__list.yview)
 		self.__list['yscroll'] = ysb.set
 		ysb.pack(side="right", expand=False, fill="y")
 
@@ -73,21 +86,34 @@ class VList(tkinter.Frame):
 		self.cmenu.add_command(label="Свойства", command=self.__show_info)
 		self.cmenu.add_separator()
 		self.cmenu.add_command(label="Закрыть", command=self.__hide_cmenu)
-		self.cmenu_selection = None
+
+
+		self.toolbar = Toolbar(parent=self)
+		self.toolbar.pack(side="bottom", expand=False, fill="x")
+		self.toolbar.cb_add_volume = self.__add_volume
+		self.toolbar.cb_remove_volume = self.__remove_volume
+		self.toolbar.cb_show_info = self.__show_info
+
 
 
 	def __make_cmenu(self, e):
 		"""отображение контекстного меню"""
-		self.cmenu_selection = self.__list.identify_row(e.y)
-		if self.cmenu_selection:
+		cmenu_selection = self.__list.identify_row(e.y)		# тек. елемент под курсором
+
+		if cmenu_selection:
+			self.__list.selection_set(cmenu_selection)				# выделяем его
+			self.__select_row(None)									# выполняем действия по отображению выбора
 			self.cmenu.post(e.x_root, e.y_root)
 
-	def __show_info(self):
-		print("__show_info!!!")
-		print(self.cmenu_selection)
 
 	def __hide_cmenu(self):
 		pass
+
+
+
+
+
+
 
 
 	def reload_volumes(self):
@@ -97,7 +123,7 @@ class VList(tkinter.Frame):
 		self.__volumes_map = {}
 		self.__insert_volumes()
 		self.is_locked = True
-		self.__update_buttons_state()
+
 
 
 
@@ -159,32 +185,15 @@ class VList(tkinter.Frame):
 			self.cb_open_modal_add_volume()
 
 
+	def __show_info(self):
+		"""отображение модала о томе"""
+		if self.current_volume_id is None:
+			return False
 
-	def __toggle_lock(self):
-		self.is_locked = not self.is_locked
-		self.__update_buttons_state()
-
-
-	def __open_db(self):
-		if self.cb_open_db:
-			self.cb_open_db()
+		vnode = self.__volumes_map[self.current_volume_id]
+		dbus.emit(dbus.SHOW_ABOUT_VOLUME, vnode)
 	#--- toolbar actions ------------------------------------------------------
 		
-
-
-	def __update_buttons_state(self):
-		if self.is_locked:
-			self.btn_add_volume.config(state="disabled")
-			self.btn_remove_volume.config(state="disabled")
-		else:
-			self.btn_add_volume.config(state="normal")
-			self.btn_remove_volume.config(state="normal")
-
-
-
-
-
-
 
 
 
@@ -198,7 +207,4 @@ class VList(tkinter.Frame):
 
 	def set_cb_open_modal_add_volume(self, cb):
 		self.cb_open_modal_add_volume = cb
-
-	def set_cb_open_db(self, cb):
-		self.cb_open_db = cb
 	#--- set cbs --------------------------------------------------------------

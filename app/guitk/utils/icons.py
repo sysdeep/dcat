@@ -39,7 +39,8 @@ def volume_icon(name):
 ALIACES = {
     # "close"     : "list-remove.png",
     "close"     : "exit.png",
-    "error"     : "error.png"
+    "error"     : "error.png",
+    "info"		: "info.png"
 }
 
 def aqicon(name):
