@@ -167,6 +167,20 @@ class DB(object):
 		return volume_id
 
 
+
+	def update_volume_row(self, vdata, commit=False):
+		ivalues = (
+			vdata["name"],
+			vdata["vtype"],
+			vdata["uuid"]
+		)
+		cursor = self.connection.cursor()
+		cursor.execute("UPDATE volumes SET name=?, vtype=? WHERE uuid=?", ivalues)
+
+		if commit:
+			self.connection.commit()
+
+
 	def create_file_row(self, fdata, commit=False):
 		ivalues = (
 			fdata["volume_id"],

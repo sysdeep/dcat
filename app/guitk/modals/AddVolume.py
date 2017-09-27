@@ -110,7 +110,7 @@ class AddVolume(tkinter.Toplevel):
 
 	def __update_volume_vtype(self, e):
 		self.volume_vtype = self.volume_type_box.get()
-		print(self.volume_vtype)
+		# print(self.volume_vtype)
 
 
 	def __show_select_dir(self):

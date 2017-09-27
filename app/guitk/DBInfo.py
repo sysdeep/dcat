@@ -32,7 +32,7 @@ class DBInfo(tkinter.Frame):
 		self.label_created.pack(side="left")
 
 		self.icon_close = aqicon("close")
-		tkinter.Button(self, text="Close", image=self.icon_close, compound="left", relief="flat", command=self.__on_exit).pack(side="right")
+		tkinter.Button(self, text="Закрыть", image=self.icon_close, compound="left", relief="flat", command=self.__on_exit).pack(side="right")
 
 
 	def update_info(self):

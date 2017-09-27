@@ -5,6 +5,8 @@ from .DB import DB
 from .enums import FRow, VRow, FType
 
 from app import log
+from app.lib import dbus
+
 
 class Storage(object):
 	def __init__(self):
@@ -93,17 +95,17 @@ class Storage(object):
 
 
 
-	def __load_files(self, volume=None):
-		if not self.is_open:
-			return []
-
-		if volume:
-			files = self.db.get_volume_files(volume)
-		else:
-			files = self.db.get_files_all()
-
-
-		return files
+	# def __load_files(self, volume=None):
+	# 	if not self.is_open:
+	# 		return []
+	#
+	# 	if volume:
+	# 		files = self.db.get_volume_files(volume)
+	# 	else:
+	# 		files = self.db.get_files_all()
+	#
+	#
+	# 	return files
 
 	
 
@@ -117,6 +119,11 @@ class Storage(object):
 	def create_file_row(self, fdata, commit=False):
 		file_id = self.db.create_file_row(fdata, commit)
 		return file_id
+
+	def update_volume_row(self, vdata, commit=False):
+		self.db.update_volume_row(vdata, commit)
+
+		dbus.emit(dbus.STORAGE_VOLUME_UPDATED, vdata["uuid"])
 
 
 	def commit(self):

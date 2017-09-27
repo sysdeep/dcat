@@ -14,12 +14,9 @@ from .Menu import BarMenu
 # from .DataFrame import DataFrame
 from .explorer import Explorer
 from .DBInfo import DBInfo
-# from .InfoFrame import InfoFrame
-from .modals.AddVolume import AddVolume
-from .modals.AboutVolume import AboutVolume
-from .modals.AboutFile import AboutFile
+from .modals import AddVolume
 from .ToolBar import ToolBar
-
+from .modals.ModalsCtrl import ModalsCtrl
 from app.lib.USettings import USettings
 from .utils import qicon
 
@@ -38,8 +35,8 @@ class MainWindow(tkinter.Tk):
 	def __init__(self):
 		super(MainWindow, self).__init__()
 
-
-		self.title("DCat")
+		self.name = "DCat"
+		self.title(self.name)
 		self.minsize(800, 400)
 		# self.iconphoto(self, get_icon("gnome-app-install-star"))
 
@@ -79,7 +76,7 @@ class MainWindow(tkinter.Tk):
 		self.modal_add_volume = None
 
 
-
+		self.modals_ctrl = ModalsCtrl(self)
 
 		# style = ttk.Style()
 		# print(style.theme_names())
@@ -97,10 +94,6 @@ class MainWindow(tkinter.Tk):
 		# self.tk.call("ttk::setTheme", "radiance")
 		# self.tk.call("ttk::setTheme", "winxpblue")
 
-
-
-		dbus.eon(dbus.SHOW_ABOUT_VOLUME, self.__on_show_modal_about_volume)
-		dbus.eon(dbus.SHOW_ABOUT_FILE, self.__on_show_modal_about_file)
 
 
 		#--- открываем последний
@@ -145,6 +138,7 @@ class MainWindow(tkinter.Tk):
 			self.explorer_frame.refresh()
 			self.__update_db_info()
 			self.usettings.update_last_base(db_path)
+			self.__update_title(db_path)
 
 
 
@@ -165,6 +159,7 @@ class MainWindow(tkinter.Tk):
 		self.__update_db_info()
 
 		self.usettings.update_last_base(db_path)
+		self.__update_title(db_path)
 		
 
 
@@ -191,17 +186,10 @@ class MainWindow(tkinter.Tk):
 
 
 
-	def __on_show_modal_about_volume(self, vnode):
-		AboutVolume(vnode, master=self)
 
-
-	def __on_show_modal_about_file(self, fnode):
-		AboutFile(fnode, master=self)
-
-
-
-
-
+	def __update_title(self, db_path):
+		text = "{}: {}".format(self.name, db_path)
+		self.title(text)
 
 
 

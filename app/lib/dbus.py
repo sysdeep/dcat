@@ -13,7 +13,9 @@ DATA = {
 #--- events consts
 SHOW_ABOUT_VOLUME = "show_about_volume"				# args: vnode
 SHOW_ABOUT_FILE = "show_about_file"					# args: fnode
+SHOW_EDIT_VOLUME = "show_edit_volume"				# args: vnode
 
+STORAGE_VOLUME_UPDATED = "storage_volume_updated"	# args: volume_uuid
 
 
 def eon(event_name, f):
