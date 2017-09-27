@@ -29,9 +29,11 @@ class BarMenu():
 		self.menu = None
 
 
-		self.cb_create = None
-		self.cb_open = None
-		self.cb_open_modal_add_volume = None
+		#--- callbacks
+		self.cb_show_create = None
+		self.cb_show_open = None
+		self.cb_open_last = None
+		self.cb_show_add_volume = None
 
 
 		#--- key bindings
@@ -51,10 +53,10 @@ class BarMenu():
 
 		file_menu = Menu(self.menu, tearoff=0)
 		self.menu.add_cascade(label="File", menu=file_menu)
-		file_menu.add_command(label="Open", command=self.c_open_db)
-		file_menu.add_command(label="Create", command=self.c_create_db)
+		file_menu.add_command(label="Open", command=self.__show_open_db)
+		file_menu.add_command(label="Create", command=self.__show_create_db)
 		file_menu.add_separator()
-		file_menu.add_command(label="Add volume", command=self.c_add_volume)
+		file_menu.add_command(label="Add volume", command=self.__show_add_volume)
 		file_menu.add_separator()
 		file_menu.add_cascade(label="Last", menu=self.last_menu)
 		file_menu.add_separator()
@@ -64,21 +66,43 @@ class BarMenu():
 		help_menu = Menu(self.menu, tearoff=0)
 		self.menu.add_cascade(label="Помощь", menu=help_menu)
 
-		help_menu.add_command(label="О программе", command=self.c_show_about)
+		help_menu.add_command(label="О программе", command=self.__show_about)
 
 
 
 
 	def add_last_files(self, last_array):
 		for item in last_array:
-			self.last_menu.add_command(label=item, command=lambda x=item: self.c_open_last(x))
+			self.last_menu.add_command(label=item, command=lambda x=item: self.__open_last(x))
 
 
 
 
-	def c_open_last(self, item):
-		if self.cb_open:
-			self.cb_open(item)
+	def __open_last(self, item):
+		if self.cb_open_last:
+			self.cb_open_last(item)
+
+
+
+	def __show_create_db(self):
+		if self.cb_show_create:
+			self.cb_show_create()
+
+
+	def __show_open_db(self):
+		if self.cb_show_open:
+			self.cb_show_open()
+
+
+	def __show_add_volume(self):
+		if self.cb_show_add_volume:
+			self.cb_show_add_volume()
+
+
+
+
+	def __show_about(self):
+		About(self.parent)
 
 
 
@@ -86,42 +110,3 @@ class BarMenu():
 		print("exit")
 		self.parent.quit()
 		# main_ee.emit("exit")
-
-	def c_about(self):
-		win = Toplevel()
-		lab = Label(win, text="Это просто программа-тест \n меню в Tkinter")
-		lab.pack()
-
-
-	def c_create_db(self):
-		if self.cb_create:
-			self.cb_create()
-
-
-
-
-	def c_open_db(self):
-		if self.cb_open:
-			self.cb_open()
-
-
-	def c_add_volume(self):
-		if self.cb_open_modal_add_volume:
-			self.cb_open_modal_add_volume()
-
-
-
-
-	def c_show_about(self):
-		modal = About(self.parent)
-
-
-	def set_cb_create(self, cb):
-		self.cb_create = cb
-
-	def set_cb_show_open_db(self, cb):
-		self.cb_open = cb
-
-	def set_cb_open_modal_add_volume(self, cb):
-		self.cb_open_modal_add_volume = cb
-	

@@ -5,6 +5,7 @@ import tkinter
 from tkinter import ttk, PhotoImage
 
 from app.storage import get_storage, VRow, FRow, FType
+from app.lib import dbus
 from ..utils import qicon, conv
 
 from .LNode import LNode
@@ -22,6 +23,7 @@ class FList(ttk.Frame):
 		self.nav_bar.pack(side="top", fill="x")
 		self.nav_bar.set_cb_go(self.__go_history)
 		self.nav_bar.set_cb_root(self.__go_root)
+		self.nav_bar.cb_show_info = self.__show_info
 
 		self.__sort_dir = False
 
@@ -76,6 +78,7 @@ class FList(ttk.Frame):
 		self.icon_file = qicon("empty.png")
 		
 		self.current_volume = None
+		# self.current_fnode = None
 
 
 		self.litems = {}				# список загруженных нод
@@ -139,13 +142,15 @@ class FList(ttk.Frame):
 		if fnode.is_dir():
 			ftype = "dir"
 			icon = self.icon_folder
+			size = ""
 		else:
 			ftype = "file"
 			icon = self.icon_file
+			size = fnode.size
 
 
 		ivalues = (
-				fnode.size,
+				size,
 				# file_row[FRow.RIGHTS],
 				# file_row[FRow.OWNER],
 				# file_row[FRow.GROUP],
@@ -230,3 +235,17 @@ class FList(ttk.Frame):
 		self.litems = {}
 
 
+
+
+	def __show_info(self):
+		selection = self.__tree.selection()
+		if len(selection) == 0:
+			return False
+
+
+
+		selected_item = self.__tree.selection()[0]
+		fnode = self.litems[selected_item]
+
+
+		dbus.emit(dbus.SHOW_ABOUT_FILE, fnode)

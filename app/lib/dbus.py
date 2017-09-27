@@ -12,6 +12,7 @@ DATA = {
 
 #--- events consts
 SHOW_ABOUT_VOLUME = "show_about_volume"				# args: vnode
+SHOW_ABOUT_FILE = "show_about_file"					# args: fnode
 
 
 

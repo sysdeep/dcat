@@ -175,7 +175,6 @@ class VList(tkinter.Frame):
 	#--- toolbar actions ------------------------------------------------------
 	def __remove_volume(self):
 		if self.current_volume_id and self.remove_cb:
-			print(self.current_volume_id)
 			self.remove_cb(self.current_volume_id)
 
 

@@ -17,6 +17,7 @@ from .DBInfo import DBInfo
 # from .InfoFrame import InfoFrame
 from .modals.AddVolume import AddVolume
 from .modals.AboutVolume import AboutVolume
+from .modals.AboutFile import AboutFile
 from .ToolBar import ToolBar
 
 from app.lib.USettings import USettings
@@ -39,7 +40,7 @@ class MainWindow(tkinter.Tk):
 
 
 		self.title("DCat")
-		self.minsize(1100, 400)
+		self.minsize(800, 400)
 		# self.iconphoto(self, get_icon("gnome-app-install-star"))
 
 		self.usettings = USettings()
@@ -48,20 +49,30 @@ class MainWindow(tkinter.Tk):
 		
 		self.storage = get_storage()
 
+
+		#--- menu
 		self.menu_bar = BarMenu(self)
 		self.menu_bar.add_last_files(self.usettings.data["lastbases"])
+		self.menu_bar.cb_show_open			= self.__on_show_open_db
+		self.menu_bar.cb_show_create 		= self.__on_create_db
+		self.menu_bar.cb_open_last 			= self.__on_open_db
+		self.menu_bar.cb_show_add_volume 	= self.__on_open_modal_add_volume
 
 
+		#--- toolbar
 		self.tool_bar = ToolBar(self)
 		self.tool_bar.pack(side="top", expand=False, fill="x")
-		self.tool_bar.cb_open_db = self.__on_show_open_db
-		self.tool_bar.cb_create_db = self.__on_create_db
+		self.tool_bar.cb_open_db 	= self.__on_show_open_db
+		self.tool_bar.cb_create_db 	= self.__on_create_db
 
+
+		#--- explorer
 		self.explorer_frame = Explorer(self)
 		self.explorer_frame.pack(side="top", fill="both", expand=True)
 		self.explorer_frame.v_list.set_cb_open_modal_add_volume(self.__on_open_modal_add_volume)
 
 
+		#--- db info
 		self.db_info = DBInfo(self)
 		self.db_info.pack(side="bottom", fill="x", expand=False)
 
@@ -69,16 +80,15 @@ class MainWindow(tkinter.Tk):
 
 
 
-		self.menu_bar.set_cb_create(self.__on_create_db)
-		self.menu_bar.set_cb_show_open_db(self.__on_show_open_db)
-		self.menu_bar.set_cb_open_modal_add_volume(self.__on_open_modal_add_volume)
 
 
 		#--- если в настройках флаг открывать последний
 		is_open_last = self.usettings.data["open_last"]
 		if is_open_last == 1:
+			print("open last")
 			if len(self.usettings.data["lastbases"]) > 0:
 				last = self.usettings.data["lastbases"][-1]
+				print(last)
 				if os.path.exists(last):
 					self.__on_open_db(last)
 
@@ -103,6 +113,7 @@ class MainWindow(tkinter.Tk):
 
 
 		dbus.eon(dbus.SHOW_ABOUT_VOLUME, self.__on_show_modal_about_volume)
+		dbus.eon(dbus.SHOW_ABOUT_FILE, self.__on_show_modal_about_file)
 
 
 	def __update_db_info(self):
@@ -165,7 +176,7 @@ class MainWindow(tkinter.Tk):
 	def __on_show_open_db(self):
 		"""отобразить модал выбора базы для открытия"""
 		inpath = askopenfilename(
-				title=u"Select ADEPT-encrypted PDF file to decrypt",
+				title=u"Выбор базы",
 				defaultextension=u".dcat", filetypes=[('DCat files', '.dcat')])
 
 		if inpath:
@@ -176,6 +187,10 @@ class MainWindow(tkinter.Tk):
 
 	def __on_show_modal_about_volume(self, vnode):
 		AboutVolume(vnode, master=self)
+
+
+	def __on_show_modal_about_file(self, fnode):
+		AboutFile(fnode, master=self)
 
 
 
