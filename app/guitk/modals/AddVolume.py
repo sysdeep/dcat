@@ -16,6 +16,7 @@ from app.storage import get_storage
 from app.data import VOLUME_TYPE
 from app.logic.SWalker import SWalker
 from app.logic import scaner
+from app.lib import dbus
 
 
 def now_date():
@@ -173,9 +174,19 @@ class AddVolume(tkinter.Toplevel):
 		print("Scan time: ", delta.seconds)
 
 
-		if self.cb_complete:
-			self.cb_complete()
-			self.destroy()
+		dbus.emit(dbus.SCAN_COMPLETE)
+		self.destroy()
+
+		#
+		# if self.cb_complete:
+		# 	self.cb_complete()
+		# 	self.destroy()
+
+
+
+
+
+
 
 	def __start_chan_reader(self):
 		try:

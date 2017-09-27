@@ -3,22 +3,17 @@
 
 import os
 import tkinter
-from tkinter import ttk
 from tkinter.filedialog import *
 
 from app.storage import get_storage
 from app.lib import dbus
+from app.lib.USettings import USettings
 
+from .modals.ModalsCtrl import ModalsCtrl
 from .Menu import BarMenu
-# from .TreeFrame import TreeFrame
-# from .DataFrame import DataFrame
 from .explorer import Explorer
 from .DBInfo import DBInfo
-from .modals import AddVolume
 from .ToolBar import ToolBar
-from .modals.ModalsCtrl import ModalsCtrl
-from app.lib.USettings import USettings
-from .utils import qicon
 
 
 
@@ -53,7 +48,7 @@ class MainWindow(tkinter.Tk):
 		self.menu_bar.cb_show_open			= self.__on_show_open_db
 		self.menu_bar.cb_show_create 		= self.__on_create_db
 		self.menu_bar.cb_open_last 			= self.__on_open_db
-		self.menu_bar.cb_show_add_volume 	= self.__on_open_modal_add_volume
+		self.menu_bar.cb_show_add_volume 	= self.__on_show_modal_add_volume
 
 
 		#--- toolbar
@@ -66,7 +61,7 @@ class MainWindow(tkinter.Tk):
 		#--- explorer
 		self.explorer_frame = Explorer(self)
 		self.explorer_frame.pack(side="top", fill="both", expand=True)
-		self.explorer_frame.v_list.set_cb_open_modal_add_volume(self.__on_open_modal_add_volume)
+		self.explorer_frame.v_list.set_cb_open_modal_add_volume(self.__on_show_modal_add_volume)
 
 
 		#--- db info
@@ -164,14 +159,10 @@ class MainWindow(tkinter.Tk):
 
 
 
-	def __on_open_modal_add_volume(self):
-		self.modal_add_volume = AddVolume(self)
-		self.modal_add_volume.set_cb_complete(self.__on_scan_complete)
+	def __on_show_modal_add_volume(self):
+		"""вызов события для отоьражения модала добавления тома"""
+		dbus.emit(dbus.SHOW_ADD_VOLUME)
 
-
-	def __on_scan_complete(self):
-		self.explorer_frame.refresh()
-		self.modal_add_volume = None
 
 
 	def __on_show_open_db(self):

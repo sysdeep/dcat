@@ -190,7 +190,9 @@ class VList(tkinter.Frame):
 
 	def __on_volume_updated(self, volume_uuid):
 		"""событие об обновлении данных тома"""
-		self.reload_volumes()
+		self.reload_volumes()						# обновляем весь список
+		self.current_volume_id = volume_uuid
+		self.__list.selection_set(volume_uuid)		# выделяем текуший
 
 
 
