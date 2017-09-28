@@ -59,7 +59,7 @@ class NavBar(tkinter.Frame):
 
 		__last_btn = None
 		for i, iname in enumerate(inames):
-			# btn = ttk.Button(self.stack_frame, text=iname, command=lambda x=i: self.__go(x), compound="left" )
+			iname += " >"
 			btn = tkinter.Button(self.stack_frame, text=iname, command=lambda x=i: self.__go(x), compound="left", relief="flat")
 			btn.pack(side="left")
 			__last_btn = btn

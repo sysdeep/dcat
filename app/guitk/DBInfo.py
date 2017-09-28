@@ -5,12 +5,18 @@
 import tkinter 
 from tkinter import ttk
 
+from app.lib import dbus
 from .utils import aqicon
 
 
 class DBInfo(tkinter.Frame):
 	def __init__(self, master, *args, **kwargs):
 		super(DBInfo, self).__init__(master, *args, **kwargs)
+
+
+		# self.cb_show_info = None
+
+
 
 		tkinter.Label(self, text="version:").pack(side="left")
 
@@ -31,8 +37,14 @@ class DBInfo(tkinter.Frame):
 		self.label_created = tkinter.Label(self, text="---")
 		self.label_created.pack(side="left")
 
+
+
 		self.icon_close = aqicon("close")
 		tkinter.Button(self, text="Закрыть", image=self.icon_close, compound="left", relief="flat", command=self.__on_exit).pack(side="right")
+
+
+		self.icon_info = aqicon("info")
+		tkinter.Button(self, text="Info", image=self.icon_info, compound="left", relief="flat", command=self.__show_info).pack(side="right")
 
 
 	def update_info(self):
@@ -62,3 +74,12 @@ class DBInfo(tkinter.Frame):
 
 	def __on_exit(self):
 		self.master.quit()
+
+
+	def __show_info(self):
+		dbus.emit(dbus.SHOW_ABOUT_BASE)
+		# if self.cb_show_info:
+		# 	self.cb_show_info()
+
+
+

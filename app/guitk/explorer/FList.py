@@ -6,6 +6,7 @@ from tkinter import ttk, PhotoImage
 
 from app.storage import get_storage, VRow, FRow, FType
 from app.lib import dbus
+from app.lib.fsize import naturalsize
 from ..utils import qicon, conv
 
 from .LNode import LNode
@@ -146,7 +147,7 @@ class FList(ttk.Frame):
 		else:
 			ftype = "file"
 			icon = self.icon_file
-			size = fnode.size
+			size = naturalsize(fnode.size)
 
 
 		ivalues = (
