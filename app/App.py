@@ -1,25 +1,32 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-
+import sys
+import signal
 from .guitk import MainWindow
-from app.rc import FILE_DB_TEST
-from app.storage import get_storage
-
-
-
-# storage = get_storage()
-# storage.open_storage(FILE_DB_TEST)
-
 
 
 class Application(object):
-    def __init__(self):
+	def __init__(self):
+
+
+		#--- перехват системных сигналов
+		signal.signal(signal.SIGINT, self.__signal_handler)			# обработка Ctrl+C
+
+		self.gui = MainWindow()
 
 
 
-        self.gui = MainWindow()
+
+	def start(self):
+		self.gui.mainloop()
+
+		sys.exit(0)
 
 
-    def start(self):
-        self.gui.mainloop()
+
+	def __signal_handler(self, signum, frame):
+		"""обработчик сигнала завершения от системы"""
+		print("перехвачен сигнал SIGINT(Ctrl+C)")
+		print("запрос на выход из cmd")
+		self.gui.act_exit()

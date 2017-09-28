@@ -183,7 +183,8 @@ class MainWindow(tkinter.Tk):
 		self.title(text)
 
 
-
+	def act_exit(self):
+		self.quit()
 
 
 
