@@ -132,7 +132,18 @@ def start_scan(dir_path, chan):
 
 		# break
 	# self.storage.commit()
-	print(rmap)
+	
+	#--- !!! windows error
+	#  File "G:\_Wrk\_Python\_DCat\DCat\app\logic\scaner.py", line 135, in start_scan
+	#
+	# 	print(rmap)
+	#	File "g:\Python35\lib\encodings\cp866.py", line 19, in encode
+    #	return codecs.charmap_encode(input,self.errors,encoding_map)[0]
+	#	UnicodeEncodeError: 'charmap' codec can't encode character '\xeb' in position 10
+	#	89: character maps to <undefined>
+	
+	
+	# print(rmap)
 
 
 	row = {
