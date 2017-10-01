@@ -7,6 +7,7 @@ import os.path
 from tkinter import *
 from tkinter.filedialog import *
 from .modals.About import About
+from .utils.icons import qicon, aqicon
 # from lib.ee import main_ee
 # from .widgets.IOTestDialog import IOTestDialog
 # from .widgets.IOTableDialog import IOTableDialog
@@ -40,6 +41,12 @@ class BarMenu():
 		self.parent.bind_all("<Control-q>", lambda e: self.__c_exit())
 
 
+
+		self.icon_open 			= qicon("document_open.png")
+		self.icon_create 		= qicon("document_new.png")
+		self.icon_add_volume 	= qicon("edit_add.png")
+		self.icon_exit			= aqicon("close")
+
 		self.makeMenu()
 
 
@@ -52,15 +59,16 @@ class BarMenu():
 		self.last_menu = Menu(self.menu, tearoff=0)
 
 		file_menu = Menu(self.menu, tearoff=0)
-		self.menu.add_cascade(label="File", menu=file_menu)
-		file_menu.add_command(label="Open", command=self.__show_open_db)
-		file_menu.add_command(label="Create", command=self.__show_create_db)
+		# self.menu.add_cascade(label="Файл", menu=file_menu, accelerator="Ctrl+f")
+		self.menu.add_cascade(label="Файл", menu=file_menu)
+		file_menu.add_command(label="Открыть", command=self.__show_open_db, image=self.icon_open, compound="left")
+		file_menu.add_command(label="Создать", command=self.__show_create_db, image=self.icon_create, compound="left")
 		file_menu.add_separator()
-		file_menu.add_command(label="Add volume", command=self.__show_add_volume)
+		file_menu.add_command(label="Добавить том", command=self.__show_add_volume, image=self.icon_add_volume, compound="left")
 		file_menu.add_separator()
 		file_menu.add_cascade(label="Last", menu=self.last_menu)
 		file_menu.add_separator()
-		file_menu.add_command(label="Exit", command=self.__c_exit, compound="left", accelerator="Ctrl+q")
+		file_menu.add_command(label="Выход", command=self.__c_exit, compound="left", accelerator="Ctrl+q", image=self.icon_exit)
 
 
 		help_menu = Menu(self.menu, tearoff=0)
