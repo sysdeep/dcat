@@ -35,6 +35,8 @@ class BarMenu():
 		self.cb_show_open = None
 		self.cb_open_last = None
 		self.cb_show_add_volume = None
+		self.cb_create_db_backup = None
+
 
 
 		#--- key bindings
@@ -46,6 +48,7 @@ class BarMenu():
 		self.icon_create 		= qicon("document_new.png")
 		self.icon_add_volume 	= qicon("edit_add.png")
 		self.icon_exit			= aqicon("close")
+		self.icon_back_up		= qicon("document_save_as.png")
 
 		self.makeMenu()
 
@@ -63,6 +66,7 @@ class BarMenu():
 		self.menu.add_cascade(label="Файл", menu=file_menu)
 		file_menu.add_command(label="Открыть", command=self.__show_open_db, image=self.icon_open, compound="left")
 		file_menu.add_command(label="Создать", command=self.__show_create_db, image=self.icon_create, compound="left")
+		file_menu.add_command(label="BackUp", command=self.__create_db_backup, image=self.icon_back_up, compound="left")
 		file_menu.add_separator()
 		file_menu.add_command(label="Добавить том", command=self.__show_add_volume, image=self.icon_add_volume, compound="left")
 		file_menu.add_separator()
@@ -100,6 +104,12 @@ class BarMenu():
 	def __show_open_db(self):
 		if self.cb_show_open:
 			self.cb_show_open()
+
+
+	def __create_db_backup(self):
+		if self.cb_create_db_backup:
+			self.cb_create_db_backup()
+		
 
 
 	def __show_add_volume(self):

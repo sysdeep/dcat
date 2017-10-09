@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import os.path
+import shutil
+import time
+
 from .DB import DB
 from .enums import FRow, VRow, FType
 
@@ -144,3 +148,26 @@ class Storage(object):
 	def find_volume_items(self, volume_id, parent_id):
 		result = [file for file in self.files if (file[FRow.PARENT] == parent_id) and (file[FRow.VOLUME] == volume_id)]
 		return result
+
+
+
+	def create_current_backup(self):
+		# print("create_current_backup")
+
+		if self.is_open is False:
+			return False
+
+
+		# print(self.storage_path)
+
+		base_name = os.path.splitext(self.storage_path)
+		# print(base_name)
+
+		new_backup_name = base_name[0] + "_" + str(int(time.time())) + base_name[1]
+		# print(new_backup_name)
+
+
+		try:
+			shutil.copyfile(self.storage_path, new_backup_name)
+		except:
+			log.exception("unable copy file for backup...")

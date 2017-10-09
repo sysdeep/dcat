@@ -49,13 +49,15 @@ class MainWindow(tkinter.Tk):
 		self.menu_bar.cb_show_create 		= self.__on_create_db
 		self.menu_bar.cb_open_last 			= self.__on_open_db
 		self.menu_bar.cb_show_add_volume 	= self.__on_show_modal_add_volume
+		self.menu_bar.cb_create_db_backup	= self.act_db_backup
 
 
 		#--- toolbar
 		self.tool_bar = ToolBar(self)
 		self.tool_bar.pack(side="top", expand=False, fill="x")
-		self.tool_bar.cb_open_db 	= self.__on_show_open_db
-		self.tool_bar.cb_create_db 	= self.__on_create_db
+		self.tool_bar.cb_open_db 			= self.__on_show_open_db
+		self.tool_bar.cb_create_db 			= self.__on_create_db
+		self.tool_bar.cb_create_db_backup	= self.act_db_backup
 
 
 		#--- explorer
@@ -181,6 +183,11 @@ class MainWindow(tkinter.Tk):
 	def __update_title(self, db_path):
 		text = "{}: {}".format(self.name, db_path)
 		self.title(text)
+
+
+
+	def act_db_backup(self):
+		self.storage.create_current_backup();
 
 
 	def act_exit(self):
