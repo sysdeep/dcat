@@ -215,7 +215,21 @@ class DB(object):
 		return row_id
 
 
+	
 
+
+	def find_by_name(self, term):
+		# SQL = "SELECT * FROM files WHERE name LIKE '%?%'";
+		SQL = "SELECT * FROM files WHERE name LIKE '%" + term + "%'";
+		print(term)
+		
+		cursor = self.connection.cursor()
+		# cursor.execute(SQL, (term,))
+		cursor.execute(SQL)
+		rows = cursor.fetchall()
+		result = make_fnodes(rows)
+		# result = []
+		return result
 
 
 

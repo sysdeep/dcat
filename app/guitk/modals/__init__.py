@@ -7,3 +7,4 @@ from .AboutFile import AboutFile
 from .EditVolume import EditVolume
 from .AddVolume import AddVolume
 from .AboutBase import AboutBase
+from .Find import Find

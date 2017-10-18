@@ -16,6 +16,7 @@ SHOW_ABOUT_FILE 		= "show_about_file"				# args: fnode
 SHOW_ABOUT_BASE 		= "show_about_base"				# args: None
 SHOW_EDIT_VOLUME 		= "show_edit_volume"			# args: vnode
 SHOW_ADD_VOLUME			= "show_add_volume"				# args: None
+SHOW_FIND				= "show_find"					# args: None
 
 STORAGE_VOLUME_UPDATED 	= "storage_volume_updated"		# args: volume_uuid
 

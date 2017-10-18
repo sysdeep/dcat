@@ -58,6 +58,7 @@ class MainWindow(tkinter.Tk):
 		self.tool_bar.cb_open_db 			= self.__on_show_open_db
 		self.tool_bar.cb_create_db 			= self.__on_create_db
 		self.tool_bar.cb_create_db_backup	= self.act_db_backup
+		self.tool_bar.cb_show_find_modal	= self.act_show_find_modal
 
 
 		#--- explorer
@@ -184,6 +185,10 @@ class MainWindow(tkinter.Tk):
 		text = "{}: {}".format(self.name, db_path)
 		self.title(text)
 
+
+
+	def act_show_find_modal(self):
+		dbus.emit(dbus.SHOW_FIND)
 
 
 	def act_db_backup(self):

@@ -151,6 +151,14 @@ class Storage(object):
 
 
 
+	def find_items(self, term, is_file=True, is_folder=False):
+		items = self.db.find_by_name(term)
+
+		# print(items)
+
+		return items
+
+
 	def create_current_backup(self):
 		# print("create_current_backup")
 

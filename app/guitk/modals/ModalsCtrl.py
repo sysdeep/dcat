@@ -3,7 +3,7 @@
 
 from app.lib import dbus
 
-from . import AddVolume, AboutVolume, AboutFile, EditVolume, AboutBase
+from . import AddVolume, AboutVolume, AboutFile, EditVolume, AboutBase, Find
 
 class ModalsCtrl(object):
 	def __init__(self, main_win):
@@ -14,6 +14,7 @@ class ModalsCtrl(object):
 		dbus.eon(dbus.SHOW_EDIT_VOLUME, self.show_edit_volume)
 		dbus.eon(dbus.SHOW_ADD_VOLUME, self.show_add_volume)
 		dbus.eon(dbus.SHOW_ABOUT_BASE, self.show_about_base)
+		dbus.eon(dbus.SHOW_FIND, self.show_find)
 
 
 	def show_about_volume(self, vnode):
@@ -30,3 +31,6 @@ class ModalsCtrl(object):
 
 	def show_about_base(self):
 		AboutBase(master=self.main_win)
+
+	def show_find(self):
+		Find(master=self.main_win)
