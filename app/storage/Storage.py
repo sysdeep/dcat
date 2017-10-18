@@ -5,11 +5,14 @@ import os.path
 import shutil
 import time
 
-from .DB import DB
-from .enums import FRow, VRow, FType
 
 from app import log
 from app.lib import dbus
+
+
+from .DB import DB
+from .enums import FRow, VRow, FType
+from . import finder
 
 
 class Storage(object):
@@ -152,11 +155,22 @@ class Storage(object):
 
 
 	def find_items(self, term, is_file=True, is_folder=False):
-		items = self.db.find_by_name(term)
 
-		# print(items)
+		pre_fnodes = self.db.find_by_name(term)
 
-		return items
+		fnodes = []
+		for fnode in pre_fnodes:
+			if is_file and fnode.is_file():
+				fnodes.append(fnode)
+
+			if is_folder and fnode.is_dir():
+				fnodes.append(fnode)
+
+		pre_fnodes = None
+
+		result = finder.find_top_items(self.db, fnodes)
+
+		return result
 
 
 	def create_current_backup(self):

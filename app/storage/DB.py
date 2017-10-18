@@ -149,6 +149,21 @@ class DB(object):
 		return result
 
 
+
+	def get_file(self, file_id):
+		"""получить заданную запись файла"""
+		SQL = "SELECT * FROM files WHERE uuid = ?"
+		cursor = self.connection.cursor()
+		cursor.execute(SQL, (file_id, ))
+		row = cursor.fetchone()
+
+		if row is None:
+			return None
+		result = make_fnode(row)
+		return result
+		# return None
+
+
 	def create_volume_row(self, vdata, commit=False):
 		ivalues = (
 			vdata["uuid"],
@@ -221,7 +236,6 @@ class DB(object):
 	def find_by_name(self, term):
 		# SQL = "SELECT * FROM files WHERE name LIKE '%?%'";
 		SQL = "SELECT * FROM files WHERE name LIKE '%" + term + "%'";
-		print(term)
 		
 		cursor = self.connection.cursor()
 		# cursor.execute(SQL, (term,))

@@ -82,7 +82,7 @@ class Find(tkinter.Toplevel):
 		self.var_file = tkinter.IntVar()
 		self.var_file.set(1)
 		self.var_folder = tkinter.IntVar()
-		self.var_register = tkinter.IntVar()
+		# self.var_register = tkinter.IntVar()
 
 
 
@@ -92,8 +92,8 @@ class Find(tkinter.Toplevel):
 		self.cbutton_folder = tkinter.Checkbutton(frame_options, text="Folder", variable=self.var_folder)
 		self.cbutton_folder.pack(side="left")
 
-		self.cbutton_register = tkinter.Checkbutton(frame_options, text="Register", variable=self.var_register)
-		self.cbutton_register.pack(side="left")
+		# self.cbutton_register = tkinter.Checkbutton(frame_options, text="Register", variable=self.var_register)
+		# self.cbutton_register.pack(side="left")
 
 		
 		frame_actions = tkinter.Frame(group_edit)
@@ -109,7 +109,9 @@ class Find(tkinter.Toplevel):
 
 
 
-		columns=('size', 
+		columns=(
+			"path",
+			'size', 
 			# 'rights', "owner", "group", 
 			"ctime", 
 			# "atime", "mtime"
@@ -123,6 +125,7 @@ class Find(tkinter.Toplevel):
 		# self.__tree.heading("rights", text="Права")
 		# self.__tree.heading("owner", text="Владелец")
 		# self.__tree.heading("group", text="Группа")
+		self.__tree.heading("path", text="Путь")
 		self.__tree.heading("ctime", text="Создание")
 		# self.__tree.heading("atime", text="Доступ")
 		# self.__tree.heading("mtime", text="Модификация")
@@ -212,20 +215,22 @@ class Find(tkinter.Toplevel):
 
 
 		search_text = self.search_entry.get()
-		print(search_text)
+		
 
-		print(self.var_file.get())
-		print(self.var_folder.get())
-		print(self.var_register.get())
-
-
+		# print(self.var_file.get())
+		# print(self.var_folder.get())
+		# print(self.var_register.get())
 
 
-		items = self.storage.find_items(search_text)
+		is_file = self.var_file.get() == 1
+		is_folder = self.var_folder.get() == 1
+
+
+		items = self.storage.find_items(search_text, is_file=is_file, is_folder=is_folder)
 
 		self.__clear()
 		for item in items:
-			print(item.name)
+			# print(item.name)
 
 			self.__insert_file(item)
 
@@ -247,7 +252,10 @@ class Find(tkinter.Toplevel):
 			size = naturalsize(fnode.size)
 
 
+
+		name_path = fnode.make_parents_path(is_self=False)
 		ivalues = (
+			name_path,
 				size,
 				# file_row[FRow.RIGHTS],
 				# file_row[FRow.OWNER],
@@ -257,8 +265,11 @@ class Find(tkinter.Toplevel):
 				# conv.convert_ctime(file_row[FRow.MTIME]),
 			)
 
+
+		
 		
 		self.__tree.insert("", 'end', fnode.uuid, text=fnode.name, tags=("simple", ), image=icon, values=ivalues)
+		# self.__tree.insert("", 'end', fnode.uuid, text=name_text, tags=("simple", ), image=icon, values=ivalues)
 
 		# self.litems[fnode.uuid] = fnode
 

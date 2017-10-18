@@ -84,6 +84,9 @@ class FNode(object):
 		self.size	= 0
 
 
+		self.parents = []					# спсиок родителей для рекурсивного поиска
+
+
 
 	def is_file(self):
 		return self.ftype == 1
@@ -105,6 +108,28 @@ class FNode(object):
 		t = time.gmtime(ctime)
 		result = time.strftime("%Y-%m-%d %H:%M:%S", t)
 		return result
+
+
+
+	def make_parents_path(self, is_self=False):
+		parents = [parent.name for parent in self.parents]
+
+		if is_self:
+			parents.append(self.name)
+
+		# parents.insert(0, "")
+		parents_str = "/".join(parents)
+
+		return "/" + parents_str
+
+
+
+
+
+
+
+
+
 
 
 # class CommonFile(Node):
