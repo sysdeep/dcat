@@ -6,6 +6,7 @@ import tkinter
 from tkinter import ttk
 
 from ..utils import qicon, aqicon
+# from ..components import ButtonPrimary
 
 class NavBar(tkinter.Frame):
 	def __init__(self, parent, *args, **kwargs):
@@ -35,7 +36,7 @@ class NavBar(tkinter.Frame):
 		self.btn_back.pack(side="left")
 		self.btn_back.configure(state="disabled")
 
-		self.btn_show_info = tkinter.Button(self, text="info", command=self.__show_info, image=self.icon_info, relief="flat")
+		self.btn_show_info = tkinter.Button(self, text="info", command=self.__show_info, image=self.icon_info, relief="flat", highlightthickness=0, bd=0)
 		self.btn_show_info.pack(side="right")
 
 
@@ -43,6 +44,8 @@ class NavBar(tkinter.Frame):
 		self.stack_frame.pack(fill="both", side="left", padx=10)
 
 
+		# self.btn_test = ButtonPrimary(self, text="test", image=self.icon_info, compound="left")
+		# self.btn_test.pack(fill="both", side="left", padx=10)
 
 	def update_history(self):
 		

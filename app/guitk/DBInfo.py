@@ -8,6 +8,8 @@ from tkinter import ttk
 from app.lib import dbus
 from .utils import aqicon
 
+from .components import ButtonDefault, ButtonInfo
+
 
 class DBInfo(tkinter.Frame):
 	def __init__(self, master, *args, **kwargs):
@@ -40,11 +42,13 @@ class DBInfo(tkinter.Frame):
 
 
 		self.icon_close = aqicon("close")
-		tkinter.Button(self, text="Закрыть", image=self.icon_close, compound="left", relief="flat", command=self.__on_exit).pack(side="right")
+		# tkinter.Button(self, text="Закрыть", image=self.icon_close, compound="left", relief="flat", command=self.__on_exit).pack(side="right")
+		ButtonDefault(self, text="Закрыть", image=self.icon_close, compound="left", command=self.__on_exit).pack(side="right")
 
 
 		self.icon_info = aqicon("info")
-		tkinter.Button(self, text="Info", image=self.icon_info, compound="left", relief="flat", command=self.__show_info).pack(side="right")
+		# tkinter.Button(self, text="Info", image=self.icon_info, compound="left", relief="flat", command=self.__show_info).pack(side="right")
+		ButtonDefault(self, text="Info", image=self.icon_info, compound="left", command=self.__show_info).pack(side="right")
 
 
 	def update_info(self):
