@@ -49,8 +49,12 @@ CREATE_VERSION = """
     INSERT INTO system(key, value) VALUES("version",?)
 """
 
-CREATE_TIMESTAMP = """
+CREATE_TIMESTAMP_CREATED = """
     INSERT INTO system(key, value) VALUES("created",?)
+"""
+
+CREATE_TIMESTAMP_UPDATED = """
+    INSERT INTO system(key, value) VALUES("updated",?)
 """
 
 

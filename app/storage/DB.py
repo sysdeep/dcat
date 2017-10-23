@@ -3,51 +3,58 @@
 
 import sqlite3
 import time
-from . import sql
-from . import models
 
-VERSION = "1.0"
+from app import log
+
+from . import migrations
+from . import sql
+# from . import models
+from .models import loader
+
+
+
+VERSION = "2"
 
 def now_date():
 	return time.strftime("%Y-%m-%d %H:%M:%S")
 
-def make_volume(volume_data):
-	vnode = models.VNode()
-	vnode.uuid = volume_data["uuid"]
-	vnode.name = volume_data["name"]
-	vnode.vtype = volume_data["vtype"]
-	vnode.path = volume_data["path"]
-	vnode.created = volume_data["created"]
-	return vnode
+# def make_volume(volume_data):
+# 	vnode = models.VNode()
+# 	vnode.uuid = volume_data["uuid"]
+# 	vnode.name = volume_data["name"]
+# 	vnode.vtype = volume_data["vtype"]
+# 	vnode.path = volume_data["path"]
+# 	vnode.created = volume_data["created"]
+# 	return vnode
 
 
-def make_volumes(volumes_array):
-	result = []
-	for volume_data in volumes_array:
-		result.append(make_volume(volume_data))
+# def make_volumes(volumes_array):
+# 	result = []
+# 	for volume_data in volumes_array:
+# 		result.append(make_volume(volume_data))
 
-	return result
-
-
-
-def make_fnode(file_data):
-	fnode = models.FNode()
-	fnode.uuid = file_data["uuid"]
-	fnode.volume_id = file_data["volume_id"]
-	fnode.parent_id = file_data["parent_id"]
-	fnode.name = file_data["name"]
-	fnode.size = file_data["size"]
-	fnode.ctime = file_data["ctime"]
-	fnode.ftype = file_data["type"]
-	return fnode
+# 	return result
 
 
-def make_fnodes(files_array):
-	result = []
-	for file_data in files_array:
-		result.append(make_fnode(file_data))
 
-	return result
+# def make_fnode(file_data):
+# 	fnode = models.FNode()
+# 	fnode.uuid = file_data["uuid"]
+# 	fnode.volume_id = file_data["volume_id"]
+# 	fnode.parent_id = file_data["parent_id"]
+# 	fnode.name = file_data["name"]
+# 	fnode.size = file_data["size"]
+# 	fnode.ctime = file_data["ctime"]
+# 	fnode.ftype = file_data["type"]
+# 	return fnode
+
+
+# def make_fnodes(files_array):
+# 	result = []
+# 	for file_data in files_array:
+# 		result.append(make_fnode(file_data))
+
+# 	return result
 
 
 
@@ -79,6 +86,8 @@ class DB(object):
 		self.db_path = db_path
 		self.__connect()
 
+		self.migrate()
+
 
 	def close_db(self):
 		if self.connection:
@@ -94,9 +103,19 @@ class DB(object):
 		self.cursor.execute(sql.CREATE_TABLE_VOLUMES)
 		self.cursor.execute(sql.CREATE_TABLE_SYSTEM)
 		self.cursor.execute(sql.CREATE_VERSION, (VERSION,))
-		self.cursor.execute(sql.CREATE_TIMESTAMP, (now_date(),))
+		self.cursor.execute(sql.CREATE_TIMESTAMP_CREATED, (now_date(),))
+		self.cursor.execute(sql.CREATE_TIMESTAMP_UPDATED, (now_date(),))
 		self.connection.commit()
 
+
+
+	def get_version(self):
+		cursor = self.connection.cursor()
+		cursor.execute("SELECT value FROM system WHERE key = 'version'")
+		row = cursor.fetchone()
+		if row is None:
+			return "0"
+		return row[0]
 
 
 	def get_system(self):
@@ -112,7 +131,8 @@ class DB(object):
 		cursor = self.connection.cursor()
 		cursor.execute(sql.GET_VOLUMES)
 		rows = cursor.fetchall()
-		result = make_volumes(rows)
+		# result = make_volumes(rows)
+		result = loader.make_vnodes(rows)
 		return result
 		
 
@@ -136,7 +156,8 @@ class DB(object):
 		cursor = self.connection.cursor()
 		cursor.execute(sql.GET_VOLUME_ROOT_FILES, (volume_id, ))
 		rows = cursor.fetchall()
-		result = make_fnodes(rows)
+		# result = make_fnodes(rows)
+		result = loader.make_fnodes(rows)
 		return result
 
 
@@ -145,7 +166,8 @@ class DB(object):
 		cursor = self.connection.cursor()
 		cursor.execute(sql.GET_PARENT_FILES, (parent_id, ))
 		rows = cursor.fetchall()
-		result = make_fnodes(rows)
+		# result = make_fnodes(rows)
+		result = loader.make_fnodes(rows)
 		return result
 
 
@@ -159,7 +181,8 @@ class DB(object):
 
 		if row is None:
 			return None
-		result = make_fnode(row)
+		# result = make_fnode(row)
+		result = loader.make_fnode(row)
 		return result
 		# return None
 
@@ -194,6 +217,14 @@ class DB(object):
 
 		if commit:
 			self.connection.commit()
+
+
+	def update_version(self):
+		log.info("обновление версии базы")
+		cursor = self.connection.cursor()
+		cursor.execute("UPDATE system SET value=? WHERE key='version'", (VERSION, ))
+
+		
 
 
 	def create_file_row(self, fdata, commit=False):
@@ -241,7 +272,8 @@ class DB(object):
 		# cursor.execute(SQL, (term,))
 		cursor.execute(SQL)
 		rows = cursor.fetchall()
-		result = make_fnodes(rows)
+		# result = make_fnodes(rows)
+		result = loader.make_fnodes(rows)
 		# result = []
 		return result
 
@@ -260,4 +292,44 @@ class DB(object):
 
 	def commit(self):
 		self.connection.commit()
+
+
+
+
+
+	def migrate(self):
+		log.info("проверка версии базы")
+		db_version = self.get_version()
+		log.info("тек. версия: {}, необходима: {}".format(db_version, VERSION))
+
+		if db_version == VERSION:
+			log.info("версия базы подходящая")
+			return True
+
+		log.warning("необходима миграция")
+		self.update_version()
+
+
+
+		migration_steps = []
+
+		if db_version == "1.0":
+			migration_steps.append(migrations.up1_to_2)
+		# 	migration_steps.append(migrations.up2_to_3)
+		# elif db_version == "2":
+		# 	migration_steps.append(migrations.up2_to_3)
+			
+
+
+		for action in migration_steps:
+			action(self.connection)
+
+
+
+		self.connection.commit()
+
+		db_version = self.get_version()
+		log.info("тек. версия: {}".format(db_version))
+
+
 

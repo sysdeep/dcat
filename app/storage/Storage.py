@@ -193,3 +193,7 @@ class Storage(object):
 			shutil.copyfile(self.storage_path, new_backup_name)
 		except:
 			log.exception("unable copy file for backup...")
+
+
+	def get_db_version(self):
+		return self.db.get_version()

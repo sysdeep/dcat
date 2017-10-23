@@ -18,4 +18,6 @@ if __name__ == "__main__":
 
 
 
-    storage.find_items("ant")
+    # storage.find_items("ant")
+    v = storage.get_db_version()
+    print(v)
