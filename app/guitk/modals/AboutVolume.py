@@ -6,7 +6,7 @@ from tkinter import ttk
 
 from app.rc import ABOUT_NAME, ABOUT_AUTHOR_EMAIL, ABOUT_AUTHOR_NAME, ABOUT_DESCRIPTION, ABOUT_SLUG, VERSION
 from ..utils import aqicon
-
+from ..components import ButtonDefault
 
 
 class IRow(object):
@@ -49,6 +49,7 @@ class AboutVolume(tkinter.Toplevel):
 		self.items = (
 			self.__make_irow("name", "Название"),
 			self.__make_irow("created", "Создание"),
+			self.__make_irow("updated", "Обновление"),
 			self.__make_irow("path", "Путь"),
 			self.__make_irow("vtype", "Тип"),
 		)
@@ -65,7 +66,7 @@ class AboutVolume(tkinter.Toplevel):
 
 		self.icon_close = aqicon("close")
 		# ttk.Button(controls_frame, text="Закрыть(Ctrl+w)", command=self.destroy, image=self.icon_close, compound="left").pack(side="right")
-		tkinter.Button(controls_frame, text="Закрыть(Ctrl+w)", command=self.destroy, image=self.icon_close, compound="left").pack(side="right")
+		ButtonDefault(controls_frame, text="Закрыть(Ctrl+w)", command=self.destroy, image=self.icon_close, compound="left").pack(side="right")
 
 		self.bind_all("<Control-w>", lambda e: self.destroy())
 

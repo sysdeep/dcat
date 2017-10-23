@@ -5,58 +5,18 @@ import sqlite3
 import time
 
 from app import log
+from app.lib.fdate import sql_date
 
 from . import migrations
 from . import sql
-# from . import models
 from .models import loader
 
 
 
+
+
+#--- BD module version
 VERSION = "2"
-
-def now_date():
-	return time.strftime("%Y-%m-%d %H:%M:%S")
-
-# def make_volume(volume_data):
-# 	vnode = models.VNode()
-# 	vnode.uuid = volume_data["uuid"]
-# 	vnode.name = volume_data["name"]
-# 	vnode.vtype = volume_data["vtype"]
-# 	vnode.path = volume_data["path"]
-# 	vnode.created = volume_data["created"]
-# 	return vnode
-
-
-# def make_volumes(volumes_array):
-# 	result = []
-# 	for volume_data in volumes_array:
-# 		result.append(make_volume(volume_data))
-
-# 	return result
-
-
-
-# def make_fnode(file_data):
-# 	fnode = models.FNode()
-# 	fnode.uuid = file_data["uuid"]
-# 	fnode.volume_id = file_data["volume_id"]
-# 	fnode.parent_id = file_data["parent_id"]
-# 	fnode.name = file_data["name"]
-# 	fnode.size = file_data["size"]
-# 	fnode.ctime = file_data["ctime"]
-# 	fnode.ftype = file_data["type"]
-# 	return fnode
-
-
-# def make_fnodes(files_array):
-# 	result = []
-# 	for file_data in files_array:
-# 		result.append(make_fnode(file_data))
-
-# 	return result
-
-
 
 
 
@@ -103,8 +63,8 @@ class DB(object):
 		self.cursor.execute(sql.CREATE_TABLE_VOLUMES)
 		self.cursor.execute(sql.CREATE_TABLE_SYSTEM)
 		self.cursor.execute(sql.CREATE_VERSION, (VERSION,))
-		self.cursor.execute(sql.CREATE_TIMESTAMP_CREATED, (now_date(),))
-		self.cursor.execute(sql.CREATE_TIMESTAMP_UPDATED, (now_date(),))
+		self.cursor.execute(sql.CREATE_TIMESTAMP_CREATED, (sql_date(),))
+		self.cursor.execute(sql.CREATE_TIMESTAMP_UPDATED, (sql_date(),))
 		self.connection.commit()
 
 
@@ -307,9 +267,7 @@ class DB(object):
 			return True
 
 		log.warning("необходима миграция")
-		self.update_version()
-
-
+		
 
 		migration_steps = []
 
@@ -326,6 +284,7 @@ class DB(object):
 
 
 
+		self.update_version()
 		self.connection.commit()
 
 		db_version = self.get_version()

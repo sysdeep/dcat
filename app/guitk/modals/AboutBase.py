@@ -7,7 +7,7 @@ from tkinter import ttk
 from ..utils import aqicon
 from app.storage import get_storage
 from app.lib.fsize import naturalsize
-
+from ..components import ButtonDefault
 
 
 
@@ -63,7 +63,7 @@ class AboutBase(tkinter.Toplevel):
 		controls_frame.pack(fill="both", side="bottom", padx=5, pady=5)
 
 		self.icon_close = aqicon("close")
-		tkinter.Button(controls_frame, text="Закрыть(Ctrl+w)", command=self.destroy, image=self.icon_close, compound="left").pack(side="right")
+		ButtonDefault(controls_frame, text="Закрыть(Ctrl+w)", command=self.destroy, image=self.icon_close, compound="left").pack(side="right")
 
 		self.bind_all("<Control-w>", lambda e: self.destroy())
 

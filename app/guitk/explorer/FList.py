@@ -7,7 +7,7 @@ from tkinter import ttk, PhotoImage
 from app.storage import get_storage, VRow, FRow, FType
 from app.lib import dbus
 from app.lib.fsize import naturalsize
-from ..utils import qicon, conv
+from ..utils import qicon, conv, aqicon
 
 from .LNode import LNode
 from .NavBar import NavBar
@@ -69,7 +69,15 @@ class FList(ttk.Frame):
 		self.__tree.tag_bind("simple", "<<TreeviewSelect>>", self.__select_row)
 		self.__tree.bind("<Double-1>", self.__open_row)
 		# self.__tree.tag_bind("simple", "<<TreeviewOpen>>", self.__open_row)
+		self.__tree.bind("<Button-3>", self.__make_cmenu)
 
+
+
+		self.__icon_menu_info = aqicon("info")
+		# self.__icon_menu_edit = aqicon("edit")
+		self.cmenu = tkinter.Menu(self, tearoff=0)
+		self.cmenu.add_command(label="Свойства", command=self.__show_info, image=self.__icon_menu_info, compound="left")
+		# self.cmenu.add_command(label="Изменить", command=self.__show_edit, image=self.__icon_menu_edit, compound="left")
 
 
 		self.storage = get_storage()
@@ -85,6 +93,21 @@ class FList(ttk.Frame):
 		self.litems = {}				# список загруженных нод
 		self.open_cb = None
 		self.select_cb = None
+
+
+
+	def __make_cmenu(self, e):
+		"""отображение контекстного меню"""
+		cmenu_selection = self.__tree.identify_row(e.y)		# тек. елемент под курсором
+
+		if cmenu_selection:
+			self.__tree.selection_set(cmenu_selection)				# выделяем его
+			# self.__select_row(None)									# выполняем действия по отображению выбора
+
+			#--- отображение меню
+			# self.cmenu.post(e.x_root, e.y_root)
+			self.cmenu.tk_popup(e.x_root, e.y_root)					# автозакрытие при потере фокуса(https://stackoverflow.com/questions/21200516/python3-tkinter-popup-menu-not-closing-automatically-when-clicking-elsewhere)
+
 
 
 

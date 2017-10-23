@@ -47,10 +47,15 @@ class VList(tkinter.Frame):
 		# self.__list.bind("<Double-1>", self.__open_row)
 
 
+
+
+		self.__icon_menu_info = aqicon("info")
+		self.__icon_menu_edit = aqicon("edit")
 		self.cmenu = tkinter.Menu(self, tearoff=0)
-		self.cmenu.add_command(label="Свойства", command=self.__show_info)
-		self.cmenu.add_separator()
-		self.cmenu.add_command(label="Закрыть", command=self.__hide_cmenu)
+		self.cmenu.add_command(label="Свойства", command=self.__show_info, image=self.__icon_menu_info, compound="left")
+		self.cmenu.add_command(label="Изменить", command=self.__show_edit, image=self.__icon_menu_edit, compound="left")
+		# self.cmenu.add_separator()
+		# self.cmenu.add_command(label="Закрыть", command=self.__hide_cmenu)
 
 
 		self.toolbar = Toolbar(parent=self)
@@ -72,7 +77,10 @@ class VList(tkinter.Frame):
 		if cmenu_selection:
 			self.__list.selection_set(cmenu_selection)				# выделяем его
 			self.__select_row(None)									# выполняем действия по отображению выбора
-			self.cmenu.post(e.x_root, e.y_root)
+
+			#--- отображение меню
+			# self.cmenu.post(e.x_root, e.y_root)
+			self.cmenu.tk_popup(e.x_root, e.y_root)					# автозакрытие при потере фокуса(https://stackoverflow.com/questions/21200516/python3-tkinter-popup-menu-not-closing-automatically-when-clicking-elsewhere)
 
 
 	def __hide_cmenu(self):
