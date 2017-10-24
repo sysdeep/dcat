@@ -3,6 +3,8 @@
 
 import tkinter
 from tkinter import ttk
+from tkinter import messagebox
+
 
 from app.storage import get_storage
 from app.lib import dbus
@@ -51,9 +53,11 @@ class VList(tkinter.Frame):
 
 		self.__icon_menu_info = aqicon("info")
 		self.__icon_menu_edit = aqicon("edit")
+		self.__icon_menu_remove = aqicon("trash")
 		self.cmenu = tkinter.Menu(self, tearoff=0)
 		self.cmenu.add_command(label="Свойства", command=self.__show_info, image=self.__icon_menu_info, compound="left")
 		self.cmenu.add_command(label="Изменить", command=self.__show_edit, image=self.__icon_menu_edit, compound="left")
+		self.cmenu.add_command(label="Удалить", command=self.__remove_volume, image=self.__icon_menu_remove, compound="left")
 		# self.cmenu.add_separator()
 		# self.cmenu.add_command(label="Закрыть", command=self.__hide_cmenu)
 
@@ -83,14 +87,7 @@ class VList(tkinter.Frame):
 			self.cmenu.tk_popup(e.x_root, e.y_root)					# автозакрытие при потере фокуса(https://stackoverflow.com/questions/21200516/python3-tkinter-popup-menu-not-closing-automatically-when-clicking-elsewhere)
 
 
-	def __hide_cmenu(self):
-		pass
-
-
-
-
-
-
+	
 
 
 	def reload_volumes(self):
@@ -151,8 +148,12 @@ class VList(tkinter.Frame):
 
 	#--- toolbar actions ------------------------------------------------------
 	def __remove_volume(self):
+		
+
 		if self.current_volume_id and self.remove_cb:
-			self.remove_cb(self.current_volume_id)
+			result = messagebox.askyesno("Подтверждение удаления тома", "Удалить выбранный том?")
+			if result:
+				self.remove_cb(self.current_volume_id)
 
 
 
@@ -209,7 +210,7 @@ class VList(tkinter.Frame):
 
 
 
-class Toolbar(tkinter.Frame):
+class Toolbar(ttk.Frame):
 	def __init__(self, parent, *args, **kwargs):
 		super(Toolbar, self).__init__(parent, *args, **kwargs)
 
@@ -223,16 +224,20 @@ class Toolbar(tkinter.Frame):
 		self.icon_info 			= aqicon("info")
 		self.icon_edit 			= aqicon("edit")
 
-		self.btn_add_volume = tkinter.Button(self, text="add", command=self.__add_volume, image=self.icon_add, relief="flat")
+		# self.btn_add_volume = tkinter.Button(self, text="add", command=self.__add_volume, image=self.icon_add, relief="flat")
+		self.btn_add_volume = ttk.Button(self, text="add", command=self.__add_volume, image=self.icon_add)
 		self.btn_add_volume.pack(side="left")
 
-		self.btn_show_edit = tkinter.Button(self, text="edit", command=self.__show_edit, image=self.icon_edit, relief="flat")
+		# self.btn_show_edit = tkinter.Button(self, text="edit", command=self.__show_edit, image=self.icon_edit, relief="flat")
+		self.btn_show_edit = ttk.Button(self, text="edit", command=self.__show_edit, image=self.icon_edit)
 		self.btn_show_edit.pack(side="left")
 
-		self.btn_show_info = tkinter.Button(self, text="info", command=self.__show_info, image=self.icon_info, relief="flat")
+		# self.btn_show_info = tkinter.Button(self, text="info", command=self.__show_info, image=self.icon_info, relief="flat")
+		self.btn_show_info = ttk.Button(self, text="info", command=self.__show_info, image=self.icon_info)
 		self.btn_show_info.pack(side="left")
 
-		self.btn_remove_volume = tkinter.Button(self, text="remove", command=self.__remove_volume, image=self.icon_remove, relief="flat")
+		# self.btn_remove_volume = tkinter.Button(self, text="remove", command=self.__remove_volume, image=self.icon_remove, relief="flat")
+		self.btn_remove_volume = ttk.Button(self, text="remove", command=self.__remove_volume, image=self.icon_remove)
 		self.btn_remove_volume.pack(side="right")
 
 
@@ -240,6 +245,8 @@ class Toolbar(tkinter.Frame):
 		self.cb_add_volume()
 
 	def __remove_volume(self):
+		# result = messagebox.askquestion("Remove", "Remove&&")
+		
 		self.cb_remove_volume()
 
 	def __show_info(self):

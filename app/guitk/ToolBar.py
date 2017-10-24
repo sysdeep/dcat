@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import tkinter
+from tkinter import ttk
 
 from .utils import qicon
 
@@ -28,7 +29,8 @@ class ToolBar(tkinter.Frame):
 		self.btn_backup = tkinter.Button(self, text="BackUP", command=self.__create_db_backup, image=self.icon_back_up, relief="flat", compound="left")
 		self.btn_backup.pack(side="left")
 
-		btn_find = tkinter.Button(self, text="Поиск", command=self.__show_find_modal, image=self.icon_find, relief="flat", compound="left")
+		# btn_find = ttk.Button(self, text="Поиск", command=self.__show_find_modal, image=self.icon_find, relief="flat", compound="left")
+		btn_find = ttk.Button(self, text="Поиск", command=self.__show_find_modal, image=self.icon_find, compound="left")
 		btn_find.pack(side="left")
 
 	def __open_db(self):

@@ -41,7 +41,8 @@ ALIACES = {
 	"error"     : "error.png",
 	"info"		: "info.png",
 	"edit"		: "edit.png",
-	"save"		: "document_save.png"
+	"save"		: "document_save.png",
+	"trash"		: "edittrash.png"
 }
 
 def aqicon(name):

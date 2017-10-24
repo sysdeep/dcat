@@ -3,6 +3,7 @@
 
 import os
 import tkinter
+from tkinter import ttk
 from tkinter.filedialog import *
 
 from app.storage import get_storage
@@ -42,6 +43,8 @@ class MainWindow(tkinter.Tk):
 		self.storage = get_storage()
 
 
+		
+
 		#--- menu
 		self.menu_bar = BarMenu(self)
 		self.menu_bar.add_last_files(self.usettings.data["lastbases"])
@@ -76,10 +79,10 @@ class MainWindow(tkinter.Tk):
 
 		self.modals_ctrl = ModalsCtrl(self)
 
-		# style = ttk.Style()
+		style = ttk.Style()
 		# print(style.theme_names())
 		# print(style.theme_use())
-		# style.theme_use("clam")
+		style.theme_use("clam")
 
 		# self.tk.eval("source themes/pkgIndex.tcl")
 		# self.tk.call("package", "require", "ttkthemes")

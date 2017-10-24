@@ -26,11 +26,13 @@ class AboutBase(tkinter.Toplevel):
 		self.storage = get_storage()
 
 
-		self.main_frame = tkinter.Frame(self,)
-		self.main_frame.pack(expand=True, fill="both", side="top", padx=10, pady=20)
+		# self.main_frame = tkinter.Frame(self,)
+		self.main_frame = ttk.Frame(self, padding=10)
+		# self.main_frame.pack(expand=True, fill="both", side="top", padx=10, pady=20)
+		self.main_frame.pack(expand=True, fill="both")
 
 
-		self.grid = tkinter.Frame(self.main_frame)
+		self.grid = ttk.Frame(self.main_frame)
 		self.grid.pack(side="top", expand=True, fill="both")
 
 
@@ -59,11 +61,12 @@ class AboutBase(tkinter.Toplevel):
 
 
 		#--- controls
-		controls_frame = tkinter.Frame(self.main_frame)
+		controls_frame = ttk.Frame(self.main_frame)
 		controls_frame.pack(fill="both", side="bottom", padx=5, pady=5)
 
 		self.icon_close = aqicon("close")
-		ButtonDefault(controls_frame, text="Закрыть(Ctrl+w)", command=self.destroy, image=self.icon_close, compound="left").pack(side="right")
+		# ButtonDefault(controls_frame, text="Закрыть(Ctrl+w)", command=self.destroy, image=self.icon_close, compound="left").pack(side="right")
+		ttk.Button(controls_frame, text="Закрыть(Ctrl+w)", command=self.destroy, image=self.icon_close, compound="left").pack(side="right")
 
 		self.bind_all("<Control-w>", lambda e: self.destroy())
 

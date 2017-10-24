@@ -11,44 +11,46 @@ from .utils import aqicon
 from .components import ButtonDefault, ButtonInfo
 
 
-class DBInfo(tkinter.Frame):
+class DBInfo(ttk.Frame):
 	def __init__(self, master, *args, **kwargs):
 		super(DBInfo, self).__init__(master, *args, **kwargs)
 
 
 		# self.cb_show_info = None
+		self.configure(padding=5)
 
 
+		ttk.Label(self, text="version:").pack(side="left")
 
-		tkinter.Label(self, text="version:").pack(side="left")
-
-		self.label_version = tkinter.Label(self, text="---")
+		self.label_version = ttk.Label(self, text="---")
 		self.label_version.pack(side="left")
 
-		tkinter.Label(self, text=" | ").pack(side="left")
+		ttk.Label(self, text=" | ").pack(side="left")
 
-		tkinter.Label(self, text="path:").pack(side="left")
+		ttk.Label(self, text="path:").pack(side="left")
 
-		self.label_path = tkinter.Label(self, text="---")
+		self.label_path = ttk.Label(self, text="---")
 		self.label_path.pack(side="left")
 
-		tkinter.Label(self, text=" | ").pack(side="left")
+		ttk.Label(self, text=" | ").pack(side="left")
 
-		tkinter.Label(self, text="created:").pack(side="left")
+		ttk.Label(self, text="created:").pack(side="left")
 
-		self.label_created = tkinter.Label(self, text="---")
+		self.label_created = ttk.Label(self, text="---")
 		self.label_created.pack(side="left")
 
 
 
 		self.icon_close = aqicon("close")
 		# tkinter.Button(self, text="Закрыть", image=self.icon_close, compound="left", relief="flat", command=self.__on_exit).pack(side="right")
-		ButtonDefault(self, text="Закрыть", image=self.icon_close, compound="left", command=self.__on_exit).pack(side="right")
+		# ButtonDefault(self, text="Закрыть", image=self.icon_close, compound="left", command=self.__on_exit).pack(side="right")
+		ttk.Button(self, text="Закрыть", image=self.icon_close, compound="left", command=self.__on_exit).pack(side="right")
 
 
 		self.icon_info = aqicon("info")
 		# tkinter.Button(self, text="Info", image=self.icon_info, compound="left", relief="flat", command=self.__show_info).pack(side="right")
-		ButtonDefault(self, text="Info", image=self.icon_info, compound="left", command=self.__show_info).pack(side="right")
+		# ButtonDefault(self, text="Info", image=self.icon_info, compound="left", command=self.__show_info).pack(side="right")
+		ttk.Button(self, text="Info", image=self.icon_info, compound="left", command=self.__show_info).pack(side="right", padx=5)
 
 
 	def update_info(self):

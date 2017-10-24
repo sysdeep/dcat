@@ -8,6 +8,7 @@ from tkinter import *
 from tkinter.filedialog import *
 from .modals.About import About
 from .utils.icons import qicon, aqicon
+from app.lib import dbus
 # from lib.ee import main_ee
 # from .widgets.IOTestDialog import IOTestDialog
 # from .widgets.IOTableDialog import IOTableDialog
@@ -75,6 +76,11 @@ class BarMenu():
 		file_menu.add_command(label="Выход", command=self.__c_exit, compound="left", accelerator="Ctrl+q", image=self.icon_exit)
 
 
+		settings_menu = Menu(self.menu, tearoff=0)
+		self.menu.add_cascade(label="Настройки", menu=settings_menu)
+		settings_menu.add_command(label="Стиль", command=self.__show_style)
+
+
 		help_menu = Menu(self.menu, tearoff=0)
 		self.menu.add_cascade(label="Помощь", menu=help_menu)
 
@@ -128,3 +134,8 @@ class BarMenu():
 		print("exit")
 		self.parent.quit()
 		# main_ee.emit("exit")
+
+
+
+	def __show_style(self):
+		dbus.emit(dbus.SHOW_STYLES)

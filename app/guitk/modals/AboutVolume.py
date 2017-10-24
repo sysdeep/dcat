@@ -38,11 +38,12 @@ class AboutVolume(tkinter.Toplevel):
 		self.vnode = vnode
 
 
-		self.main_frame = tkinter.Frame(self,)
-		self.main_frame.pack(expand=True, fill="both", side="top", padx=10, pady=20)
+		self.main_frame = ttk.Frame(self, padding=10)
+		# self.main_frame.pack(expand=True, fill="both", side="top", padx=10, pady=20)
+		self.main_frame.pack(expand=True, fill="both")
 
 
-		self.grid = tkinter.Frame(self.main_frame)
+		self.grid = ttk.Frame(self.main_frame)
 		self.grid.pack(side="top", expand=True, fill="both")
 
 
@@ -66,7 +67,8 @@ class AboutVolume(tkinter.Toplevel):
 
 		self.icon_close = aqicon("close")
 		# ttk.Button(controls_frame, text="Закрыть(Ctrl+w)", command=self.destroy, image=self.icon_close, compound="left").pack(side="right")
-		ButtonDefault(controls_frame, text="Закрыть(Ctrl+w)", command=self.destroy, image=self.icon_close, compound="left").pack(side="right")
+		# ButtonDefault(controls_frame, text="Закрыть(Ctrl+w)", command=self.destroy, image=self.icon_close, compound="left").pack(side="right")
+		ttk.Button(controls_frame, text="Закрыть(Ctrl+w)", command=self.destroy, image=self.icon_close, compound="left").pack(side="right")
 
 		self.bind_all("<Control-w>", lambda e: self.destroy())
 
