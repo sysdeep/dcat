@@ -67,7 +67,7 @@ class MainWindow(tkinter.Tk):
 		#--- explorer
 		self.explorer_frame = Explorer(self)
 		self.explorer_frame.pack(side="top", fill="both", expand=True)
-		self.explorer_frame.v_list.set_cb_open_modal_add_volume(self.__on_show_modal_add_volume)
+		# self.explorer_frame.v_list.set_cb_open_modal_add_volume(self.__on_show_modal_add_volume)
 
 
 		#--- db info
@@ -79,10 +79,10 @@ class MainWindow(tkinter.Tk):
 
 		self.modals_ctrl = ModalsCtrl(self)
 
-		style = ttk.Style()
+		# style = ttk.Style()
 		# print(style.theme_names())
 		# print(style.theme_use())
-		style.theme_use("clam")
+		# style.theme_use("clam")
 
 		# self.tk.eval("source themes/pkgIndex.tcl")
 		# self.tk.call("package", "require", "ttkthemes")

@@ -16,7 +16,7 @@ class NavBar(tkinter.Frame):
 		self.cb_go = None
 		# self.cb_back = None
 		self.cb_root = None
-		self.cb_show_info = None
+		# self.cb_show_info = None
 
 		self.history_stack = []
 
@@ -30,14 +30,14 @@ class NavBar(tkinter.Frame):
 		# label.pack(side="left")
 
 		self.icon_back = qicon("back.png")
-		self.icon_info = aqicon("info")
+		# self.icon_info = aqicon("info")
 
 		self.btn_back = tkinter.Button(controls_frame, text="back", command=self.__go_back, image=self.icon_back, relief="flat")
 		self.btn_back.pack(side="left")
 		self.btn_back.configure(state="disabled")
 
-		self.btn_show_info = tkinter.Button(self, text="info", command=self.__show_info, image=self.icon_info, relief="flat", highlightthickness=0, bd=0)
-		self.btn_show_info.pack(side="right")
+		# self.btn_show_info = tkinter.Button(self, text="info", command=self.__show_info, image=self.icon_info, relief="flat", highlightthickness=0, bd=0)
+		# self.btn_show_info.pack(side="right")
 
 
 		self.stack_frame = ttk.Frame(self)
@@ -156,9 +156,9 @@ class NavBar(tkinter.Frame):
 
 
 
-	def __show_info(self):
-		if self.cb_show_info:
-			self.cb_show_info()
+	# def __show_info(self):
+	# 	if self.cb_show_info:
+	# 		self.cb_show_info()
 
 
 

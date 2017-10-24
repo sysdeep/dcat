@@ -62,12 +62,12 @@ class VList(tkinter.Frame):
 		# self.cmenu.add_command(label="Закрыть", command=self.__hide_cmenu)
 
 
-		self.toolbar = Toolbar(parent=self)
-		self.toolbar.pack(side="bottom", expand=False, fill="x")
-		self.toolbar.cb_add_volume = self.__add_volume
-		self.toolbar.cb_remove_volume = self.__remove_volume
-		self.toolbar.cb_show_info = self.__show_info
-		self.toolbar.cb_show_edit = self.__show_edit
+		# self.toolbar = Toolbar(parent=self)
+		# self.toolbar.pack(side="bottom", expand=False, fill="x")
+		# self.toolbar.cb_add_volume = self.__add_volume
+		# self.toolbar.cb_remove_volume = self.__remove_volume
+		# self.toolbar.cb_show_info = self.__show_info
+		# self.toolbar.cb_show_edit = self.__show_edit
 
 
 		dbus.eon(dbus.STORAGE_VOLUME_UPDATED, self.__on_volume_updated)
@@ -157,9 +157,9 @@ class VList(tkinter.Frame):
 
 
 
-	def __add_volume(self):
-		if self.cb_open_modal_add_volume:
-			self.cb_open_modal_add_volume()
+	# def __add_volume(self):
+	# 	if self.cb_open_modal_add_volume:
+	# 		self.cb_open_modal_add_volume()
 
 
 	def __show_info(self):
@@ -210,48 +210,48 @@ class VList(tkinter.Frame):
 
 
 
-class Toolbar(ttk.Frame):
-	def __init__(self, parent, *args, **kwargs):
-		super(Toolbar, self).__init__(parent, *args, **kwargs)
+# class Toolbar(ttk.Frame):
+# 	def __init__(self, parent, *args, **kwargs):
+# 		super(Toolbar, self).__init__(parent, *args, **kwargs)
 
-		self.cb_add_volume 		= None
-		self.cb_remove_volume 	= None
-		self.cb_show_info 		= None
-		self.cb_show_edit 		= None
+# 		self.cb_add_volume 		= None
+# 		self.cb_remove_volume 	= None
+# 		self.cb_show_info 		= None
+# 		self.cb_show_edit 		= None
 
-		self.icon_add 			= qicon("edit_add.png")
-		self.icon_remove 		= qicon("edittrash.png")
-		self.icon_info 			= aqicon("info")
-		self.icon_edit 			= aqicon("edit")
+# 		self.icon_add 			= qicon("edit_add.png")
+# 		self.icon_remove 		= qicon("edittrash.png")
+# 		self.icon_info 			= aqicon("info")
+# 		self.icon_edit 			= aqicon("edit")
 
-		# self.btn_add_volume = tkinter.Button(self, text="add", command=self.__add_volume, image=self.icon_add, relief="flat")
-		self.btn_add_volume = ttk.Button(self, text="add", command=self.__add_volume, image=self.icon_add)
-		self.btn_add_volume.pack(side="left")
+# 		# self.btn_add_volume = tkinter.Button(self, text="add", command=self.__add_volume, image=self.icon_add, relief="flat")
+# 		self.btn_add_volume = ttk.Button(self, text="add", command=self.__add_volume, image=self.icon_add)
+# 		self.btn_add_volume.pack(side="left")
 
-		# self.btn_show_edit = tkinter.Button(self, text="edit", command=self.__show_edit, image=self.icon_edit, relief="flat")
-		self.btn_show_edit = ttk.Button(self, text="edit", command=self.__show_edit, image=self.icon_edit)
-		self.btn_show_edit.pack(side="left")
+# 		# self.btn_show_edit = tkinter.Button(self, text="edit", command=self.__show_edit, image=self.icon_edit, relief="flat")
+# 		self.btn_show_edit = ttk.Button(self, text="edit", command=self.__show_edit, image=self.icon_edit)
+# 		self.btn_show_edit.pack(side="left")
 
-		# self.btn_show_info = tkinter.Button(self, text="info", command=self.__show_info, image=self.icon_info, relief="flat")
-		self.btn_show_info = ttk.Button(self, text="info", command=self.__show_info, image=self.icon_info)
-		self.btn_show_info.pack(side="left")
+# 		# self.btn_show_info = tkinter.Button(self, text="info", command=self.__show_info, image=self.icon_info, relief="flat")
+# 		self.btn_show_info = ttk.Button(self, text="info", command=self.__show_info, image=self.icon_info)
+# 		self.btn_show_info.pack(side="left")
 
-		# self.btn_remove_volume = tkinter.Button(self, text="remove", command=self.__remove_volume, image=self.icon_remove, relief="flat")
-		self.btn_remove_volume = ttk.Button(self, text="remove", command=self.__remove_volume, image=self.icon_remove)
-		self.btn_remove_volume.pack(side="right")
+# 		# self.btn_remove_volume = tkinter.Button(self, text="remove", command=self.__remove_volume, image=self.icon_remove, relief="flat")
+# 		self.btn_remove_volume = ttk.Button(self, text="remove", command=self.__remove_volume, image=self.icon_remove)
+# 		self.btn_remove_volume.pack(side="right")
 
 
-	def __add_volume(self):
-		self.cb_add_volume()
+# 	def __add_volume(self):
+# 		self.cb_add_volume()
 
-	def __remove_volume(self):
-		# result = messagebox.askquestion("Remove", "Remove&&")
+# 	def __remove_volume(self):
+# 		# result = messagebox.askquestion("Remove", "Remove&&")
 		
-		self.cb_remove_volume()
+# 		self.cb_remove_volume()
 
-	def __show_info(self):
-		self.cb_show_info()
+# 	def __show_info(self):
+# 		self.cb_show_info()
 
-	def __show_edit(self):
-		self.cb_show_edit()
+# 	def __show_edit(self):
+# 		self.cb_show_edit()
 

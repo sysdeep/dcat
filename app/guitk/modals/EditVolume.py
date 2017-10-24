@@ -60,6 +60,10 @@ class EditVolume(tkinter.Toplevel):
 
 
 
+		self.description = tkinter.Text(self.main_frame, height=10, width=40)
+		self.description.pack(side="top", fill="both", expand=True)
+
+
 		#--- controls
 		controls_frame = tkinter.Frame(self.main_frame)
 		controls_frame.pack(fill="both", side="bottom", padx=5, pady=5)
@@ -82,6 +86,8 @@ class EditVolume(tkinter.Toplevel):
 		self.volume_name_entry.insert(0, self.vnode.name)
 		self.vtype = self.vnode.vtype
 		self.volume_type_box.set(self.vtype)
+		if self.vnode.description:
+			self.description.insert(tkinter.END, self.vnode.description)
 
 
 	def __update_volume_vtype(self, e):
@@ -97,12 +103,14 @@ class EditVolume(tkinter.Toplevel):
 
 		self.vnode.name = name
 		self.vnode.vtype = self.vtype
+		self.vnode.description = self.description.get(1.0, tkinter.END)
 
 
 		row = {
-			"uuid"	: self.vnode.uuid,
-			"name"	: name,
-			"vtype"	: self.vtype
+			"uuid"			: self.vnode.uuid,
+			"name"			: name,
+			"vtype"			: self.vtype,
+			"description"	: self.vnode.description
 		}
 
 		self.storage.update_volume_row(row, commit=True)

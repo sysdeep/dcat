@@ -10,3 +10,4 @@ class VNode(object):
 		self.path = ""
 		self.created = "---"
 		self.updated = "---"
+		self.description = ""

@@ -44,7 +44,7 @@ class AboutVolume(tkinter.Toplevel):
 
 
 		self.grid = ttk.Frame(self.main_frame)
-		self.grid.pack(side="top", expand=True, fill="both")
+		self.grid.pack(side="top", expand=False, fill="x")
 
 
 		self.items = (
@@ -60,6 +60,14 @@ class AboutVolume(tkinter.Toplevel):
 
 			irow.lkey.grid(row=i, column=0, sticky="e")
 			irow.vkey.grid(row=i, column=1, sticky="w")
+
+
+
+		self.desctiption = tkinter.Text(self.main_frame, height=10, width=40)
+		self.desctiption.pack(side="top", fill="both", expand=True)
+		# self.desctiption.insert(tkinter.END, "asfdafasdffsd")
+		# self.desctiption.config(state=tkinter.NORMAL)
+		# self.desctiption.config(state=tkinter.DISABLED)
 
 
 		controls_frame = tkinter.Frame(self.main_frame)
@@ -89,6 +97,12 @@ class AboutVolume(tkinter.Toplevel):
 				value = "---"
 
 			irow.update(value)
+
+
+		if vnode.description:
+			self.desctiption.insert(tkinter.END, vnode.description)
+			# self.desctiption.insert(tkinter.END, "vnode.description")
+			self.desctiption.config(state=tkinter.DISABLED)
 
 
 

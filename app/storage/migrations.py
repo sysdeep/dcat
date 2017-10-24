@@ -27,8 +27,13 @@ def up1_to_2(connection):
 
 
 def up2_to_3(connection):
-	log.info("миграция 2->3")
-	# #--- system
-	# SQL = "INSERT INTO system(key, value) VALUES("updated",?)"
-	# cursor = connection.cursor()
-	# cursor.execute(SQL, (fdate.sql_date(),))
+	log.info("миграция 2 -> 3")
+	
+	cursor = connection.cursor()
+
+	#--- volumes - добавление колонки с датой обновления
+	SQL = """ALTER TABLE volumes ADD COLUMN description TEXT"""
+	cursor.execute(SQL)
+
+
+	

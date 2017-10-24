@@ -30,12 +30,13 @@ def make_fnodes(files_array):
 
 def make_vnode(volume_data):
 	vnode = VNode()
-	vnode.uuid = volume_data["uuid"]
-	vnode.name = volume_data["name"]
-	vnode.vtype = volume_data["vtype"]
-	vnode.path = volume_data["path"]
-	vnode.created = volume_data["created"]
-	vnode.updated = volume_data["updated"]
+	vnode.uuid 			= volume_data["uuid"]
+	vnode.name 			= volume_data["name"]
+	vnode.vtype 		= volume_data["vtype"]
+	vnode.path 			= volume_data["path"]
+	vnode.created 		= volume_data["created"]
+	vnode.updated 		= volume_data["updated"]
+	vnode.description 	= volume_data["description"]
 	return vnode
 
 

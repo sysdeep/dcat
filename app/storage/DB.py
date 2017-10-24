@@ -16,7 +16,7 @@ from .models import loader
 
 
 #--- BD module version
-VERSION = "2"
+VERSION = "3"
 
 
 
@@ -170,10 +170,11 @@ class DB(object):
 		ivalues = (
 			vdata["name"],
 			vdata["vtype"],
+			vdata["description"],
 			vdata["uuid"]
 		)
 		cursor = self.connection.cursor()
-		cursor.execute("UPDATE volumes SET name=?, vtype=? WHERE uuid=?", ivalues)
+		cursor.execute("UPDATE volumes SET name=?, vtype=?, description=? WHERE uuid=?", ivalues)
 
 		if commit:
 			self.connection.commit()
@@ -273,9 +274,9 @@ class DB(object):
 
 		if db_version == "1.0":
 			migration_steps.append(migrations.up1_to_2)
-		# 	migration_steps.append(migrations.up2_to_3)
-		# elif db_version == "2":
-		# 	migration_steps.append(migrations.up2_to_3)
+			migration_steps.append(migrations.up2_to_3)
+		elif db_version == "2":
+			migration_steps.append(migrations.up2_to_3)
 			
 
 

@@ -5,6 +5,7 @@
 import os.path
 
 from tkinter import *
+
 from tkinter.filedialog import *
 from .modals.About import About
 from .utils.icons import qicon, aqicon
