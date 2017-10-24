@@ -65,6 +65,7 @@ class DB(object):
 		self.cursor.execute(sql.CREATE_VERSION, (VERSION,))
 		self.cursor.execute(sql.CREATE_TIMESTAMP_CREATED, (sql_date(),))
 		self.cursor.execute(sql.CREATE_TIMESTAMP_UPDATED, (sql_date(),))
+		self.cursor.execute(sql.CREATE_SYSTEM_DESCRIPTION, ("init",))
 		self.connection.commit()
 
 

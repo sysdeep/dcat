@@ -31,7 +31,12 @@ def up2_to_3(connection):
 	
 	cursor = connection.cursor()
 
-	#--- volumes - добавление колонки с датой обновления
+	#--- system - добавление строки с описанием
+	SQL = """INSERT INTO system(key, value) VALUES("description",?)"""
+	cursor = connection.cursor()
+	cursor.execute(SQL, ("---",))
+
+	#--- volumes - добавление колонки с описанием
 	SQL = """ALTER TABLE volumes ADD COLUMN description TEXT"""
 	cursor.execute(SQL)
 

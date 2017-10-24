@@ -59,6 +59,10 @@ CREATE_TIMESTAMP_UPDATED = """
     INSERT INTO system(key, value) VALUES("updated",?)
 """
 
+CREATE_SYSTEM_DESCRIPTION = """
+    INSERT INTO system(key, value) VALUES("description",?)
+"""
+
 
 CREATE_FILE_ROW = """
     INSERT INTO 
