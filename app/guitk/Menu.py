@@ -51,6 +51,7 @@ class BarMenu():
 		self.icon_add_volume 	= qicon("edit_add.png")
 		self.icon_exit			= aqicon("close")
 		self.icon_back_up		= qicon("document_save_as.png")
+		self.icon_last			= qicon("bookmark.png")
 
 		self.makeMenu()
 
@@ -72,7 +73,7 @@ class BarMenu():
 		file_menu.add_separator()
 		file_menu.add_command(label="Добавить том", command=self.__show_add_volume, image=self.icon_add_volume, compound="left")
 		file_menu.add_separator()
-		file_menu.add_cascade(label="Last", menu=self.last_menu)
+		file_menu.add_cascade(label="Last", menu=self.last_menu, image=self.icon_last, compound="left")
 		file_menu.add_separator()
 		file_menu.add_command(label="Выход", command=self.__c_exit, compound="left", accelerator="Ctrl+q", image=self.icon_exit)
 

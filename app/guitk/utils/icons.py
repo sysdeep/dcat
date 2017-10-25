@@ -26,6 +26,7 @@ VOLUME_ICONS = {
 	"floppy"    : "document_save.png",
 	"net"       : "nfs_unmount.png",
 	"tape"      : "media_tape.png",
+	"crypted"	: "decrypted.png",
 	"other"     : "contents.png"
 }
 
@@ -42,7 +43,8 @@ ALIACES = {
 	"info"		: "info.png",
 	"edit"		: "edit.png",
 	"save"		: "document_save.png",
-	"trash"		: "edittrash.png"
+	"trash"		: "edittrash.png",
+	"open_folder"	: "document_open_folder.png"
 }
 
 def aqicon(name):
