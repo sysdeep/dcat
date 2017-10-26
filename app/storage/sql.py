@@ -35,7 +35,7 @@ CREATE_TABLE_VOLUMES = """
         "created"   DATETIME,
         "updated"   DATETIME,
         "vtype"         VARCHAR(32),
-        "description"   TEXT,
+        "description"   TEXT
     );
 """
 
