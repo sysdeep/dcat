@@ -1,8 +1,0 @@
-{
-    "python.linting.pylintEnabled": false,
-    "editor.mouseWheelZoom": true,
-
-    "files.exclude": {
-        "**/__pycache__": true
-    }
-}
