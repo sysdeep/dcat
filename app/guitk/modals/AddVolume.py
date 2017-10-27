@@ -15,7 +15,6 @@ from tkinter import filedialog
 from app import log
 from app.storage import get_storage
 from app.data import VOLUME_TYPE
-from app.logic.SWalker import SWalker
 from app.logic import scaner
 from app.lib import dbus
 
@@ -338,42 +337,9 @@ class AddVolume(tkinter.Toplevel):
 
 		
 
-		# swalker = SWalker()
-		# swalker.storage = self.storage
-		# swalker.set_scan_volume(spath)
-		# swalker.start_scan()
-
-
-	# def set_item(self, item):
-	# 	self.main_frame.set_item(item)
 
 	def set_cb_complete(self, cb):
 		self.cb_complete = cb
-
-
-
-
-
-# def scan_dir(dir_path, chan):
-# 	for root, dirs, files in os.walk(dir_path):
-
-# 		for d in dirs:
-# 			fpath = os.path.join(root, d)
-# 			print(fpath)
-# 			chan.put(fpath)
-
-
-# 		for d in files:
-# 			fpath = os.path.join(root, d)
-# 			print(fpath)
-# 			chan.put(fpath)
-
-# 		# time.sleep(1)
-
-# 	chan.put("finish")
-
-
-
 
 
 

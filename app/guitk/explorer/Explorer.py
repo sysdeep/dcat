@@ -4,16 +4,16 @@
 import tkinter
 from tkinter import ttk, PhotoImage
 
-from app.logic import get_tree, load_tree_demo
+# from app.logic import get_tree, load_tree_demo
 from app.storage import get_storage, VRow, FRow, FType
 from app.lib import dbus
-from ..utils.events import select_tree_item
+# from ..utils.events import select_tree_item
 from ..utils import qicon, conv
 
-from .NavBar import NavBar
+# from .NavBar import NavBar
 from .VList import VList
 from .FList import FList
-from .InfoFrame import InfoFrame
+# from .InfoFrame import InfoFrame
 
 
 class LNode(object):

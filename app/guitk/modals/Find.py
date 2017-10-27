@@ -1,33 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import os.path
-import threading
-import time
-from queue import Queue
-import uuid
-from datetime import datetime
 
 import tkinter
 from tkinter import ttk
-from tkinter import filedialog
 
 from app.storage import get_storage
-from app.data import VOLUME_TYPE
-from app.logic.SWalker import SWalker
-from app.logic import scaner
 from app.lib import dbus
 
-from app.lib.fsize import naturalsize
-from ..utils import qicon, conv, aqicon
-
-
-# def now_date():
-# 	return time.strftime("%Y-%m-%d %H:%M:%S")
-
-
-
-
+from ..utils import qicon, aqicon
 
 
 
@@ -40,20 +21,22 @@ class Find(tkinter.Toplevel):
 		self.minsize(400, 300)
 		
 		self.storage = get_storage()
-		# self.volume_path = None
-		# self.volume_name = ""
-		# self.volume_id = ""
-		# self.volume_vtype = VOLUME_TYPE[0]
-		# self.chan = Queue()
-		# self.cb_complete = None
 
 		self.main_frame = ttk.Frame(self)
 		self.main_frame.pack(expand=True, fill="both")
 
 
 
+		self.volumes = []								# список томов
+		self.volumes_name_map = {}						# карта id: name
+		self.files = []									# список найденых файлов
 
+		self.var_file = tkinter.IntVar()
+		self.var_file.set(1)
+		self.var_folder = tkinter.IntVar()
 
+		self.icon_folder = qicon("folder.png")
+		self.icon_file = qicon("empty.png")
 
 
 
@@ -63,59 +46,50 @@ class Find(tkinter.Toplevel):
 
 
 
+		#--- edit controls ----------------------------------------------------
 		left_frame = ttk.Frame(group_edit)
 		left_frame.pack(side="left")
 
 
-
-		#--- name
-		frame_edit = ttk.Frame(left_frame, padding=5)
-		frame_edit.pack(side="top", fill="x", expand=True)
-
-		ttk.Label(frame_edit, text="Фраза: ").pack(side="left")
-		self.search_entry = tkinter.Entry(frame_edit, width=30, justify="left")
-		self.search_entry.pack(side="left")
-
-		#--- volume
-		# frame_volume = ttk.Frame(left_frame, padding=5)
-		# frame_volume.pack(side="top", fill="x", expand=True)
-		#
-		# ttk.Label(frame_volume, text="Том: ").pack(side="left")
-		# self.search_entry = tkinter.Entry(frame_edit, width=30, justify="left")
-		# self.search_entry.pack(side="left")
-
-
-		#--- options
-		frame_options = ttk.Frame(left_frame, padding=5)
-		frame_options.pack(side="top", fill="x", expand=True)
-
-		ttk.Label(frame_options, text="Опции: ").pack(side="left")
-
-		self.var_file = tkinter.IntVar()
-		self.var_file.set(1)
-		self.var_folder = tkinter.IntVar()
-		# self.var_register = tkinter.IntVar()
+		__label_term = ttk.Label(left_frame, text="Фраза:")
+		__label_volume = ttk.Label(left_frame, text="Том:")
+		__label_options = ttk.Label(left_frame, text="Опции:")
 
 
 
-		self.cbutton_file = ttk.Checkbutton(frame_options, text="File", variable=self.var_file)
-		self.cbutton_file.pack(side="left")
+		self.search_entry = tkinter.Entry(left_frame, width=30, justify="left")
+		self.volume_box = ttk.Combobox(left_frame, state='readonly')
 
-		self.cbutton_folder = ttk.Checkbutton(frame_options, text="Folder", variable=self.var_folder)
-		self.cbutton_folder.pack(side="left")
 
-		# self.cbutton_register = tkinter.Checkbutton(frame_options, text="Register", variable=self.var_register)
-		# self.cbutton_register.pack(side="left")
+		__options_frame = ttk.Frame(left_frame)
+		ttk.Checkbutton(__options_frame, text="File", variable=self.var_file).grid(row=0, column=0)
+		ttk.Checkbutton(__options_frame, text="Folder", variable=self.var_folder).grid(row=0, column=1)
+
+
+
+		row = 0
+		__label_term.grid(row=row, column=0, sticky="e", pady=5, padx=5)
+		self.search_entry.grid(row=row, column=1, sticky="w", pady=5, padx=5)
+
+
+
+		row += 1
+		__label_volume.grid(row=row, column=0, sticky="e", pady=5, padx=5)
+		self.volume_box.grid(row=row, column=1, sticky="w", pady=5, padx=5)
+
+
+
+		row += 1
+		__label_options.grid(row=row, column=0, sticky="e", pady=5, padx=5)
+		__options_frame.grid(row=row, column=1, sticky="w", pady=5, padx=5)
 
 
 
 
-		#--- actions
+
+		#--- actions ----------------------------------------------------------
 		frame_actions = ttk.Frame(group_edit)
 		frame_actions.pack(side="right", fill="x", expand=True)
-
-
-
 
 		self.__icon_start = qicon("go_next.png")
 		ttk.Button(frame_actions, text="Запустить", image=self.__icon_start, compound="left", command=self.__act_start).pack(side="right")
@@ -124,94 +98,36 @@ class Find(tkinter.Toplevel):
 
 
 
-		columns=(
-			"path",
-			'size', 
-			# 'rights', "owner", "group", 
-			"ctime", 
-			# "atime", "mtime"
-			)
+		#--- tree result ------------------------------------------------------
+		frame_result = ttk.Frame(self.main_frame)
+		frame_result.pack(side="top", expand=True, fill="both")
 
-		self.__tree = ttk.Treeview(self.main_frame, show="tree headings", selectmode='browse', columns=columns)
-		
-		# self.__tree.heading("size", text="Размер", command=lambda c="size": self.__sort(c))
+		columns = ("volume", "path")
+		self.__tree = ttk.Treeview(frame_result, show="tree headings", selectmode='browse', columns=columns)
 		self.__tree.heading('#0', text='Название')
-		self.__tree.heading("size", text="Размер")
-		# self.__tree.heading("rights", text="Права")
-		# self.__tree.heading("owner", text="Владелец")
-		# self.__tree.heading("group", text="Группа")
+		self.__tree.heading("volume", text="Том")
 		self.__tree.heading("path", text="Путь")
-		self.__tree.heading("ctime", text="Создание")
-		# self.__tree.heading("atime", text="Доступ")
-		# self.__tree.heading("mtime", text="Модификация")
-
-
 		self.__tree.column("#0", minwidth=200, width=200)
-		self.__tree.column("size", minwidth=90, width=90)
-		# self.__tree.column("rights", minwidth=40, width=50)
-		# self.__tree.column("owner", minwidth=80, width=80)
-		# self.__tree.column("group", minwidth=80, width=80)
-		self.__tree.column("ctime", minwidth=200, width=200)
-		# self.__tree.column("atime", minwidth=90, width=90)
-		# self.__tree.column("mtime", minwidth=100, width=100)
+		self.__tree.pack(side="left", expand=True, fill="both")
+		self.__tree.bind("<Button-3>", self.__make_cmenu)
 
 
-		# for c in columns:
-		# 	self.__tree.heading(c, text=c, command=lambda c=c: self.__sort(c))
-
-		self.__tree.pack(side="top", expand=True, fill="both")
-
-
+		self.__icon_menu_info = aqicon("info")
+		self.cmenu = tkinter.Menu(self, tearoff=0)
+		self.cmenu.add_command(label="Свойства", command=self.__show_info, image=self.__icon_menu_info, compound="left")
 
 		#--- vertical scroll
-		# ysb = ttk.Scrollbar(self, orient="vertical", command= self.__tree.yview)
-		# self.__tree['yscroll'] = ysb.set
-		# ysb.pack(side="right", expand=False, fill="y")
-
-		# self.__tree.column("#0", width=300)
-		# self.__tree.tag_bind("simple", "<<TreeviewSelect>>", self.__select_row)
-		# self.__tree.bind("<Double-1>", self.__open_row)
-		
-		self.icon_folder = qicon("folder.png")
-		self.icon_file = qicon("empty.png")
-
-
-
-		# row = 0
-		# ttk.Label(edit_frame, text="Каталог: ").grid(row=row, column=0, sticky="e")
-		# self.scan_path_entry = ttk.Entry(edit_frame, width=30, justify="left")
-		# self.scan_path_entry.grid(row=row, column=1, sticky="w")
-		# ttk.Button(edit_frame, text="Выбрать каталог", command=self.__show_select_dir).grid(row=row, column=2, sticky="w")
-
-		# row += 1
-		# ttk.Label(edit_frame, text="Название тома: ").grid(row=row, column=0, sticky="e")
-		# self.volume_name_entry = ttk.Entry(edit_frame, width=30, justify="left")
-		# self.volume_name_entry.grid(row=row, column=1, sticky="w")
-
-		# row += 1
-		# ttk.Label(edit_frame, text="Иконка: ").grid(row=row, column=0, sticky="e")
-		# self.volume_type_box = ttk.Combobox(edit_frame, values=VOLUME_TYPE, state='readonly')
-		# self.volume_type_box.grid(row=row, column=1, sticky="w")
-		# self.volume_type_box.set(self.volume_vtype)
-		# self.volume_type_box.bind('<<ComboboxSelected>>', self.__update_volume_vtype)
+		ysb = ttk.Scrollbar(frame_result, orient="vertical", command= self.__tree.yview)
+		self.__tree['yscroll'] = ysb.set
+		ysb.pack(side="right", expand=False, fill="y")
 
 
 
 
 
-
-		# results_frame = ttk.Frame(self.main_frame)
-		# results_frame.pack(fill="x", side="top", padx=10, pady=10)
-
-		# self.cur_file_operate = ttk.Label(results_frame, text="")
-		# self.cur_file_operate.pack(side="left")
-
-
+		#--- controls ---------------------------------------------------------
 		controls_frame = ttk.Frame(self.main_frame)
 		controls_frame.pack(fill="both", side="bottom", padx=10, pady=10)
-
-		# ttk.Button(controls_frame, text="Закрыть(Ctrl+w)", image=get_icon("application-exit"), compound="left", command=self.destroy).pack(side="right")
-		# ttk.Button(controls_frame, text="Запуск", command=self.__start_scan).pack(side="left")
 
 		self.__icon_close = aqicon("close")
 		ttk.Button(controls_frame, text="Закрыть(Ctrl+w)", image=self.__icon_close, compound="left", command=self.destroy).pack(side="right")
@@ -220,245 +136,138 @@ class Find(tkinter.Toplevel):
 
 
 
-		# self.stime_start = None
-		# self.stime_finish = None
-		# self.files_counter = 0
 
-		# self.search_entry.insert(0, "ant")
+		#--- start ------------------------------------------------------------
+		self.__load()
+
+
+
+
+
+		#--- debug ------------------------------------------------------------
+		self.search_entry.insert(0, "pro.json")
+
+
+
+
+
+
+
+
+	def __load(self):
+		"""предзагрузка данных"""
+		self.volumes = self.storage.get_volumes_cache()
+		vnames = [volume.name for volume in self.volumes]
+
+		vnames.insert(0, "All")
+
+		self.volume_box.config(values=vnames)
+		self.volume_box.current(0)
+
+		#--- делаем карту имён для послед. быстрого поиска
+		self.volumes_name_map = {v.uuid : v.name for v in self.volumes}
+
+
+
 
 
 
 	def __act_start(self):
+		"""запуск поиска"""
+
+		volume_index = self.volume_box.current()
+		if volume_index == 0:
+			volume_id = None
+		else:
+			volume = self.volumes[volume_index - 1]
+			volume_id = volume.uuid
 
 
 		search_text = self.search_entry.get()
 		
 
-		# print(self.var_file.get())
-		# print(self.var_folder.get())
-		# print(self.var_register.get())
-
-
 		is_file = self.var_file.get() == 1
 		is_folder = self.var_folder.get() == 1
 
 
-		items = self.storage.find_items(search_text, is_file=is_file, is_folder=is_folder)
+		self.files = self.storage.find_items(search_text, is_file=is_file, is_folder=is_folder, volume_id=volume_id)
 
 		self.__clear()
-		for item in items:
-			# print(item.name)
 
+		for item in self.files:
 			self.__insert_file(item)
 
 
 	def __clear(self):
+		"""очистка списка"""
 		for row in self.__tree.get_children():
 			self.__tree.delete(row)
 
 
 	def __insert_file(self, fnode):
-
-		if fnode.is_dir():
-			ftype = "dir"
-			icon = self.icon_folder
-			size = ""
-		else:
-			ftype = "file"
-			icon = self.icon_file
-			size = naturalsize(fnode.size)
-
-
+		"""добавление строки данных"""
 
 		name_path = fnode.make_parents_path(is_self=False)
-		ivalues = (
-			name_path,
-				size,
-				# file_row[FRow.RIGHTS],
-				# file_row[FRow.OWNER],
-				# file_row[FRow.GROUP],
-				conv.convert_ctime(fnode.ctime),
-				# conv.convert_ctime(file_row[FRow.ATIME]),
-				# conv.convert_ctime(file_row[FRow.MTIME]),
-			)
+		volume_name = self.__find_volume_name(fnode.volume_id)
 
+		ivalues = (volume_name, name_path)
 
+		icon = self.icon_folder if fnode.is_dir() else self.icon_file
 		
 		
 		self.__tree.insert("", 'end', fnode.uuid, text=fnode.name, tags=("simple", ), image=icon, values=ivalues)
-		# self.__tree.insert("", 'end', fnode.uuid, text=name_text, tags=("simple", ), image=icon, values=ivalues)
 
-		# self.litems[fnode.uuid] = fnode
+
 
 
 	def destroy(self):
+		"""???"""
 		# self.status = False
 		tkinter.Toplevel.destroy(self)
 
 
-	# def __update_volume_vtype(self, e):
-	# 	self.volume_vtype = self.volume_type_box.get()
-	# 	# print(self.volume_vtype)
 
 
-	# def __show_select_dir(self):
-	# 	spath = filedialog.askdirectory()
-	# 	if spath:
-	# 		spath = os.path.normpath(spath)
-	# 		self.volume_path = spath
-	# 		# self.select_label.config(text=self.volume_path)
+	def __find_volume_name(self, volume_id):
+		"""поиск имени тома"""
+		return self.volumes_name_map.get(volume_id, "---")
 
-	# 		volume_name = os.path.basename(self.volume_path)
-	# 		self.volume_name_entry.delete(0, "end")
-	# 		self.volume_name_entry.insert(0, volume_name)
 
-	# 		self.scan_path_entry.delete(0, "end")
-	# 		self.scan_path_entry.insert(0, self.volume_path)
 
-	# 		# self.__start_scan(spath)
+	def __find_fnode(self, fnode_id):
+		"""поиск объекта файла"""
+		fnode = None
+		for n in self.files:
+			if n.uuid == fnode_id:
+				fnode = n
+				break
 
+		return fnode
 
 
-	# def __start_scan(self):
-	# 	print("start scan dir: ", self.volume_path)
-	# 	self.volume_name = self.volume_name_entry.get()
-	# 	print("volume_name: ", self.volume_name)
+	def __make_cmenu(self, e):
+		"""отображение контекстного меню"""
+		cmenu_selection = self.__tree.identify_row(e.y)		# тек. елемент под курсором
 
-	# 	self.stime_start = datetime.now()
-	# 	print("start scan time: ", self.stime_start.isoformat())
+		if cmenu_selection:
+			self.__tree.selection_set(cmenu_selection)				# выделяем его
 
-	# 	self.files_counter = 0
+			#--- отображение меню
+			self.cmenu.tk_popup(e.x_root, e.y_root)
 
-	# 	self.__start_chan_reader()
 
 
 
-		
-	# 	self.volume_id = str(uuid.uuid4())
-	# 	vdata = {
-	# 		"name": self.volume_name,
-	# 		"uuid": self.volume_id,
-	# 		"path": self.volume_path,
-	# 		"vtype": self.volume_vtype,
-	# 		"created": now_date()
-	# 	}
-		
-	# 	self.storage.create_volume_row(vdata)
+	def __show_info(self):
+		"""отображение модала информации"""
+		selection = self.__tree.selection()
+		if len(selection) == 0:
+			return False
 
+		selected_item = self.__tree.selection()[0]
+		fnode = self.__find_fnode(selected_item)
 
-	# 	# t = threading.Thread(target=scan_dir, args=(self.volume_path, self.chan))
-	# 	t = threading.Thread(target=scaner.start_scan, args=(self.volume_path, self.chan))
-	# 	t.start()
+		dbus.emit(dbus.SHOW_ABOUT_FILE, fnode)
 
 
 
-	# def __finish_scan(self):
-	# 	self.storage.commit()
-
-	# 	self.stime_finish = datetime.now()
-	# 	print("finish scan time: ", self.stime_finish.isoformat())
-	# 	delta = self.stime_finish - self.stime_start
-	# 	print("Scan time: ", delta.seconds)
-
-
-	# 	dbus.emit(dbus.SCAN_COMPLETE)
-	# 	self.destroy()
-
-	# 	#
-	# 	# if self.cb_complete:
-	# 	# 	self.cb_complete()
-	# 	# 	self.destroy()
-
-
-
-
-
-
-
-	# def __start_chan_reader(self):
-	# 	try:
-	# 		msg = self.chan.get(block=False)
-	# 	except:
-	# 		pass
-	# 	else:
-	# 		if msg["type"] == "finish":
-	# 			self.__finish_scan()
-	# 			return True
-	# 		else:
-	# 			# print("--->", msg)
-
-	# 			#--- долгие операции - 17 сек(без них - 3 сек)
-	# 			# full_path = os.path.join(msg["root"], msg["name"])
-	# 			# self.cur_file_operate.config(text=full_path)
-	# 			#--- долгие операции - 17 сек(без них - 3 сек)
-
-	# 			self.files_counter += 1
-
-	# 			# self.cur_file_operate.config(text=msg["name"])
-	# 			self.cur_file_operate.config(text=self.files_counter)
-
-	# 			msg["volume_id"] = self.volume_id
-	# 			self.storage.create_file_row(msg)
-
-	# 	self.after(1, self.__start_chan_reader)		
-
-		
-
-	# 	# swalker = SWalker()
-	# 	# swalker.storage = self.storage
-	# 	# swalker.set_scan_volume(spath)
-	# 	# swalker.start_scan()
-
-
-	# # def set_item(self, item):
-	# # 	self.main_frame.set_item(item)
-
-	# def set_cb_complete(self, cb):
-	# 	self.cb_complete = cb
-
-
-
-
-
-# def scan_dir(dir_path, chan):
-# 	for root, dirs, files in os.walk(dir_path):
-
-# 		for d in dirs:
-# 			fpath = os.path.join(root, d)
-# 			print(fpath)
-# 			chan.put(fpath)
-
-
-# 		for d in files:
-# 			fpath = os.path.join(root, d)
-# 			print(fpath)
-# 			chan.put(fpath)
-
-# 		# time.sleep(1)
-
-# 	chan.put("finish")
-
-
-
-
-
-
-
-
-
-
-
-
-
-if __name__ == "__main__":
-
-	from app.rc import FILE_DB_TEST
-	storage = get_storage()
-	storage.open_storage(FILE_DB_TEST)
-
-	root = tkinter.Tk()
-
-	modal = Find(root)
-	ttk.Button(root, text="quit", command=quit).pack()
-
-	root.mainloop()

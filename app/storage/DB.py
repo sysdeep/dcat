@@ -227,17 +227,16 @@ class DB(object):
 	
 
 
-	def find_by_name(self, term):
-		# SQL = "SELECT * FROM files WHERE name LIKE '%?%'";
-		SQL = "SELECT * FROM files WHERE name LIKE '%" + term + "%'";
-		
+	def find_by_name(self, term, volume_id=None):
+		"""поиск файлов по имени"""
+		SQL = "SELECT * FROM files WHERE name LIKE '%{}%'".format(term)
+		if volume_id:
+			SQL += " AND volume_id = '" + volume_id + "'"
+
 		cursor = self.connection.cursor()
-		# cursor.execute(SQL, (term,))
 		cursor.execute(SQL)
 		rows = cursor.fetchall()
-		# result = make_fnodes(rows)
 		result = loader.make_fnodes(rows)
-		# result = []
 		return result
 
 

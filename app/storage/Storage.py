@@ -13,6 +13,7 @@ from app.lib import dbus
 from .DB import DB
 from .enums import FRow, VRow, FType
 from . import finder
+from . import cache
 
 
 class Storage(object):
@@ -22,7 +23,7 @@ class Storage(object):
 		self.db = DB()
 		self.is_open = False
 
-		self.volumes = []
+
 		self.files = []
 
 
@@ -38,7 +39,7 @@ class Storage(object):
 
 	def close_storage(self):
 		self.db.close_db()
-		self.volumes = []
+		cache.clear_volumes()
 		self.files = []
 		self.is_open = False
 
@@ -66,6 +67,7 @@ class Storage(object):
 			return []
 
 		volumes = self.db.get_volumes()
+		cache.set_volumes(volumes)
 
 		return volumes
 		
@@ -137,8 +139,9 @@ class Storage(object):
 		self.db.commit()
 
 
-	def get_volumes(self):
-		return self.volumes
+	def get_volumes_cache(self):
+		"""получить данные из кеша"""
+		return cache.get_volumes()
 
 	def get_files(self):
 		return self.files
@@ -154,9 +157,9 @@ class Storage(object):
 
 
 
-	def find_items(self, term, is_file=True, is_folder=False):
+	def find_items(self, term, is_file=True, is_folder=False, volume_id=None):
 
-		pre_fnodes = self.db.find_by_name(term)
+		pre_fnodes = self.db.find_by_name(term, volume_id)
 
 		fnodes = []
 		for fnode in pre_fnodes:
