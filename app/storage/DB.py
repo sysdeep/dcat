@@ -155,9 +155,10 @@ class DB(object):
 			vdata["path"],
 			vdata["vtype"],
 			vdata["created"],
+			vdata["description"]
 		)
 		cursor = self.connection.cursor()
-		cursor.execute("INSERT INTO volumes(uuid, name, path, vtype, created) VALUES(?,?,?,?,?)", ivalues)
+		cursor.execute("INSERT INTO volumes(uuid, name, path, vtype, created, description) VALUES(?,?,?,?,?,?)", ivalues)
 		volume_id = cursor.lastrowid
 		
 		if commit:

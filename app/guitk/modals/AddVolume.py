@@ -39,6 +39,7 @@ class AddVolume(tkinter.Toplevel):
 		self.storage = get_storage()
 		self.volume_path = None
 		self.volume_name = ""
+		self.volume_description = ""
 		self.volume_id = ""
 		self.volume_vtype = VOLUME_TYPE[0]
 		self.chan = Queue()
@@ -86,6 +87,11 @@ class AddVolume(tkinter.Toplevel):
 		self.__vtype_icon = None
 
 		self.__update_volume_icon()
+
+
+
+		self.description = tkinter.Text(self.main_frame, height=10, width=40)
+		self.description.pack(side="top", fill="both", expand=True)
 
 
 		# col_count, row_count = edit_frame.grid_size()
@@ -205,6 +211,8 @@ class AddVolume(tkinter.Toplevel):
 
 		self.volume_path = self.scan_path_entry.get()
 		self.volume_name = self.volume_name_entry.get()
+		self.volume_description = self.description.get(1.0, tkinter.END)
+
 
 		log.info("каталог для сканирования: " + self.volume_path)
 		log.info("название: " + self.volume_name)
@@ -254,11 +262,12 @@ class AddVolume(tkinter.Toplevel):
 		log.info("создание записи о томе")
 		self.volume_id = str(uuid.uuid4())
 		vdata = {
-			"name": self.volume_name,
-			"uuid": self.volume_id,
-			"path": self.volume_path,
-			"vtype": self.volume_vtype,
-			"created": now_date()
+			"name" 			: self.volume_name,
+			"uuid" 			: self.volume_id,
+			"path" 			: self.volume_path,
+			"vtype" 		: self.volume_vtype,
+			"description"	: self.volume_description,
+			"created" 		: now_date()
 		}
 		
 		self.storage.create_volume_row(vdata)
