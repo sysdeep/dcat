@@ -4,10 +4,9 @@
 import tkinter
 from tkinter import ttk
 
-from app.rc import ABOUT_NAME, ABOUT_AUTHOR_EMAIL, ABOUT_AUTHOR_NAME, ABOUT_DESCRIPTION, ABOUT_SLUG, VERSION
 from app.lib.fsize import naturalsize
 from ..utils import aqicon
-from ..components import ButtonDefault
+from app.storage import get_storage
 
 
 class IRow(object):
@@ -52,6 +51,7 @@ class AboutFile(tkinter.Toplevel):
 			self.__make_irow("size", "Размер"),
 			self.__make_irow("ctime", "Создание"),
 			self.__make_irow("mtime", "Модификация"),
+			self.__make_irow("volume", "Том"),
 		)
 
 
@@ -65,8 +65,6 @@ class AboutFile(tkinter.Toplevel):
 		controls_frame.pack(fill="both", side="bottom", padx=5, pady=5)
 
 		self.icon_close = aqicon("close")
-		# ttk.Button(controls_frame, text="Закрыть(Ctrl+w)", command=self.destroy, image=self.icon_close, compound="left").pack(side="right")
-		# ButtonDefault(controls_frame, text="Закрыть(Ctrl+w)", command=self.destroy, image=self.icon_close, compound="left").pack(side="right")
 		ttk.Button(controls_frame, text="Закрыть(Ctrl+w)", command=self.destroy, image=self.icon_close, compound="left").pack(side="right")
 
 		self.bind_all("<Control-w>", lambda e: self.destroy())
@@ -92,9 +90,12 @@ class AboutFile(tkinter.Toplevel):
 				continue
 
 			if irow.name == "size":
-				# naturalsize(st.st_size)
-				# irow.update(fnode.fmtime())
 				irow.update(naturalsize(fnode.size))
+				continue
+
+			if irow.name == "volume":
+				volume_name = self.__find_volume_name(fnode.volume_id)
+				irow.update(volume_name)
 				continue
 
 			try:
@@ -103,6 +104,24 @@ class AboutFile(tkinter.Toplevel):
 				value = "---"
 
 			irow.update(value)
+
+
+
+	def __find_volume_name(self, volume_id):
+		storage = get_storage()
+		if storage.is_open is False:
+			return "---"
+
+		volumes = storage.get_volumes_cache()
+
+		result = [v.name for v in volumes if v.uuid == volume_id]
+
+		return result[0] if result else "---"
+
+
+
+
+
 
 
 
