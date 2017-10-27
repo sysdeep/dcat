@@ -90,7 +90,7 @@ class AddVolume(tkinter.Toplevel):
 
 
 
-		self.description = tkinter.Text(self.main_frame, height=10, width=40)
+		self.description = tkinter.Text(self.main_frame, height=6, width=20)
 		self.description.pack(side="top", fill="both", expand=True)
 
 

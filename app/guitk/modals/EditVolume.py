@@ -8,6 +8,7 @@ from tkinter import ttk
 from ..utils import aqicon
 from app.data import VOLUME_TYPE
 from app.storage import get_storage
+from ..utils.icons import volume_icon
 #
 # class IRow(object):
 # 	def __init__(self, parent, name, sname):
@@ -32,47 +33,52 @@ class EditVolume(tkinter.Toplevel):
 		super(EditVolume, self).__init__(master, *args, **kwargs)
 		self.title("Редактирование тома")
 
-		self.maxsize(400, 300)
-		self.minsize(400, 300)
+		self.maxsize(450, 300)
+		self.minsize(450, 300)
 
 		self.vnode = vnode
 		self.vtype = None
 		self.storage = get_storage()
 
 
-		self.main_frame = tkinter.Frame(self,)
-		self.main_frame.pack(expand=True, fill="both", side="top", padx=10, pady=20)
+		self.main_frame = ttk.Frame(self, padding=10)
+		self.main_frame.pack(expand=True, fill="both", side="top")
 
 
 		edit_frame = ttk.Frame(self.main_frame)
 		edit_frame.pack(fill="x", side="top", padx=10, pady=10)
 
 		row = 0
-		ttk.Label(edit_frame, text="Название тома: ").grid(row=row, column=0, sticky="e")
+		ttk.Label(edit_frame, text="Название тома: ").grid(row=row, column=0, sticky="e", pady=5, padx=5)
 		self.volume_name_entry = tkinter.Entry(edit_frame, width=30, justify="left")
-		self.volume_name_entry.grid(row=row, column=1, sticky="w")
+		self.volume_name_entry.grid(row=row, column=1, sticky="w", pady=5, padx=5)
 
 		row += 1
-		ttk.Label(edit_frame, text="Иконка: ").grid(row=row, column=0, sticky="e")
+		ttk.Label(edit_frame, text="Иконка: ").grid(row=row, column=0, sticky="e", pady=5, padx=5)
 		self.volume_type_box = ttk.Combobox(edit_frame, values=VOLUME_TYPE, state='readonly')
-		self.volume_type_box.grid(row=row, column=1, sticky="w")
+		self.volume_type_box.grid(row=row, column=1, sticky="w", pady=5, padx=5)
 		self.volume_type_box.bind('<<ComboboxSelected>>', self.__update_volume_vtype)
 
+		self.__label_vtype_icon = ttk.Label(edit_frame, text="icon")
+		self.__label_vtype_icon.grid(row=row, column=2, sticky="w", pady=5, padx=5)
+		self.__vtype_icon = None
+		self.__update_volume_icon()
 
 
-		self.description = tkinter.Text(self.main_frame, height=10, width=40)
+
+		self.description = tkinter.Text(self.main_frame, height=6, width=20)
 		self.description.pack(side="top", fill="both", expand=True)
 
 
 		#--- controls
-		controls_frame = tkinter.Frame(self.main_frame)
+		controls_frame = ttk.Frame(self.main_frame)
 		controls_frame.pack(fill="both", side="bottom", padx=5, pady=5)
 
 		self.icon_close = aqicon("close")
 		self.icon_save = aqicon("save")
 
-		tkinter.Button(controls_frame, text="Сохранить", command=self.__do_save, image=self.icon_save, compound="left").pack(side="left")
-		tkinter.Button(controls_frame, text="Закрыть(Ctrl+w)", command=self.destroy, image=self.icon_close, compound="left").pack(side="right")
+		ttk.Button(controls_frame, text="Сохранить", command=self.__do_save, image=self.icon_save, compound="left").pack(side="left")
+		ttk.Button(controls_frame, text="Закрыть(Ctrl+w)", command=self.destroy, image=self.icon_close, compound="left").pack(side="right")
 
 		self.bind_all("<Control-w>", lambda e: self.destroy())
 
@@ -92,6 +98,11 @@ class EditVolume(tkinter.Toplevel):
 
 	def __update_volume_vtype(self, e):
 		self.vtype = self.volume_type_box.get()
+		self.__update_volume_icon()
+
+	def __update_volume_icon(self):
+		self.__vtype_icon = volume_icon(self.vtype)
+		self.__label_vtype_icon.config(image=self.__vtype_icon)
 
 
 	def __do_save(self):
