@@ -7,7 +7,7 @@ from tkinter import ttk
 from app.lib import dbus
 from .utils import qicon
 
-class ToolBar(ttk.Frame):
+class ToolBar(tkinter.Frame):
 	def __init__(self, parent, *args, **kwargs):
 		super(ToolBar, self).__init__(parent, *args, **kwargs)
 

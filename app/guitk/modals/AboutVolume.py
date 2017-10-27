@@ -63,14 +63,14 @@ class AboutVolume(tkinter.Toplevel):
 
 
 
-		self.desctiption = tkinter.Text(self.main_frame, height=10, width=40)
+		self.desctiption = tkinter.Text(self.main_frame, height=6, width=20)
 		self.desctiption.pack(side="top", fill="both", expand=True)
 		# self.desctiption.insert(tkinter.END, "asfdafasdffsd")
 		# self.desctiption.config(state=tkinter.NORMAL)
 		# self.desctiption.config(state=tkinter.DISABLED)
 
 
-		controls_frame = tkinter.Frame(self.main_frame)
+		controls_frame = ttk.Frame(self.main_frame)
 		controls_frame.pack(fill="both", side="bottom", padx=5, pady=5)
 
 		self.icon_close = aqicon("close")
@@ -102,7 +102,8 @@ class AboutVolume(tkinter.Toplevel):
 		if vnode.description:
 			self.desctiption.insert(tkinter.END, vnode.description)
 			# self.desctiption.insert(tkinter.END, "vnode.description")
-			self.desctiption.config(state=tkinter.DISABLED)
+
+		self.desctiption.config(state=tkinter.DISABLED)
 
 
 

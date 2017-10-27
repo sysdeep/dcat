@@ -122,25 +122,31 @@ class VList(tkinter.Frame):
 
 
 	def __select_row(self, e):
+
 		selection = self.__list.selection()
+
+		#--- если ничего не выбрано - ничего не делаем
 		if len(selection) == 0:
 			return False
-		
 		
 
 		vnode_uuid = self.__list.selection()[0]
 
 
-		if self.current_volume_id == vnode_uuid:
-			return False
+		#--- если выбранный элемент равен текущему - ничего не делаем
+		#--- 2017.10.27 - неудобно... нельзя быстро переместиться в корень...
+		# if self.current_volume_id == vnode_uuid:
+		# 	return False
 
 		self.current_volume_id = vnode_uuid
 
 		vnode = self.__volumes_map[vnode_uuid]
 
 		if self.select_cb:
-			# self.select_cb(selected_item)
 			self.select_cb(vnode)
+
+
+
 
 
 

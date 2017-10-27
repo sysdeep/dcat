@@ -79,10 +79,10 @@ class MainWindow(tkinter.Tk):
 
 		self.modals_ctrl = ModalsCtrl(self)
 
-		# style = ttk.Style()
+		style = ttk.Style()
 		# print(style.theme_names())
 		# print(style.theme_use())
-		# style.theme_use("clam")
+		style.theme_use("clam")
 
 		# self.tk.eval("source themes/pkgIndex.tcl")
 		# self.tk.call("package", "require", "ttkthemes")
