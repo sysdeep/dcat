@@ -107,6 +107,7 @@ class VList(tkinter.Frame):
 	def __insert_volumes(self):
 		self.volume_icons = []
 		volumes = self.storage.fetch_volumes()
+		volumes.sort(key=lambda vnode: vnode.name)
 		for vnode in volumes:
 			ivolume = volume_icon(vnode.vtype)
 			self.volume_icons.append(ivolume)
