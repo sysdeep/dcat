@@ -19,7 +19,7 @@ from app.logic import scaner
 from app.lib import dbus
 
 from app.lib.fsize import naturalsize
-from ..utils import qicon, conv
+from ..utils import qicon, conv, aqicon
 
 
 # def now_date():
@@ -58,26 +58,38 @@ class Find(tkinter.Toplevel):
 
 
 
-		group_edit = tkinter.LabelFrame(self.main_frame, text="Поиск", padx=5, pady=5)
+		group_edit = ttk.LabelFrame(self.main_frame, text="Поиск", padding=5)
 		group_edit.pack(padx=10, pady=10, fill="x")
 
 
-		frame_edit = tkinter.Frame(group_edit)
+
+		left_frame = ttk.Frame(group_edit)
+		left_frame.pack(side="left")
+
+
+
+		#--- name
+		frame_edit = ttk.Frame(left_frame, padding=5)
 		frame_edit.pack(side="top", fill="x", expand=True)
 
-
-		tkinter.Label(frame_edit, text="Фраза: ").pack(side="left")
+		ttk.Label(frame_edit, text="Фраза: ").pack(side="left")
 		self.search_entry = tkinter.Entry(frame_edit, width=30, justify="left")
 		self.search_entry.pack(side="left")
 
+		#--- volume
+		# frame_volume = ttk.Frame(left_frame, padding=5)
+		# frame_volume.pack(side="top", fill="x", expand=True)
+		#
+		# ttk.Label(frame_volume, text="Том: ").pack(side="left")
+		# self.search_entry = tkinter.Entry(frame_edit, width=30, justify="left")
+		# self.search_entry.pack(side="left")
 
-		frame_options = tkinter.Frame(group_edit)
+
+		#--- options
+		frame_options = ttk.Frame(left_frame, padding=5)
 		frame_options.pack(side="top", fill="x", expand=True)
 
-		tkinter.Label(frame_options, text="Опции: ").pack(side="left")
-
-
-
+		ttk.Label(frame_options, text="Опции: ").pack(side="left")
 
 		self.var_file = tkinter.IntVar()
 		self.var_file.set(1)
@@ -86,24 +98,27 @@ class Find(tkinter.Toplevel):
 
 
 
-		self.cbutton_file = tkinter.Checkbutton(frame_options, text="File", variable=self.var_file)
+		self.cbutton_file = ttk.Checkbutton(frame_options, text="File", variable=self.var_file)
 		self.cbutton_file.pack(side="left")
 
-		self.cbutton_folder = tkinter.Checkbutton(frame_options, text="Folder", variable=self.var_folder)
+		self.cbutton_folder = ttk.Checkbutton(frame_options, text="Folder", variable=self.var_folder)
 		self.cbutton_folder.pack(side="left")
 
 		# self.cbutton_register = tkinter.Checkbutton(frame_options, text="Register", variable=self.var_register)
 		# self.cbutton_register.pack(side="left")
 
-		
-		frame_actions = tkinter.Frame(group_edit)
-		frame_actions.pack(side="top", fill="x", expand=True)
+
+
+
+		#--- actions
+		frame_actions = ttk.Frame(group_edit)
+		frame_actions.pack(side="right", fill="x", expand=True)
 
 
 
 
-
-		tkinter.Button(frame_actions, text="Start", command=self.__act_start).pack(side="right")
+		self.__icon_start = qicon("go_next.png")
+		ttk.Button(frame_actions, text="Запустить", image=self.__icon_start, compound="left", command=self.__act_start).pack(side="right")
 
 		
 
@@ -197,7 +212,9 @@ class Find(tkinter.Toplevel):
 
 		# ttk.Button(controls_frame, text="Закрыть(Ctrl+w)", image=get_icon("application-exit"), compound="left", command=self.destroy).pack(side="right")
 		# ttk.Button(controls_frame, text="Запуск", command=self.__start_scan).pack(side="left")
-		ttk.Button(controls_frame, text="Закрыть(Ctrl+w)", command=self.destroy).pack(side="right")
+
+		self.__icon_close = aqicon("close")
+		ttk.Button(controls_frame, text="Закрыть(Ctrl+w)", image=self.__icon_close, compound="left", command=self.destroy).pack(side="right")
 
 		self.bind_all("<Control-w>", lambda e: self.destroy())
 
@@ -207,7 +224,7 @@ class Find(tkinter.Toplevel):
 		# self.stime_finish = None
 		# self.files_counter = 0
 
-		self.search_entry.insert(0, "ant")
+		# self.search_entry.insert(0, "ant")
 
 
 
