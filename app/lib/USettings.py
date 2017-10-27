@@ -38,6 +38,11 @@ class USettings(object):
 
 		
 
+	@property
+	def is_open_last(self):
+		return self.data.get("open_last", 0)
+
+
 
 
 	def save(self):

@@ -8,11 +8,22 @@ from .Storage import Storage
 def get_storage():
     storage = shared.get_storage()
     if storage is None:
-        print("create storage")
         storage = Storage()
         shared.set_storage(storage)
 
     return storage
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

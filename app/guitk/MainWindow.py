@@ -9,6 +9,7 @@ from tkinter.filedialog import *
 from app.storage import get_storage
 from app.lib import dbus
 from app.lib.USettings import USettings
+from app import shared
 
 from .modals.ModalsCtrl import ModalsCtrl
 from .Menu import BarMenu
@@ -36,8 +37,10 @@ class MainWindow(tkinter.Tk):
 		self.minsize(800, 400)
 		# self.iconphoto(self, get_icon("gnome-app-install-star"))
 
-		self.usettings = USettings()
-		self.usettings.open_settings()
+		# self.usettings = USettings()
+		# self.usettings.open_settings()
+
+		self.usettings = shared.get_usettings()
 
 		
 		self.storage = get_storage()

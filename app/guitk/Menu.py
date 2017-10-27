@@ -78,9 +78,10 @@ class BarMenu():
 		file_menu.add_command(label="Выход", command=self.__c_exit, compound="left", accelerator="Ctrl+q", image=self.icon_exit)
 
 
-		settings_menu = Menu(self.menu, tearoff=0)
-		self.menu.add_cascade(label="Настройки", menu=settings_menu)
-		settings_menu.add_command(label="Стиль", command=self.__show_style)
+		# settings_menu = Menu(self.menu, tearoff=0)
+		# self.menu.add_cascade(label="Настройки", menu=settings_menu)
+		# settings_menu.add_command(label="Стиль", command=self.__show_style)
+		self.menu.add_command(label="Настройки", command=self.__show_settings)
 
 
 		help_menu = Menu(self.menu, tearoff=0)
@@ -139,5 +140,5 @@ class BarMenu():
 
 
 
-	def __show_style(self):
-		dbus.emit(dbus.SHOW_STYLES)
+	def __show_settings(self):
+		dbus.emit(dbus.SHOW_SETTINGS)

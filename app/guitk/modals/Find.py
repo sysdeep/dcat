@@ -145,7 +145,7 @@ class Find(tkinter.Toplevel):
 
 
 		#--- debug ------------------------------------------------------------
-		self.search_entry.insert(0, "pro.json")
+		# self.search_entry.insert(0, "pro.json")
 
 
 
