@@ -1,7 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-
+"""
+{
+    "version": "0.1",
+    "lastbases": [
+        "/home/nia/Development/_Python/_DCat/reanimator.dcat",
+        "/home/nia/Development/_Python/_DCat/3.dcat",
+        "/home/nia/Development/_Python/_DCat/2.dcat",
+        "/home/nia/Development/_Python/_DCat/1.dcat"
+    ],
+    "open_last": 1
+}
+"""
 
 import tkinter
 from tkinter import ttk
@@ -17,7 +28,7 @@ class FrameHistory(ttk.Frame):
 		self.usettings = usettings
 
 
-
+		self.autoload_flag = 0
 
 
 		self.var_autoloading = tkinter.IntVar()
@@ -41,7 +52,7 @@ class FrameHistory(ttk.Frame):
 		controls_frame.pack(side="bottom", fill="x")
 
 
-		ttk.Button(controls_frame, text="Очистить историю").pack(side="right")
+		ttk.Button(controls_frame, text="Очистить историю", command=self.__clear_history).pack(side="right")
 
 
 
@@ -49,5 +60,19 @@ class FrameHistory(ttk.Frame):
 
 
 	def __load(self):
-		autoload_flag = self.usettings.is_open_last
-		self.var_autoloading.set(autoload_flag)
+		self.autoload_flag = self.usettings.is_open_last
+		self.var_autoloading.set(self.autoload_flag)
+
+
+
+	def __clear_history(self):
+		self.usettings.clear_lastbases()
+
+
+
+	def apply(self):
+		autoload_flag = self.var_autoloading.get()
+
+
+		if autoload_flag != self.autoload_flag:
+			self.usettings.is_open_last = autoload_flag

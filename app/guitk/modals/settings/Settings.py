@@ -37,11 +37,11 @@ class Settings(tkinter.Toplevel):
 
 
 
-		frame_history = FrameHistory(self.tabs, self.usettings)
-		self.tabs.add(frame_history, text="История")
+		self.frame_history = FrameHistory(self.tabs, self.usettings)
+		self.tabs.add(self.frame_history, text="История")
 
-		frame_style = FrameStyle(self.tabs)
-		self.tabs.add(frame_style, text="Стиль")
+		self.frame_style = FrameStyle(self.tabs)
+		self.tabs.add(self.frame_style, text="Стиль")
 
 
 
@@ -55,12 +55,19 @@ class Settings(tkinter.Toplevel):
 		ttk.Button(controls_frame, text="Закрыть(Ctrl+w)", command=self.destroy, image=self.icon_close, compound="left").pack(side="right")
 
 		self.__icon_save = aqicon("save")
-		ttk.Button(controls_frame, text="Сохранить", command=self.destroy, image=self.__icon_save, compound="left").pack(side="left")
+		ttk.Button(controls_frame, text="Сохранить", command=self.apply, image=self.__icon_save, compound="left").pack(side="left")
 
 		self.bind_all("<Control-w>", lambda e: self.destroy())
 
 
 
+
+	def apply(self):
+
+		self.frame_history.apply()
+		self.frame_style.apply()
+
+		self.usettings.save()
 
 
 

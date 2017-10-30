@@ -31,7 +31,10 @@ class USettings(object):
 		self.data = {
 			"version" 		: "0.1",
 			"lastbases" 	: [],
-			"open_last"		: 1
+			"open_last"		: 1,
+
+
+			# "style"			: "clam"
 		}
 
 		self.__check_path()
@@ -42,7 +45,15 @@ class USettings(object):
 	def is_open_last(self):
 		return self.data.get("open_last", 0)
 
+	@is_open_last.setter
+	def is_open_last(self, value):
+		self.data["open_last"] = value
 
+
+
+	def clear_lastbases(self):
+		self.data["lastbases"] = []
+		self.save()
 
 
 	def save(self):

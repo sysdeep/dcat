@@ -35,3 +35,7 @@ class FrameStyle(ttk.Frame):
 
 		style = ttk.Style()
 		style.theme_use(new_style)
+
+
+	def apply(self):
+		pass
