@@ -188,6 +188,13 @@ class DB(object):
 		cursor = self.connection.cursor()
 		cursor.execute("UPDATE system SET value=? WHERE key='version'", (VERSION, ))
 
+
+	def update_system(self, key, value):
+		log.info("обновление системной информации:")
+		log.info("\t{}: {}".format(key, value))
+		cursor = self.connection.cursor()
+		cursor.execute("UPDATE system SET value=? WHERE key=?", (value, key))
+
 		
 
 

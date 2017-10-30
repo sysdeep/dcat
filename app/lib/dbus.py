@@ -18,6 +18,7 @@ SHOW_EDIT_VOLUME 		= "show_edit_volume"			# args: vnode
 SHOW_ADD_VOLUME			= "show_add_volume"				# args: None
 SHOW_FIND				= "show_find"					# args: None
 SHOW_SETTINGS			= "show_settings"				# args: None
+SHOW_EDIT_BASE			= "show_edit_base"				# args: None
 
 
 SCAN_COMPLETE			= "scan_complete"				# args: None

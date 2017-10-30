@@ -122,7 +122,7 @@ class MainWindow(tkinter.Tk):
 	def __update_db_info(self):
 		"""обновление информации по базе"""
 		self.db_info.set_path(self.storage.storage_path)
-		self.db_info.set_sysinfo(self.storage.fetch_system())
+		# self.db_info.set_sysinfo(self.storage.fetch_system())
 
 
 

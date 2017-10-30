@@ -195,6 +195,9 @@ class Storage(object):
 
 		sbus.emit(sbus.STORAGE_VOLUME_UPDATED, vdata["uuid"])
 
+
+	def update_system(self, key, value):
+		self.db.update_system(key, value)
 	#--- обновление элементов -------------------------------------------------
 
 
