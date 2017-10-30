@@ -224,6 +224,13 @@ class Storage(object):
 			shutil.copyfile(self.storage_path, new_backup_name)
 		except:
 			log.exception("unable copy file for backup...")
+
+
+	def export_volume(self, volume_id):
+		pass
+
+	def export_db(self, format="json"):
+		pass
 	#--- сервис ---------------------------------------------------------------
 
 
