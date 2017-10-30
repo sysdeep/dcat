@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
+import re
 import tkinter
 from tkinter import ttk
 from tkinter import messagebox
@@ -107,7 +107,15 @@ class VList(tkinter.Frame):
 	def __insert_volumes(self):
 		self.volume_icons = []
 		volumes = self.storage.fetch_volumes()
-		volumes.sort(key=lambda vnode: vnode.name)
+
+
+		abdig_sort = lambda var: [int(x) if x.isdigit() else x for x in re.findall(r'[^0-9]|[0-9]+', var.name)]
+
+		# volumes.sort(key=lambda vnode: vnode.name)
+		volumes.sort(key=abdig_sort)
+
+
+
 		for vnode in volumes:
 			ivolume = volume_icon(vnode.vtype)
 			self.volume_icons.append(ivolume)
