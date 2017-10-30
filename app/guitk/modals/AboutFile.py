@@ -112,7 +112,7 @@ class AboutFile(tkinter.Toplevel):
 		if storage.is_open is False:
 			return "---"
 
-		volumes = storage.get_volumes_cache()
+		volumes = storage.fetch_volumes(iscache=True)
 
 		result = [v.name for v in volumes if v.uuid == volume_id]
 

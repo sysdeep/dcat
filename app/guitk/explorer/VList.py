@@ -6,7 +6,7 @@ from tkinter import ttk
 from tkinter import messagebox
 
 
-from app.storage import get_storage
+from app.storage import get_storage, sbus
 from app.lib import dbus
 from ..utils import qicon, aqicon, volume_icon
 
@@ -70,7 +70,7 @@ class VList(tkinter.Frame):
 		# self.toolbar.cb_show_edit = self.__show_edit
 
 
-		dbus.eon(dbus.STORAGE_VOLUME_UPDATED, self.__on_volume_updated)
+		sbus.eon(sbus.STORAGE_VOLUME_UPDATED, self.__on_volume_updated)
 
 
 

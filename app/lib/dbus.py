@@ -19,7 +19,6 @@ SHOW_ADD_VOLUME			= "show_add_volume"				# args: None
 SHOW_FIND				= "show_find"					# args: None
 SHOW_SETTINGS			= "show_settings"				# args: None
 
-STORAGE_VOLUME_UPDATED 	= "storage_volume_updated"		# args: volume_uuid
 
 SCAN_COMPLETE			= "scan_complete"				# args: None
 

@@ -156,7 +156,7 @@ class Find(tkinter.Toplevel):
 
 	def __load(self):
 		"""предзагрузка данных"""
-		self.volumes = self.storage.get_volumes_cache()
+		self.volumes = self.storage.fetch_volumes(iscache=True)
 		vnames = [volume.name for volume in self.volumes]
 
 		vnames.insert(0, "All")

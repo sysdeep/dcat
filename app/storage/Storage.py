@@ -5,13 +5,10 @@ import os.path
 import shutil
 import time
 
-
 from app import log
-from app.lib import dbus
-
 
 from .DB import DB
-from .enums import FRow, VRow, FType
+from . import sbus
 from . import finder
 from . import cache
 
@@ -27,24 +24,31 @@ class Storage(object):
 		self.files = []
 
 
+
+
+	#--- db file actions ------------------------------------------------------
 	def open_storage(self, file_path):
+		"""открытие базы"""
 		log.info("open storage: " + file_path)
 		self.storage_path = file_path
 		self.db.open_db(self.storage_path)
 		self.is_open = True
-		# self.__load_storage()
 
-		
+		sbus.emit(sbus.STORAGE_OPENED)
 
 
 	def close_storage(self):
+		"""закрытие базы"""
 		self.db.close_db()
 		cache.clear_volumes()
 		self.files = []
 		self.is_open = False
 
+		sbus.emit(sbus.STORAGE_CLOSED)
+
 
 	def create_storage(self, file_path):
+		"""создание базы"""
 		log.info("создание базы: " + file_path)
 		if self.is_open:
 			self.close_storage()
@@ -53,15 +57,41 @@ class Storage(object):
 		self.db.create_db(self.storage_path)
 		self.is_open = True
 
+		sbus.emit(sbus.STORAGE_CREATED)
+
+
+	def commit(self):
+		"""принудительная запись базы"""
+		self.db.commit()
+	#--- db file actions ------------------------------------------------------
 	
 	
 
 
+
+
+	#--- получение элементов --------------------------------------------------
 	def fetch_system(self):
+		"""получить системную информацию из базы"""
 		return self.db.get_system()
 
 
-	def fetch_volumes(self):
+	def get_db_version(self):
+		"""получить версию открытой базы"""
+		return self.db.get_version()
+
+
+	def fetch_volumes(self, iscache=False):
+		"""получить список томов
+			:param	iscache	[bool]		- флаг выбора томов из текущего кэша, а не из базы
+			:returns	[vnode]
+		"""
+
+		#--- если флаг из кэша - возвращаем данные из кэша
+		if iscache:
+			log.debug("fetch volumes - cache")
+			return cache.get_volumes()
+
 		log.debug("fetch volumes")
 		if not self.is_open:
 			return []
@@ -90,74 +120,11 @@ class Storage(object):
 		return files
 
 
-	def remove_volume(self, volume_uuid):
-		if not self.is_open:
-			return False
-
-		self.db.remove_volume_files(volume_uuid)
-		self.db.remove_volume(volume_uuid)
-
-		return True
-
-
-
-
-
-
-	# def __load_files(self, volume=None):
-	# 	if not self.is_open:
-	# 		return []
-	#
-	# 	if volume:
-	# 		files = self.db.get_volume_files(volume)
-	# 	else:
-	# 		files = self.db.get_files_all()
-	#
-	#
-	# 	return files
-
-	
-
-
-
-	def create_volume_row(self, vdata, commit=False):
-		volume_id = self.db.create_volume_row(vdata, commit)
-		return volume_id
-
-
-	def create_file_row(self, fdata, commit=False):
-		file_id = self.db.create_file_row(fdata, commit)
-		return file_id
-
-	def update_volume_row(self, vdata, commit=False):
-		self.db.update_volume_row(vdata, commit)
-
-		dbus.emit(dbus.STORAGE_VOLUME_UPDATED, vdata["uuid"])
-
-
-	def commit(self):
-		self.db.commit()
-
-
-	def get_volumes_cache(self):
-		"""получить данные из кеша"""
-		return cache.get_volumes()
-
-	def get_files(self):
-		return self.files
-
-
-	def find_childrens(self, parent_id):
-		result = [file for file in self.files if file[FRow.PARENT] == parent_id]
-		return result
-
-	def find_volume_items(self, volume_id, parent_id):
-		result = [file for file in self.files if (file[FRow.PARENT] == parent_id) and (file[FRow.VOLUME] == volume_id)]
-		return result
 
 
 
 	def find_items(self, term, is_file=True, is_folder=False, volume_id=None):
+		"""поиск элементов по заданным пареметрам, дополнительно рекурсивно строится полный путь"""
 
 		pre_fnodes = self.db.find_by_name(term, volume_id)
 
@@ -174,8 +141,69 @@ class Storage(object):
 		result = finder.find_top_items(self.db, fnodes)
 
 		return result
+	#--- получение элементов --------------------------------------------------
 
 
+
+
+
+
+
+
+	#--- удаление элементов ---------------------------------------------------
+	def remove_volume(self, volume_uuid):
+		"""удаление тома"""
+		if not self.is_open:
+			return False
+
+		self.db.remove_volume_files(volume_uuid)
+		self.db.remove_volume(volume_uuid)
+
+		return True
+	#--- удаление элементов ---------------------------------------------------
+
+
+
+
+
+
+
+	#--- создание элементов ---------------------------------------------------
+	def create_volume_row(self, vdata, commit=False):
+		volume_id = self.db.create_volume_row(vdata, commit)
+		return volume_id
+
+
+	def create_file_row(self, fdata, commit=False):
+		file_id = self.db.create_file_row(fdata, commit)
+		return file_id
+	#--- создание элементов ---------------------------------------------------
+
+
+
+
+
+
+
+
+
+	#--- обновление элементов -------------------------------------------------
+	def update_volume_row(self, vdata, commit=False):
+		self.db.update_volume_row(vdata, commit)
+
+		sbus.emit(sbus.STORAGE_VOLUME_UPDATED, vdata["uuid"])
+
+	#--- обновление элементов -------------------------------------------------
+
+
+
+
+
+
+
+
+
+	#--- сервис ---------------------------------------------------------------
 	def create_current_backup(self):
 		# print("create_current_backup")
 
@@ -196,7 +224,7 @@ class Storage(object):
 			shutil.copyfile(self.storage_path, new_backup_name)
 		except:
 			log.exception("unable copy file for backup...")
+	#--- сервис ---------------------------------------------------------------
 
 
-	def get_db_version(self):
-		return self.db.get_version()
+
