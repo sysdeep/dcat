@@ -4,7 +4,8 @@
 
 
 DATA = {
-	"volumes"	: []
+	"volumes"	: [],
+	"system"	: {}
 }
 
 
@@ -18,3 +19,12 @@ def set_volumes(volumes):
 
 def clear_volumes():
 	DATA["volumes"] = []
+
+
+
+def get_system():
+	return DATA["system"]
+
+def set_system(system_dict):
+	DATA["system"] = system_dict
+

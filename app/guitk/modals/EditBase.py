@@ -6,7 +6,7 @@ from tkinter import ttk
 
 from ..utils import aqicon
 from app.data import VOLUME_TYPE
-from app.storage import get_storage
+from app.storage import get_storage, defs
 from ..utils.icons import volume_icon
 
 
@@ -53,14 +53,7 @@ class EditBase(tkinter.Toplevel):
 
 
 	def __init_data(self):
-		description = "not found in db"
-		sys_info = self.storage.fetch_system()
-		for row in sys_info:
-			if row["key"] == "description":
-				description = row["value"]
-
-
-
+		description = self.storage.get_system_value(defs.SYS_KEY_DESCRIPTION)
 		self.description.insert(tkinter.END, description)
 
 
@@ -69,7 +62,7 @@ class EditBase(tkinter.Toplevel):
 		description = self.description.get(1.0, tkinter.END)
 
 
-		self.storage.update_system("description", description)
+		self.storage.update_system(defs.SYS_KEY_DESCRIPTION, description)
 		self.storage.commit()
 
 

@@ -11,7 +11,7 @@ from .DB import DB
 from . import sbus
 from . import finder
 from . import cache
-
+from . import defs
 from .export import ejson
 
 
@@ -36,6 +36,7 @@ class Storage(object):
 		self.db.open_db(self.storage_path)
 		self.is_open = True
 
+		self.load_system()
 		sbus.emit(sbus.STORAGE_OPENED)
 
 
@@ -59,6 +60,7 @@ class Storage(object):
 		self.db.create_db(self.storage_path)
 		self.is_open = True
 
+		self.load_system()
 		sbus.emit(sbus.STORAGE_CREATED)
 
 
@@ -73,14 +75,33 @@ class Storage(object):
 
 
 	#--- получение элементов --------------------------------------------------
-	def fetch_system(self):
-		"""получить системную информацию из базы"""
-		return self.db.get_system()
+	# def fetch_system(self):
+	# 	"""получить системную информацию из базы"""
+	# 	return self.db.get_system()
 
 
-	def get_db_version(self):
-		"""получить версию открытой базы"""
-		return self.db.get_version()
+	def load_system(self):
+		"""загрузить данные по базе в кэш"""
+		system_info = self.db.get_system()
+		system_data = {}
+		for row in system_info:
+			system_data[row["key"]] = row["value"]
+
+		cache.set_system(system_data)
+
+	def get_system_value(self, key):
+		"""получить тек. значение системной информации"""
+		system_data = cache.get_system()
+		return system_data.get(key, "not found")
+
+	def get_system_info(self):
+		"""получить все данные по системной информации"""
+		return cache.get_system()
+
+
+
+
+
 
 
 	def fetch_volumes(self, iscache=False):
@@ -197,14 +218,21 @@ class Storage(object):
 
 
 	def update_system(self, key, value):
+		"""обновление заданной системной переменной(вместе с кэшем)"""
 		self.db.update_system(key, value)
+		system_data = cache.get_system()
+		system_data[key] = value
+		cache.set_system(system_data)
 	#--- обновление элементов -------------------------------------------------
 
 
 
 
-
-
+	#--- aliaces --------------------------------------------------------------
+	def get_db_version(self):
+		"""получить версию открытой базы"""
+		return self.get_system_value(defs.SYS_KEY_VERSION)
+	#--- aliaces --------------------------------------------------------------
 
 
 

@@ -49,8 +49,11 @@ class AboutBase(tkinter.Toplevel):
 			self.items.append(IRow(self.grid, key, value))
 
 		#--- db sys info
-		for row in self.storage.fetch_system():
-			self.items.append(IRow(self.grid, row["key"], row["value"]))
+		# for row in self.storage.fetch_system():
+		# 	self.items.append(IRow(self.grid, row["key"], row["value"]))
+
+		for key, value in self.storage.get_system_info().items():
+			self.items.append(IRow(self.grid, key, value))
 
 
 		#--- draw
