@@ -105,11 +105,12 @@ class DB(object):
 	# 	return rows
 
 
-	# def get_volume_files(self, volume_id):
-	# 	cursor = self.connection.cursor()
-	# 	cursor.execute("SELECT * FROM files WHERE volume_id=?", (volume_id, ))
-	# 	rows = cursor.fetchall()
-	# 	return rows
+	def get_volume_all_files(self, volume_id):
+		cursor = self.connection.cursor()
+		cursor.execute("SELECT * FROM files WHERE volume_id=?", (volume_id, ))
+		rows = cursor.fetchall()
+		result = loader.make_fnodes(rows)
+		return result
 
 
 	def get_volume_root_files(self, volume_id):

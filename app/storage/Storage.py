@@ -12,6 +12,8 @@ from . import sbus
 from . import finder
 from . import cache
 
+from .export import ejson
+
 
 class Storage(object):
 	def __init__(self):
@@ -229,8 +231,21 @@ class Storage(object):
 	def export_volume(self, volume_id):
 		pass
 
-	def export_db(self, format="json"):
-		pass
+	def export_db(self, file_name_path, format="json"):
+		ejson.add_db_info("qqq")
+
+
+		volumes = self.fetch_volumes()
+
+
+		for vnode in volumes:
+			files = self.db.get_volume_all_files(vnode.uuid)
+			vnode.files = files
+
+			ejson.add_volume(vnode, files)
+
+
+		ejson.make(file_name_path)
 	#--- сервис ---------------------------------------------------------------
 
 

@@ -5,8 +5,6 @@ import time
 
 class FNode(object):
 	def __init__(self):
-		self.uuid = None
-		self.name = ""
 
 
 		self.volume_id	= ""
@@ -71,3 +69,25 @@ class FNode(object):
 
 
 
+	def make_data_dict(self):
+
+
+
+		result = {
+			"uuid"			: self.uuid,
+			"name"			: self.name,
+			"volume_id"		: self.volume_id,
+			"parent_id"		: self.parent_id,
+			"ftype"			: self.ftype,
+			"rights"		: self.rights,
+			"owner"			: self.owner,
+			"group"			: self.group,
+			"ctime"			: self.ctime,
+			"atime"			: self.atime,
+			"mtime"			: self.mtime,
+			"category"		: self.category,
+			"description"	: self.description,
+			"size"			: self.size,
+		}
+
+		return result
