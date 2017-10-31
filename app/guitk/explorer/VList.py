@@ -5,9 +5,9 @@ import tkinter
 from tkinter import ttk
 from tkinter import messagebox
 
-
+# from vendor.natsort import natsorted
 from app.storage import get_storage, sbus
-from app.lib import dbus
+from app.lib import dbus, sorting
 from ..utils import qicon, aqicon, volume_icon
 
 
@@ -109,10 +109,18 @@ class VList(tkinter.Frame):
 		volumes = self.storage.fetch_volumes()
 
 
-		abdig_sort = lambda var: [int(x) if x.isdigit() else x for x in re.findall(r'[^0-9]|[0-9]+', var.name)]
+		# abdig_sort = lambda var: [int(x) if x.isdigit() else x for x in re.findall(r'[^0-9]|[0-9]+', var.name)]
 
 		# volumes.sort(key=lambda vnode: vnode.name)
-		volumes.sort(key=abdig_sort)
+		# volumes.sort(key=abdig_sort)
+		convert = lambda text: int(text) if text.isdigit() else text
+		alphanum_key = lambda key: [convert(c) for c in re.split(r'([0-9]+)', key.name)]
+		volumes.sort(key=alphanum_key)
+
+
+		#
+		# names = [x.name for x in volumes]
+		# print(natsorted(names))
 
 
 

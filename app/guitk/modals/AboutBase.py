@@ -5,9 +5,8 @@ import tkinter
 from tkinter import ttk
 
 from ..utils import aqicon
-from app.storage import get_storage
+from app.storage import get_storage, defs
 from app.lib.fsize import naturalsize
-from ..components import ButtonDefault
 
 
 
@@ -20,47 +19,44 @@ class AboutBase(tkinter.Toplevel):
 		super(AboutBase, self).__init__(master, *args, **kwargs)
 		self.title("Свойства базы")
 
-		self.maxsize(400, 300)
-		self.minsize(400, 300)
+		self.maxsize(450, 350)
+		self.minsize(450, 350)
 
 		self.storage = get_storage()
 
 
-		# self.main_frame = tkinter.Frame(self,)
 		self.main_frame = ttk.Frame(self, padding=10)
-		# self.main_frame.pack(expand=True, fill="both", side="top", padx=10, pady=20)
 		self.main_frame.pack(expand=True, fill="both")
 
 
+		#--- main info grid
 		self.grid = ttk.Frame(self.main_frame)
-		self.grid.pack(side="top", expand=True, fill="both")
+		self.grid.pack(side="top", expand=True, fill="x")
+
+		self.__current_row = 0
+		self.label_path = self.__append_kv_row("путь")
+		self.label_size = self.__append_kv_row("размер")
+		self.label_version = self.__append_kv_row("версия")
+		self.label_created = self.__append_kv_row("создание")
+		self.label_updated = self.__append_kv_row("обновление")
 
 
 
+		#--- edit description field
+		frame_description = ttk.Frame(self.main_frame, padding=5)
+		frame_description.pack(side="top", expand=True, fill="both")
 
 
-		#--- path
-		self.items = [
-			IRow(self.grid, "path", self.storage.storage_path),
-		]
+		ttk.Label(frame_description, text="описание").pack(fill="x", side="top")
+		self.description = tkinter.Text(frame_description, height=6, width=20)
+		self.description.pack(side="left", fill="both", expand=True)
 
-		#--- file os stat
-		for key, value in self.__get_db_stat(self.storage.storage_path).items():
-			self.items.append(IRow(self.grid, key, value))
-
-		#--- db sys info
-		# for row in self.storage.fetch_system():
-		# 	self.items.append(IRow(self.grid, row["key"], row["value"]))
-
-		for key, value in self.storage.get_system_info().items():
-			self.items.append(IRow(self.grid, key, value))
+		#- vertical scroll
+		ysb = ttk.Scrollbar(frame_description, orient="vertical", command=self.description.yview)
+		self.description['yscroll'] = ysb.set
+		ysb.pack(side="right", expand=False, fill="y")
 
 
-		#--- draw
-		for i, irow in enumerate(self.items):
-
-			irow.lkey.grid(row=i, column=0, sticky="e")
-			irow.vkey.grid(row=i, column=1, sticky="w")
 
 
 		#--- controls
@@ -68,43 +64,72 @@ class AboutBase(tkinter.Toplevel):
 		controls_frame.pack(fill="both", side="bottom", padx=5, pady=5)
 
 		self.icon_close = aqicon("close")
-		# ButtonDefault(controls_frame, text="Закрыть(Ctrl+w)", command=self.destroy, image=self.icon_close, compound="left").pack(side="right")
+		self.icon_save = aqicon("save")
 		ttk.Button(controls_frame, text="Закрыть(Ctrl+w)", command=self.destroy, image=self.icon_close, compound="left").pack(side="right")
+		ttk.Button(controls_frame, text="Сохранить", command=self.__do_save, image=self.icon_save, compound="left").pack(side="left")
 
 		self.bind_all("<Control-w>", lambda e: self.destroy())
 
 
 
+		#--- start
+		self.__load()
 
 
 
-	def __get_db_stat(self, db_path):
-		"""получить информацию о файле базы"""
-		st = os.stat(db_path)
+	def __load(self):
+		"""загрузить данные"""
+		self.label_path.config(text=self.storage.storage_path)
 
-		result = {
-			"size"	: naturalsize(st.st_size)					# нормальный вид размера
-		}
+		st = os.stat(self.storage.storage_path)
+		size = naturalsize(st.st_size)
+		self.label_size.config(text=size)
 
-		return result
+		self.label_version.config(text=self.storage.get_system_value(defs.SYS_KEY_VERSION))
+		self.label_created.config(text=self.storage.get_system_value(defs.SYS_KEY_CREATED))
+		self.label_updated.config(text=self.storage.get_system_value(defs.SYS_KEY_UPDATED))
+
+		description = self.storage.get_system_value(defs.SYS_KEY_DESCRIPTION)
+		self.description.insert(tkinter.END, description)
+
+
+
+	def __make_kv_row(self, name, row):
+		"""создать строку ключ-значение"""
+		tkinter.Label(self.grid, text=name).grid(row=row, column=0, sticky="e", pady=2, padx=5)
+
+		label = tkinter.Label(self.grid)
+		label.grid(row=row, column=1, sticky="w", pady=2, padx=5)
+		return label
+
+
+	def __append_kv_row(self, name):
+		"""добавить строку со смещением вниз"""
+		row = self.__current_row
+		self.__current_row += 1
+		return self.__make_kv_row(name, row)
+
+
+
+	def __do_save(self):
+		"""сохранить изменения"""
+		description = self.description.get(1.0, tkinter.END)
+
+		self.storage.update_system(defs.SYS_KEY_DESCRIPTION, description)
+		self.storage.commit()
 
 
 
 
 
 
-class IRow(object):
-	def __init__(self, parent, name, value):
-		self.parent = parent
-		self.name = name
-		self.value = value
 
-		lkey_text = self.name + ": "
-		self.lkey = ttk.Label(self.parent, text=lkey_text)
-		self.vkey = ttk.Label(self.parent, text=value)
 
-	def update(self, value):
-		self.vkey.config(text=value)
+
+
+
+
+
 
 
 

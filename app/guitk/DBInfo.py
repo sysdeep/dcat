@@ -50,12 +50,7 @@ class DBInfo(ttk.Frame):
 		self.icon_info = aqicon("info")
 		ttk.Button(self, text="Info", image=self.icon_info, compound="left", command=self.__show_info).pack(side="right", padx=5)
 
-		self.icon_edit = aqicon("edit")
-		ttk.Button(self, text="Изменить", image=self.icon_edit, compound="left", command=self.__show_edit).pack(side="right", padx=5)
-
-	#
-	# def update_info(self):
-	# 	pass
+		
 
 
 	def set_path(self, value):
@@ -91,8 +86,4 @@ class DBInfo(ttk.Frame):
 
 	def __show_info(self):
 		dbus.emit(dbus.SHOW_ABOUT_BASE)
-
-
-	def __show_edit(self):
-		dbus.emit(dbus.SHOW_EDIT_BASE)
 
