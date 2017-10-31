@@ -10,6 +10,7 @@ from app.storage import get_storage
 from app.lib import dbus
 from app.lib.USettings import USettings
 from app import shared
+from app.rc import VERSION
 
 from .modals.ModalsCtrl import ModalsCtrl
 from .Menu import BarMenu
@@ -194,7 +195,7 @@ class MainWindow(tkinter.Tk):
 
 
 	def __update_title(self, db_path):
-		text = "{}: {}".format(self.name, db_path)
+		text = "{} v{} - {}".format(self.name, VERSION, db_path)
 		self.title(text)
 
 
