@@ -76,7 +76,7 @@ VCACHE = {}
 
 
 DATA = {
-	"pack"	: "oxygen"
+	"pack"	: "oxygen"					# набор иконок
 }
 
 

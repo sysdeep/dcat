@@ -16,7 +16,7 @@ from .Menu import BarMenu
 from .explorer import Explorer
 from .DBInfo import DBInfo
 from .ToolBar import ToolBar
-
+from .utils import ticons
 
 
 
@@ -35,8 +35,10 @@ class MainWindow(tkinter.Tk):
 		self.name = "DCat"
 		self.title(self.name)
 		self.minsize(800, 400)
+
+		self.app_icon = ticons.real_icon("app.png")
 		# self.option_add("*Font", ("Play", 12))				# до создания виджетов
-		# self.iconphoto(self, get_icon("gnome-app-install-star"))
+		self.iconphoto(self, self.app_icon)
 
 		# self.usettings = USettings()
 		# self.usettings.open_settings()

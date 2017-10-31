@@ -70,7 +70,7 @@ class BarMenu():
 		help_menu = Menu(self.menu, tearoff=0)
 		self.menu.add_cascade(label="Помощь", menu=help_menu)
 
-		help_menu.add_command(label="О программе", command=self.__show_about)
+		help_menu.add_command(label="О программе", command=self.__show_about, image=ticons.ticon(ticons.INFO), compound="left")
 
 
 
