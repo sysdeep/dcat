@@ -6,9 +6,8 @@ import tkinter
 from tkinter import ttk
 
 from app.lib import dbus
-from .utils import aqicon
+from .utils import ticons
 
-from .components import ButtonDefault, ButtonInfo
 
 
 class DBInfo(ttk.Frame):
@@ -40,15 +39,11 @@ class DBInfo(ttk.Frame):
 		# self.label_created.pack(side="left")
 
 
+		#--- close
+		ttk.Button(self, text="Закрыть", image=ticons.ticon(ticons.CLOSE), compound="left", command=self.__on_exit).pack(side="right")
 
-		self.icon_close = aqicon("close")
-		# tkinter.Button(self, text="Закрыть", image=self.icon_close, compound="left", relief="flat", command=self.__on_exit).pack(side="right")
-		# ButtonDefault(self, text="Закрыть", image=self.icon_close, compound="left", command=self.__on_exit).pack(side="right")
-		ttk.Button(self, text="Закрыть", image=self.icon_close, compound="left", command=self.__on_exit).pack(side="right")
-
-
-		self.icon_info = aqicon("info")
-		ttk.Button(self, text="Info", image=self.icon_info, compound="left", command=self.__show_info).pack(side="right", padx=5)
+		#--- dbinfo
+		ttk.Button(self, text="Info", image=ticons.ticon(ticons.INFO), compound="left", command=self.__show_info).pack(side="right", padx=5)
 
 
 

@@ -18,7 +18,8 @@ from app.data import VOLUME_TYPE
 from app.logic import scaner
 from app.lib import dbus
 
-from ..utils.icons import volume_icon, qicon, aqicon
+
+from ..utils import ticons
 
 
 def now_date():
@@ -63,11 +64,10 @@ class AddVolume(tkinter.Toplevel):
 
 
 		row = 0
-		self.__icon_open_folder = aqicon("open_folder")
 		ttk.Label(edit_frame, text="Каталог: ").grid(row=row, column=0, sticky="e", pady=5, padx=5)
 		self.scan_path_entry = ttk.Entry(edit_frame, width=30, justify="left")
 		self.scan_path_entry.grid(row=row, column=1, sticky="w", pady=5, padx=5)
-		ttk.Button(edit_frame, text="Выбрать каталог", command=self.__show_select_dir, image=self.__icon_open_folder).grid(row=row, column=2, sticky="w", padx=5)
+		ttk.Button(edit_frame, text="Выбрать каталог", command=self.__show_select_dir, image=ticons.ticon(ticons.OPEN_FOLDER)).grid(row=row, column=2, sticky="w", padx=5)
 		# ttk.Button(edit_frame, text="Выбрать каталог", command=self.__show_select_dir, image=self.__icon_open_folder, compound="left").grid(row=row, column=2, sticky="w", padx=5)
 
 		row += 1
@@ -117,13 +117,13 @@ class AddVolume(tkinter.Toplevel):
 		controls_frame = ttk.Frame(self.main_frame)
 		controls_frame.pack(fill="both", side="bottom", padx=10, pady=10)
 
-		self.__icon_start = qicon("go_next.png")
-		self.__icon_close = aqicon("close")
+
+
 		# ttk.Button(controls_frame, text="Закрыть(Ctrl+w)", image=get_icon("application-exit"), compound="left", command=self.destroy).pack(side="right")
-		self.__btn_start = ttk.Button(controls_frame, text="Запуск", command=self.__start_scan, image=self.__icon_start, compound="left")
+		self.__btn_start = ttk.Button(controls_frame, text="Запуск", command=self.__start_scan, image=ticons.ticon(ticons.GO_NEXT), compound="left")
 		self.__btn_start.pack(side="left")
 
-		self.__btn_close = ttk.Button(controls_frame, text="Закрыть(Ctrl+w)", command=self.destroy, image=self.__icon_close, compound="left")
+		self.__btn_close = ttk.Button(controls_frame, text="Закрыть(Ctrl+w)", command=self.destroy, image=ticons.ticon(ticons.CLOSE), compound="left")
 		self.__btn_close.pack(side="right")
 
 
@@ -165,7 +165,8 @@ class AddVolume(tkinter.Toplevel):
 
 
 	def __update_volume_icon(self):
-		self.__vtype_icon = volume_icon(self.volume_vtype)
+		# self.__vtype_icon = volume_icon(self.volume_vtype)
+		self.__vtype_icon = ticons.vicon(self.volume_vtype)
 		self.__label_vtype_icon.config(image=self.__vtype_icon)
 
 

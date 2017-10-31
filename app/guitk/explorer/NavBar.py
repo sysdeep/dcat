@@ -5,8 +5,12 @@
 import tkinter
 from tkinter import ttk
 
-from ..utils import qicon, aqicon
-# from ..components import ButtonPrimary
+from ..utils import ticons
+
+
+
+
+
 
 class NavBar(tkinter.Frame):
 	def __init__(self, parent, *args, **kwargs):
@@ -26,19 +30,10 @@ class NavBar(tkinter.Frame):
 		controls_frame = ttk.Frame(self)
 		controls_frame.pack(fill="both", side="left")
 
-		# label = tkinter.Label(controls_frame, text="stack")
-		# label.pack(side="left")
 
-		self.icon_back = qicon("back.png")
-		# self.icon_info = aqicon("info")
-
-		self.btn_back = tkinter.Button(controls_frame, text="back", command=self.__go_back, image=self.icon_back, relief="flat")
+		self.btn_back = tkinter.Button(controls_frame, text="back", command=self.__go_back, image=ticons.ticon(ticons.GO_PREV), relief="flat")
 		self.btn_back.pack(side="left")
 		self.btn_back.configure(state="disabled")
-
-		# self.btn_show_info = tkinter.Button(self, text="info", command=self.__show_info, image=self.icon_info, relief="flat", highlightthickness=0, bd=0)
-		# self.btn_show_info.pack(side="right")
-
 
 		self.stack_frame = ttk.Frame(self)
 		self.stack_frame.pack(fill="both", side="left", padx=10)

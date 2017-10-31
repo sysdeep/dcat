@@ -5,7 +5,7 @@ import tkinter
 from tkinter import ttk
 
 from app.lib.fsize import naturalsize
-from ..utils import aqicon
+from ..utils import ticons
 from app.storage import get_storage
 
 
@@ -64,8 +64,7 @@ class AboutFile(tkinter.Toplevel):
 		controls_frame = ttk.Frame(self.main_frame)
 		controls_frame.pack(fill="both", side="bottom", padx=5, pady=5)
 
-		self.icon_close = aqicon("close")
-		ttk.Button(controls_frame, text="Закрыть(Ctrl+w)", command=self.destroy, image=self.icon_close, compound="left").pack(side="right")
+		ttk.Button(controls_frame, text="Закрыть(Ctrl+w)", command=self.destroy, image=ticons.ticon(ticons.CLOSE), compound="left").pack(side="right")
 
 		self.bind_all("<Control-w>", lambda e: self.destroy())
 

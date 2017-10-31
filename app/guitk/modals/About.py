@@ -5,7 +5,7 @@ import tkinter
 from tkinter import ttk
 
 from app.rc import ABOUT_NAME, ABOUT_AUTHOR_EMAIL, ABOUT_AUTHOR_NAME, ABOUT_DESCRIPTION, ABOUT_SLUG, VERSION
-from ..utils import aqicon
+from ..utils import ticons
 
 class About(tkinter.Toplevel):
 	def __init__(self, master=None, *args, **kwargs):
@@ -45,8 +45,8 @@ class About(tkinter.Toplevel):
 		controls_frame = ttk.Frame(self.main_frame)
 		controls_frame.pack(fill="both", side="bottom", padx=5, pady=5)
 
-		self.icon_close = aqicon("close")
-		ttk.Button(controls_frame, text="Закрыть(Ctrl+w)", command=self.destroy, image=self.icon_close, compound="left").pack(side="right")
+		# self.icon_close = aqicon("close")
+		ttk.Button(controls_frame, text="Закрыть(Ctrl+w)", command=self.destroy, image=ticons.ticon(ticons.CLOSE), compound="left").pack(side="right")
 
 		self.bind_all("<Control-w>", lambda e: self.destroy())
 

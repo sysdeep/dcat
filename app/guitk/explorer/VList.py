@@ -8,7 +8,7 @@ from tkinter import messagebox
 # from vendor.natsort import natsorted
 from app.storage import get_storage, sbus
 from app.lib import dbus, sorting
-from ..utils import qicon, aqicon, volume_icon
+from ..utils import ticons
 
 
 
@@ -51,13 +51,9 @@ class VList(tkinter.Frame):
 
 
 
-		self.__icon_menu_info = aqicon("info")
-		self.__icon_menu_edit = aqicon("edit")
-		self.__icon_menu_remove = aqicon("trash")
 		self.cmenu = tkinter.Menu(self, tearoff=0)
-		self.cmenu.add_command(label="Свойства", command=self.__show_info, image=self.__icon_menu_info, compound="left")
-		# self.cmenu.add_command(label="Изменить", command=self.__show_edit, image=self.__icon_menu_edit, compound="left")
-		self.cmenu.add_command(label="Удалить", command=self.__remove_volume, image=self.__icon_menu_remove, compound="left")
+		self.cmenu.add_command(label="Свойства", command=self.__show_info, image=ticons.ticon(ticons.INFO), compound="left")
+		self.cmenu.add_command(label="Удалить", command=self.__remove_volume, image=ticons.ticon(ticons.TRASH), compound="left")
 		# self.cmenu.add_separator()
 		# self.cmenu.add_command(label="Закрыть", command=self.__hide_cmenu)
 
@@ -125,7 +121,8 @@ class VList(tkinter.Frame):
 
 
 		for vnode in volumes:
-			ivolume = volume_icon(vnode.vtype)
+			# ivolume = volume_icon(vnode.vtype)
+			ivolume = ticons.vicon(vnode.vtype)
 			self.volume_icons.append(ivolume)
 			self.__list.insert('', 'end', vnode.uuid, text=vnode.name, tags=("simple", ), image=ivolume)
 			self.__volumes_map[vnode.uuid] = vnode

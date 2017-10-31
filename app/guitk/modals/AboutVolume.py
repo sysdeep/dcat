@@ -5,10 +5,10 @@ import tkinter
 from tkinter import ttk
 
 
-from ..utils import aqicon
+from ..utils import ticons
 from app.data import VOLUME_TYPE
 from app.storage import get_storage
-from ..utils.icons import volume_icon
+
 
 
 
@@ -94,11 +94,10 @@ class AboutVolume(tkinter.Toplevel):
 		controls_frame = ttk.Frame(self.main_frame)
 		controls_frame.pack(fill="both", side="bottom", padx=5, pady=5)
 
-		self.icon_close = aqicon("close")
-		self.icon_save = aqicon("save")
 
-		ttk.Button(controls_frame, text="Сохранить", command=self.__do_save, image=self.icon_save, compound="left").pack(side="left")
-		ttk.Button(controls_frame, text="Закрыть(Ctrl+w)", command=self.destroy, image=self.icon_close, compound="left").pack(side="right")
+
+		ttk.Button(controls_frame, text="Сохранить", command=self.__do_save, image=ticons.ticon(ticons.SAVE), compound="left").pack(side="left")
+		ttk.Button(controls_frame, text="Закрыть(Ctrl+w)", command=self.destroy, image=ticons.ticon(ticons.CLOSE), compound="left").pack(side="right")
 
 		self.bind_all("<Control-w>", lambda e: self.destroy())
 
@@ -126,7 +125,8 @@ class AboutVolume(tkinter.Toplevel):
 		self.__update_volume_icon()
 
 	def __update_volume_icon(self):
-		self.__vtype_icon = volume_icon(self.vtype)
+		# self.__vtype_icon = volume_icon(self.vtype)
+		self.__vtype_icon = ticons.vicon(self.vtype)
 		self.__label_vtype_icon.config(image=self.__vtype_icon)
 
 

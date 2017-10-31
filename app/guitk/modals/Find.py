@@ -8,7 +8,7 @@ from tkinter import ttk
 from app.storage import get_storage
 from app.lib import dbus
 
-from ..utils import qicon, aqicon
+from ..utils import ticons
 
 
 
@@ -35,8 +35,8 @@ class Find(tkinter.Toplevel):
 		self.var_file.set(1)
 		self.var_folder = tkinter.IntVar()
 
-		self.icon_folder = qicon("folder.png")
-		self.icon_file = qicon("empty.png")
+		# self.icon_folder = qicon("folder.png")
+		# self.icon_file = qicon("empty.png")
 
 
 
@@ -91,8 +91,8 @@ class Find(tkinter.Toplevel):
 		frame_actions = ttk.Frame(group_edit)
 		frame_actions.pack(side="right", fill="x", expand=True)
 
-		self.__icon_start = qicon("go_next.png")
-		ttk.Button(frame_actions, text="Запустить", image=self.__icon_start, compound="left", command=self.__act_start).pack(side="right")
+
+		ttk.Button(frame_actions, text="Запустить", image=ticons.ticon(ticons.GO_NEXT), compound="left", command=self.__act_start).pack(side="right")
 
 		
 
@@ -112,9 +112,9 @@ class Find(tkinter.Toplevel):
 		self.__tree.bind("<Button-3>", self.__make_cmenu)
 
 
-		self.__icon_menu_info = aqicon("info")
+
 		self.cmenu = tkinter.Menu(self, tearoff=0)
-		self.cmenu.add_command(label="Свойства", command=self.__show_info, image=self.__icon_menu_info, compound="left")
+		self.cmenu.add_command(label="Свойства", command=self.__show_info, image=ticons.ticon(ticons.INFO), compound="left")
 
 		#--- vertical scroll
 		ysb = ttk.Scrollbar(frame_result, orient="vertical", command= self.__tree.yview)
@@ -129,8 +129,8 @@ class Find(tkinter.Toplevel):
 		controls_frame = ttk.Frame(self.main_frame)
 		controls_frame.pack(fill="both", side="bottom", padx=10, pady=10)
 
-		self.__icon_close = aqicon("close")
-		ttk.Button(controls_frame, text="Закрыть(Ctrl+w)", image=self.__icon_close, compound="left", command=self.destroy).pack(side="right")
+
+		ttk.Button(controls_frame, text="Закрыть(Ctrl+w)", image=ticons.ticon(ticons.CLOSE), compound="left", command=self.destroy).pack(side="right")
 
 		self.bind_all("<Control-w>", lambda e: self.destroy())
 
@@ -212,8 +212,9 @@ class Find(tkinter.Toplevel):
 
 		ivalues = (volume_name, name_path)
 
-		icon = self.icon_folder if fnode.is_dir() else self.icon_file
-		
+		# icon = self.icon_folder if fnode.is_dir() else self.icon_file
+		icon = ticons.ficon(ticons.F_FOLDER) if fnode.is_dir() else ticons.ficon(ticons.F_EMPTY)
+
 		
 		self.__tree.insert("", 'end', fnode.uuid, text=fnode.name, tags=("simple", ), image=icon, values=ivalues)
 

@@ -7,7 +7,7 @@ from tkinter import ttk, PhotoImage
 from app.storage import get_storage, VRow, FRow, FType
 from app.lib import dbus
 from app.lib.fsize import naturalsize
-from ..utils import qicon, conv, aqicon
+from ..utils import conv, ticons
 
 from .LNode import LNode
 from .NavBar import NavBar
@@ -73,18 +73,15 @@ class FList(ttk.Frame):
 
 
 
-		self.__icon_menu_info = aqicon("info")
-		# self.__icon_menu_edit = aqicon("edit")
 		self.cmenu = tkinter.Menu(self, tearoff=0)
-		self.cmenu.add_command(label="Свойства", command=self.__show_info, image=self.__icon_menu_info, compound="left")
+		self.cmenu.add_command(label="Свойства", command=self.__show_info, image=ticons.ticon(ticons.INFO), compound="left")
 		# self.cmenu.add_command(label="Изменить", command=self.__show_edit, image=self.__icon_menu_edit, compound="left")
 
 
 		self.storage = get_storage()
 
 
-		self.icon_folder = qicon("folder.png")
-		self.icon_file = qicon("empty.png")
+		#
 		
 		self.current_volume = None
 		# self.current_fnode = None
@@ -165,11 +162,11 @@ class FList(ttk.Frame):
 
 		if fnode.is_dir():
 			ftype = "dir"
-			icon = self.icon_folder
+			icon = ticons.ficon(ticons.F_FOLDER)
 			size = ""
 		else:
 			ftype = "file"
-			icon = self.icon_file
+			icon = ticons.ficon(ticons.F_EMPTY)
 			size = naturalsize(fnode.size)
 
 

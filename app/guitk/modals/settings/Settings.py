@@ -8,7 +8,7 @@
 import tkinter
 from tkinter import ttk
 
-from app.guitk.utils import aqicon
+from app.guitk.utils import ticons
 from app import shared
 
 from .FrameHistory import FrameHistory
@@ -51,11 +51,9 @@ class Settings(tkinter.Toplevel):
 		controls_frame = ttk.Frame(self.main_frame)
 		controls_frame.pack(fill="both", side="bottom", padx=5, pady=5)
 
-		self.icon_close = aqicon("close")
-		ttk.Button(controls_frame, text="Закрыть(Ctrl+w)", command=self.destroy, image=self.icon_close, compound="left").pack(side="right")
+		ttk.Button(controls_frame, text="Закрыть(Ctrl+w)", command=self.destroy, image=ticons.ticon(ticons.CLOSE), compound="left").pack(side="right")
 
-		self.__icon_save = aqicon("save")
-		ttk.Button(controls_frame, text="Сохранить", command=self.apply, image=self.__icon_save, compound="left").pack(side="left")
+		ttk.Button(controls_frame, text="Сохранить", command=self.apply, image=ticons.ticon(ticons.SAVE), compound="left").pack(side="left")
 
 		self.bind_all("<Control-w>", lambda e: self.destroy())
 
