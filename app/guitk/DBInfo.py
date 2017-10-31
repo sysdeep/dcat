@@ -50,7 +50,7 @@ class DBInfo(ttk.Frame):
 		self.icon_info = aqicon("info")
 		ttk.Button(self, text="Info", image=self.icon_info, compound="left", command=self.__show_info).pack(side="right", padx=5)
 
-		
+
 
 
 	def set_path(self, value):

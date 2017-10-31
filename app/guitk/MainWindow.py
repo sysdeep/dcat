@@ -35,6 +35,7 @@ class MainWindow(tkinter.Tk):
 		self.name = "DCat"
 		self.title(self.name)
 		self.minsize(800, 400)
+		# self.option_add("*Font", ("Play", 12))				# до создания виджетов
 		# self.iconphoto(self, get_icon("gnome-app-install-star"))
 
 		# self.usettings = USettings()
@@ -98,6 +99,9 @@ class MainWindow(tkinter.Tk):
 		# self.tk.call("ttk::setTheme", "radiance")
 		# self.tk.call("ttk::setTheme", "winxpblue")
 
+
+		# style.configure("TButton", font=("Play", 12))
+		# style.configure(".", font=("Play", 12))
 
 
 		#--- открываем последний

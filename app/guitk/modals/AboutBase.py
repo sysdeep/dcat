@@ -96,9 +96,9 @@ class AboutBase(tkinter.Toplevel):
 
 	def __make_kv_row(self, name, row):
 		"""создать строку ключ-значение"""
-		tkinter.Label(self.grid, text=name).grid(row=row, column=0, sticky="e", pady=2, padx=5)
+		ttk.Label(self.grid, text=name).grid(row=row, column=0, sticky="e", pady=2, padx=5)
 
-		label = tkinter.Label(self.grid)
+		label = ttk.Label(self.grid)
 		label.grid(row=row, column=1, sticky="w", pady=2, padx=5)
 		return label
 

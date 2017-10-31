@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import tkinter
-from tkinter import ttk
+from tkinter import ttk, font
 
 
 
@@ -26,6 +26,36 @@ class FrameStyle(ttk.Frame):
 		self.style_box.pack(side="left")
 		self.style_box.bind('<<ComboboxSelected>>', self.__update_style)
 		self.style_box.set(current_style)
+
+
+
+		# self.font_box = ttk.Combobox(self, state='readonly')
+		# self.font_box.bind('<<ComboboxSelected>>', self.__update_font)
+		# self.font_box.pack(side="left")
+
+		self.__load()
+
+
+
+
+	def __load(self):
+		pass
+		# fonts = font.families()
+		# # print(fonts)
+		# self.font_box.config(values = fonts)
+
+
+	# def __update_font(self, e):
+	# 	font_name = self.font_box.get()
+	#
+	# 	print(font_name)
+	#
+	# 	style = ttk.Style()
+	# 	style.configure(".", font=(font_name, 10))
+	#
+	# 	# tkinter.Tk.option_add("*Font", (font_name, 12))
+	# 	# tkinter.Tk.config("*Font", (font_name, 12))
+
 
 
 
