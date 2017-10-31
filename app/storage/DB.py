@@ -95,7 +95,7 @@ class DB(object):
 		# result = make_volumes(rows)
 		result = loader.make_vnodes(rows)
 		return result
-		
+
 
 
 	# def get_files_all(self):
@@ -174,10 +174,11 @@ class DB(object):
 			vdata["name"],
 			vdata["vtype"],
 			vdata["description"],
+			sql_date(),
 			vdata["uuid"]
 		)
 		cursor = self.connection.cursor()
-		cursor.execute("UPDATE volumes SET name=?, vtype=?, description=? WHERE uuid=?", ivalues)
+		cursor.execute("UPDATE volumes SET name=?, vtype=?, description=?, updated=? WHERE uuid=?", ivalues)
 
 		if commit:
 			self.connection.commit()
@@ -195,7 +196,7 @@ class DB(object):
 		cursor = self.connection.cursor()
 		cursor.execute("UPDATE system SET value=? WHERE key=?", (value, key))
 
-		
+
 
 
 	def create_file_row(self, fdata, commit=False):
@@ -232,7 +233,7 @@ class DB(object):
 		return row_id
 
 
-	
+
 
 
 	def find_by_name(self, term, volume_id=None):
@@ -286,7 +287,7 @@ class DB(object):
 			migration_steps.append(migrations.up2_to_3)
 		elif db_version == "2":
 			migration_steps.append(migrations.up2_to_3)
-			
+
 
 
 		for action in migration_steps:
