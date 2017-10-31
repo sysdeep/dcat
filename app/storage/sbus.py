@@ -15,6 +15,8 @@ STORAGE_CLOSED			= "storage_closed"				# args: None
 STORAGE_CREATED			= "storage_created"				# args: None
 STORAGE_VOLUME_UPDATED 	= "storage_volume_updated"		# args: volume_uuid
 
+DB_COMMITTED			= "db_committed"				# args: None - база сохранена
+DB_MIGRATED				= "db_migrated"					# args: None - база произвела миграцию
 
 def eon(event_name, f):
 	DATA["emitter"].eon(event_name, f)

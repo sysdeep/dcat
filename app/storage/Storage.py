@@ -23,8 +23,9 @@ class Storage(object):
 		self.is_open = False
 
 
-		self.files = []
-
+		#--- прослушка событий
+		sbus.eon(sbus.DB_COMMITTED, self.__on_db_committed)
+		sbus.eon(sbus.DB_MIGRATED, self.__on_db_migrated)
 
 
 
@@ -40,11 +41,12 @@ class Storage(object):
 		sbus.emit(sbus.STORAGE_OPENED)
 
 
+
+
 	def close_storage(self):
 		"""закрытие базы"""
 		self.db.close_db()
 		cache.clear_volumes()
-		self.files = []
 		self.is_open = False
 
 		sbus.emit(sbus.STORAGE_CLOSED)
@@ -281,3 +283,24 @@ class Storage(object):
 
 
 
+	#--- events ---------------------------------------------------------------
+	def __on_db_committed(self):
+		"""событие от базы - запись изменений в файл"""
+
+		#--- обновляем данные в кэше - время изменения базы
+		updated_timestamp = self.db.get_system_value(defs.SYS_KEY_UPDATED)
+		system_cache = cache.get_system()
+		system_cache[defs.SYS_KEY_UPDATED] = updated_timestamp
+		cache.set_system(system_cache)
+
+
+	def __on_db_migrated(self):
+		"""событие от базы - произошла миграция"""
+
+		#--- обновляем данные в кэше - версия базы
+		version = self.db.get_system_value(defs.SYS_KEY_VERSION)
+		system_cache = cache.get_system()
+		system_cache[defs.SYS_KEY_VERSION] = version
+		cache.set_system(system_cache)
+
+	#--- events ---------------------------------------------------------------

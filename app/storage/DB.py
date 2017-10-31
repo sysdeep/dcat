@@ -10,8 +10,8 @@ from app.lib.fdate import sql_date
 from . import migrations
 from . import sql
 from .models import loader
-
-
+from . import defs
+from . import sbus
 
 
 
@@ -66,7 +66,7 @@ class DB(object):
 		self.cursor.execute(sql.CREATE_TIMESTAMP_CREATED, (sql_date(),))
 		self.cursor.execute(sql.CREATE_TIMESTAMP_UPDATED, (sql_date(),))
 		self.cursor.execute(sql.CREATE_SYSTEM_DESCRIPTION, ("init",))
-		self.connection.commit()
+		self.commit()
 
 
 
@@ -85,6 +85,21 @@ class DB(object):
 		cursor.execute("SELECT * FROM system")
 		rows = cursor.fetchall()
 		return rows
+
+
+	def get_system_value(self, key):
+		"""получить тек. значение системной информации"""
+		cursor = self.connection.cursor()
+		cursor.execute("SELECT * FROM system WHERE key = '" + key + "'")
+		row = cursor.fetchone()
+
+		if row is None:
+			return "---"
+
+		return row["value"]
+
+		# system_data = cache.get_system()
+		# return system_data.get(key, "not found")
 
 
 	def get_volumes(self):
@@ -161,14 +176,15 @@ class DB(object):
 		cursor = self.connection.cursor()
 		cursor.execute("INSERT INTO volumes(uuid, name, path, vtype, created, description) VALUES(?,?,?,?,?,?)", ivalues)
 		volume_id = cursor.lastrowid
+		self.update_db_timestamp()
 		
 		if commit:
-			self.connection.commit()
+			self.commit()
 
 		return volume_id
 
 
-
+	#--- updates --------------------------------------------------------------
 	def update_volume_row(self, vdata, commit=False):
 		ivalues = (
 			vdata["name"],
@@ -179,15 +195,17 @@ class DB(object):
 		)
 		cursor = self.connection.cursor()
 		cursor.execute("UPDATE volumes SET name=?, vtype=?, description=?, updated=? WHERE uuid=?", ivalues)
+		self.update_db_timestamp()
 
 		if commit:
-			self.connection.commit()
+			self.commit()
 
 
 	def update_version(self):
 		log.info("обновление версии базы")
 		cursor = self.connection.cursor()
 		cursor.execute("UPDATE system SET value=? WHERE key='version'", (VERSION, ))
+		self.update_db_timestamp()
 
 
 	def update_system(self, key, value):
@@ -195,7 +213,12 @@ class DB(object):
 		log.info("\t{}: {}".format(key, value))
 		cursor = self.connection.cursor()
 		cursor.execute("UPDATE system SET value=? WHERE key=?", (value, key))
+		self.update_db_timestamp()
 
+	def update_db_timestamp(self):
+		cursor = self.connection.cursor()
+		cursor.execute("UPDATE system SET value=? WHERE key=?", (sql_date(), defs.SYS_KEY_UPDATED))
+	#--- updates --------------------------------------------------------------
 
 
 
@@ -227,8 +250,9 @@ class DB(object):
 		cursor.execute(sql.CREATE_FILE_ROW, ivalues)
 		row_id = cursor.lastrowid
 
+		self.update_db_timestamp()
 		if commit:
-			self.connection.commit()
+			self.commit()
 
 		return row_id
 
@@ -253,16 +277,21 @@ class DB(object):
 	def remove_volume_files(self, volume_uuid):
 		cursor = self.connection.cursor()
 		cursor.execute(sql.REMOVE_VOLUME_FILES, (volume_uuid, ))
-		self.connection.commit()
+		self.update_db_timestamp()
+		self.commit()
+
 
 	def remove_volume(self, volume_uuid):
 		cursor = self.connection.cursor()
 		cursor.execute(sql.REMOVE_VOLUME, (volume_uuid, ))
-		self.connection.commit()
+		self.update_db_timestamp()
+		self.commit()
 
 
 	def commit(self):
+		"""выполнить коммит и сообщить всем"""
 		self.connection.commit()
+		sbus.emit(sbus.DB_COMMITTED)
 
 
 
@@ -296,10 +325,13 @@ class DB(object):
 
 
 		self.update_version()
-		self.connection.commit()
+		self.update_db_timestamp()
+		self.commit()
 
 		db_version = self.get_version()
 		log.info("тек. версия: {}".format(db_version))
+
+		sbus.emit(sbus.DB_MIGRATED)
 
 
 
