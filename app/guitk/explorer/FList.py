@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import re
+
 import tkinter
 from tkinter import ttk, PhotoImage
 
@@ -118,6 +120,7 @@ class FList(ttk.Frame):
 		self.nav_bar.reinit()
 		items = self.storage.fetch_volume_files(volume_uuid)
 
+		self.__sort_nodes(items)
 		for item in items:
 			self.__insert_file(item)
 
@@ -190,7 +193,11 @@ class FList(ttk.Frame):
 	def __insert_parent_files(self, parent_id):
 		fnodes = self.storage.fetch_parent_files(parent_id)
 
+
+		self.__sort_nodes(fnodes)
+
 		for fnode in fnodes:
+			# print(fnode.name)
 			self.__insert_file(fnode)
 
 
@@ -270,3 +277,11 @@ class FList(ttk.Frame):
 
 
 		dbus.emit(dbus.SHOW_ABOUT_FILE, fnode)
+
+
+
+
+	def __sort_nodes(self, nodes):
+		convert = lambda text: int(text) if text.isdigit() else text
+		alphanum_key = lambda key: [convert(c) for c in re.split(r'([0-9]+)', key.name)]
+		nodes.sort(key=alphanum_key)
