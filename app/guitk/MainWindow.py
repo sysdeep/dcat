@@ -5,6 +5,7 @@ import os
 import tkinter
 from tkinter import ttk
 from tkinter.filedialog import *
+from tkinter import messagebox
 
 from app.storage import get_storage
 from app.lib import dbus
@@ -21,7 +22,7 @@ from .utils import ticons
 
 
 
-
+from .Ctrl import Ctrl
 
 
 
@@ -48,7 +49,7 @@ class MainWindow(tkinter.Tk):
 
 		
 		self.storage = get_storage()
-
+		self.ctrl = Ctrl()
 
 		
 
@@ -107,6 +108,8 @@ class MainWindow(tkinter.Tk):
 		# style.configure(".", font=("Play", 12))
 
 
+
+
 		#--- открываем последний
 		self.__check_open_last()
 
@@ -130,9 +133,6 @@ class MainWindow(tkinter.Tk):
 		"""обновление информации по базе"""
 		self.db_info.set_path(self.storage.storage_path)
 		# self.db_info.set_sysinfo(self.storage.fetch_system())
-
-
-
 
 
 

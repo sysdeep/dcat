@@ -6,13 +6,15 @@ import shutil
 import time
 
 from app import log
+from app.lib import dbus
 
 from .DB import DB
 from . import sbus
 from . import finder
 from . import cache
 from . import defs
-from .export import ejson
+from .export import ejson, evolume
+
 
 
 class Storage(object):
@@ -261,8 +263,37 @@ class Storage(object):
 			log.exception("unable copy file for backup...")
 
 
-	def export_volume(self, volume_id):
-		pass
+	def export_volume(self, volume_id, export_file_path):
+		log.debug("export volume - " + volume_id)
+		log.debug("export path - " + export_file_path)
+
+		#--- sysinfo
+		sys_info = self.get_system_info()
+		sys_info["sorage_path"] = self.storage_path
+
+		#--- volume info
+		vnode = self.db.get_volume(volume_id)
+		volume_info = vnode.make_data_dict()
+
+
+		#--- files
+		files = []
+		fnodes = self.fetch_volume_files(volume_id)
+		for fnode in fnodes:
+			result = fnode.make_data_dict()
+			files.append(result)
+
+
+		result = evolume.export(sys_info, volume_info, files, export_file_path)
+		if result:
+			dbus.emit(dbus.SHOW_EXPORT_VOLUME_OK)
+		else:
+			dbus.emit(dbus.SHOW_EXPORT_VOLUME_ERR)
+
+
+
+
+
 
 	def export_db(self, file_name_path, format="json"):
 		ejson.add_db_info("qqq")

@@ -20,6 +20,10 @@ SHOW_FIND				= "show_find"					# args: None
 SHOW_SETTINGS			= "show_settings"				# args: None
 
 
+SHOW_EXPORT_VOLUME		= "show_export_volume"			# args: volume_id
+SHOW_EXPORT_VOLUME_OK	= "show_export_volume_ok"		# args: None
+SHOW_EXPORT_VOLUME_ERR	= "show_export_volume_err"		# args: None
+
 SCAN_COMPLETE			= "scan_complete"				# args: None
 
 def eon(event_name, f):

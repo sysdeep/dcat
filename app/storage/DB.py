@@ -112,6 +112,20 @@ class DB(object):
 		return result
 
 
+	def get_volume(self, volume_id):
+		"""получить данные по заданному тому"""
+		cursor = self.connection.cursor()
+		cursor.execute("SELECT * FROM volumes WHERE uuid=?", (volume_id, ))
+		row = cursor.fetchone()
+
+		if row is None:
+			return None
+
+		result = loader.make_vnode(row)
+		return result
+
+
+
 
 	# def get_files_all(self):
 	# 	cursor = self.connection.cursor()

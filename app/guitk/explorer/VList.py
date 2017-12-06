@@ -54,6 +54,7 @@ class VList(tkinter.Frame):
 		self.cmenu = tkinter.Menu(self, tearoff=0)
 		self.cmenu.add_command(label="Свойства", command=self.__show_info, image=ticons.ticon(ticons.INFO), compound="left")
 		self.cmenu.add_command(label="Удалить", command=self.__remove_volume, image=ticons.ticon(ticons.TRASH), compound="left")
+		self.cmenu.add_command(label="Экспорт", command=self.__export_volume, image=ticons.ticon(ticons.I_EXPORT), compound="left")
 		# self.cmenu.add_separator()
 		# self.cmenu.add_command(label="Закрыть", command=self.__hide_cmenu)
 
@@ -189,6 +190,15 @@ class VList(tkinter.Frame):
 
 		vnode = self.__volumes_map[self.current_volume_id]
 		dbus.emit(dbus.SHOW_ABOUT_VOLUME, vnode)
+
+
+	def __export_volume(self):
+		if self.current_volume_id is None:
+			return False
+
+		# self.storage.export_volume(self.current_volume_id)
+		dbus.emit(dbus.SHOW_EXPORT_VOLUME, self.current_volume_id)
+
 
 
 	# def __show_edit(self):
