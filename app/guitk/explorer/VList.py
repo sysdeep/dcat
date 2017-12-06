@@ -192,12 +192,16 @@ class VList(tkinter.Frame):
 		dbus.emit(dbus.SHOW_ABOUT_VOLUME, vnode)
 
 
+
+
 	def __export_volume(self):
+		"""отобразить окно экспорта заданного тома"""
 		if self.current_volume_id is None:
 			return False
 
-		# self.storage.export_volume(self.current_volume_id)
-		dbus.emit(dbus.SHOW_EXPORT_VOLUME, self.current_volume_id)
+		vnode = self.__volumes_map[self.current_volume_id]
+
+		dbus.emit(dbus.SHOW_EXPORT_VOLUME, self.current_volume_id, vnode.name)
 
 
 

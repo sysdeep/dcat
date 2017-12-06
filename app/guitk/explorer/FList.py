@@ -194,7 +194,8 @@ class FList(ttk.Frame):
 		fnodes = self.storage.fetch_parent_files(parent_id)
 
 
-		self.__sort_nodes(fnodes)
+		# self.__sort_nodes(fnodes)
+		fnodes = self.__sort_nodes(fnodes)
 
 		for fnode in fnodes:
 			# print(fnode.name)
@@ -282,6 +283,18 @@ class FList(ttk.Frame):
 
 
 	def __sort_nodes(self, nodes):
+		"""сортировка"""
+
+		dir_nodes = [fnode for fnode in nodes if fnode.is_dir()]			# каталоги
+		file_nodes = [fnode for fnode in nodes if fnode.is_file()]			# файлы
+
+
 		convert = lambda text: int(text) if text.isdigit() else text
 		alphanum_key = lambda key: [convert(c) for c in re.split(r'([0-9]+)', key.name)]
-		nodes.sort(key=alphanum_key)
+		# nodes.sort(key=alphanum_key)
+
+		dir_nodes.sort(key=alphanum_key)
+		file_nodes.sort(key=alphanum_key)
+
+		return dir_nodes + file_nodes
+

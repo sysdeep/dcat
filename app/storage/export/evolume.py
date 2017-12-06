@@ -12,6 +12,7 @@ DATA = {
 def get_default():
 	return {
 		"api"			: 1,
+		"type"			: "volume",
 		"db_info"		: {},
 		"volume_info"	: {},
 		"files"			: []

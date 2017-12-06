@@ -14,7 +14,7 @@ from . import finder
 from . import cache
 from . import defs
 from .export import ejson, evolume
-
+from .importer import ivolume
 
 
 class Storage(object):
@@ -263,6 +263,17 @@ class Storage(object):
 			log.exception("unable copy file for backup...")
 
 
+
+
+	def import_volume(self, file_path):
+		err, result = ivolume.import_volume(file_path)
+
+		if err:
+			print(result)
+		else:
+			print("import ok")
+
+
 	def export_volume(self, volume_id, export_file_path):
 		log.debug("export volume - " + volume_id)
 		log.debug("export path - " + export_file_path)
@@ -278,7 +289,7 @@ class Storage(object):
 
 		#--- files
 		files = []
-		fnodes = self.fetch_volume_files(volume_id)
+		fnodes = self.db.get_volume_all_files(volume_id)
 		for fnode in fnodes:
 			result = fnode.make_data_dict()
 			files.append(result)

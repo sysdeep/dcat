@@ -20,9 +20,15 @@ SHOW_FIND				= "show_find"					# args: None
 SHOW_SETTINGS			= "show_settings"				# args: None
 
 
-SHOW_EXPORT_VOLUME		= "show_export_volume"			# args: volume_id
+#--- export
+SHOW_EXPORT_VOLUME		= "show_export_volume"			# args: volume_id, volume_name
 SHOW_EXPORT_VOLUME_OK	= "show_export_volume_ok"		# args: None
 SHOW_EXPORT_VOLUME_ERR	= "show_export_volume_err"		# args: None
+
+#--- import
+SHOW_IMPORT_VOLUME		= "show_import_volume"			# args: None
+
+
 
 SCAN_COMPLETE			= "scan_complete"				# args: None
 

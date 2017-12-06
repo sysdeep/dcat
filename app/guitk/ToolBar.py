@@ -27,6 +27,9 @@ class ToolBar(tkinter.Frame):
 		btn_add_volume = tkinter.Button(self, text="Добавить том", command=self.__show_add_volume, image=ticons.ticon(ticons.I_ADD_ITEM), relief="flat", compound="left")
 		btn_add_volume.pack(side="left")
 
+		btn_import_volume = tkinter.Button(self, text="Импортировать том", command=self.__show_import_volume, image=ticons.ticon(ticons.I_IMPORT), relief="flat", compound="left")
+		btn_import_volume.pack(side="left")
+
 		self.btn_backup = tkinter.Button(self, text="BackUP", command=self.__create_db_backup, image=ticons.ticon(ticons.I_SAVE_AS), relief="flat", compound="left")
 		self.btn_backup.pack(side="left")
 
@@ -51,3 +54,9 @@ class ToolBar(tkinter.Frame):
 
 	def __show_add_volume(self):
 		dbus.emit(dbus.SHOW_ADD_VOLUME)
+
+
+	def __show_import_volume(self):
+		dbus.emit(dbus.SHOW_IMPORT_VOLUME)
+
+
