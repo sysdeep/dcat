@@ -35,7 +35,7 @@ ETYPE_COUNT 	= "count"					# полезная нагрузка - кол-во ф�
 
 
 def dtimeit(func):
-
+	"""декоратор для замера времени выполнения"""
 	def timed(*args, **kwargs):
 		ts = time.time()
 		result = func(*args, **kwargs)
@@ -53,6 +53,7 @@ def dtimeit(func):
 
 @dtimeit
 def get_fcount(rpath):
+	"""получить кол-во файлов для сканирования"""
 	counter = 0
 	for root, dirs, files in os.walk(rpath):
 		counter += len(dirs)
@@ -65,6 +66,7 @@ def get_fcount(rpath):
 
 
 def make_event(etype, payload=None):
+	"""создать пакет для отправки"""
 	return {
 		"etype"		: etype,
 		"payload"	: payload
