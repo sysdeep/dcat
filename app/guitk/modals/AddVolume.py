@@ -106,9 +106,26 @@ class AddVolume(tkinter.Toplevel):
 		results_frame = ttk.Frame(self.main_frame)
 		results_frame.pack(fill="x", side="top", padx=10, pady=10)
 
-		self.cur_file_operate = ttk.Label(results_frame, text="")
+		self.cur_file_operate = ttk.Label(results_frame, text="0")
 		self.cur_file_operate.pack(side="left")
 
+		ttk.Label(results_frame, text="/").pack(side="left")
+
+		self.total_files = ttk.Label(results_frame, text="0")
+		self.total_files.pack(side="left")
+		self.total_files_count = 0
+		self.current_prc = 0
+		self.current_hold = 0
+
+
+
+		self.progress_val = tkinter.IntVar()
+
+		self.progress = ttk.Progressbar(results_frame, orient='horizontal', mode='determinate', variable=self.progress_val)
+		self.progress.pack(side="left", expand=True, fill="both")
+
+		# self.progress.start(50)
+		self.progress_val.set(self.current_prc)
 
 
 		
@@ -315,10 +332,29 @@ class AddVolume(tkinter.Toplevel):
 		except:
 			pass
 		else:
-			if msg["type"] == "finish":
+			if msg["etype"] == scaner.ETYPE_START:
+				pass
+
+			elif msg["etype"] == scaner.ETYPE_FINISH:
+				self.current_prc = 100
+				self.progress_val.set(self.current_prc)
 				self.__finish_scan()
 				return True
-			else:
+			
+			elif msg["etype"] == scaner.ETYPE_ERROR:
+				pass
+			
+			elif msg["etype"] == scaner.ETYPE_COUNT:
+				self.total_files_count = msg["payload"]
+				self.total_files.config(text=str(self.total_files_count))
+				self.current_hold = self.total_files_count/100
+				self.current_prc = 0
+				self.progress_val.set(self.current_prc)
+
+
+			elif msg["etype"] == scaner.ETYPE_FILE:
+
+				file_row = msg["payload"]
 				# print("--->", msg)
 
 				#--- долгие операции - 17 сек(без них - 3 сек)
@@ -331,8 +367,15 @@ class AddVolume(tkinter.Toplevel):
 				# self.cur_file_operate.config(text=msg["name"])
 				self.cur_file_operate.config(text=self.files_counter)
 
-				msg["volume_id"] = self.volume_id
-				self.storage.create_file_row(msg)
+				file_row["volume_id"] = self.volume_id
+				self.storage.create_file_row(file_row)
+
+
+				self.current_prc = int(self.files_counter / self.current_hold)
+				self.progress_val.set(self.current_prc)
+
+			else:
+				print("ERROR!!!!!!!!")
 
 		self.after(1, self.__start_chan_reader)		
 
