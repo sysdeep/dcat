@@ -1,18 +1,41 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+	scaner - сканирование заданной директории в потоке
+	в процессе выполнения шлёт данные в очередь
+
+	для windows - проблема с правами - пока отключено
+"""
 
 import os
 import time
 import uuid
 
-from app.storage import FType, make_frow
+from app.lib.tools import dtimeit
+from app.storage import FType
+from app import log
 
+from .models import make_frow
+
+
+
+#--- user perms ---------------------------------------------------------------
 # from pwd import getpwuid, getpwall
 # from grp import getgrgid, getgrall
 
+# USERS = {}
+# GROUPS = {}
 
-USERS = {}
-GROUPS = {}
+# for item in getpwall():
+#	USERS[item.pw_uid] = item.pw_name
+
+# for item in getgrall():
+#	GROUPS[item.gr_gid] = item.gr_name
+#--- user perms ---------------------------------------------------------------
+
+
+
+
 
 
 #--- типы пакетов, отправляемых в канал
@@ -21,30 +44,9 @@ ETYPE_FINISH	= "finish"					# завершение
 ETYPE_ERROR 	= "error"					# ошибка
 ETYPE_FILE 		= "file"					# полезная нагрузка в виде файла
 ETYPE_COUNT 	= "count"					# полезная нагрузка - кол-во файлов для сканирования
-# ETYPE_PCR 		= "pcr"
 
 
 
-
-# for item in getpwall():
-#	USERS[item.pw_uid] = item.pw_name
-
-# for item in getgrall():
-#	GROUPS[item.gr_gid] = item.gr_name
-
-
-
-def dtimeit(func):
-	"""декоратор для замера времени выполнения"""
-	def timed(*args, **kwargs):
-		ts = time.time()
-		result = func(*args, **kwargs)
-		te = time.time()
-
-		print("timeit: ", te - ts)
-		return result
-
-	return timed
 
 
 
@@ -76,34 +78,22 @@ def make_event(etype, payload=None):
 
 @dtimeit
 def start_scan(dir_path, chan):
-	print("start_scan")
+	log.info("запуск сканирования каталога")
 
 	chan.put(make_event(ETYPE_START))
 
 
 	files_count = get_fcount(dir_path)
+	log.info("кол-во файлов: " + str(files_count))
 	chan.put(make_event(ETYPE_COUNT, files_count))
 
 
-	# f_holder = int(files_count / 100)
-	# print("f_holder:", f_holder)
-
 	# # print(getpwall())
 
-	# # return False
 
 
-	# volume_name = os.path.basename(self.volume_path)
-	# volume_id = str(uuid.uuid4())
-	# print("volume_name: ", volume_name)
-	# vdata = {
-	# 	"name": volume_name,
-	# 	"uuid": volume_id
-	# }
-	
-	# self.storage.create_volume_row(vdata)
 
-
+	#--- карта - path : id
 	rmap = {
 		# volume_path    : "0"
 		dir_path		: "0"
@@ -111,122 +101,60 @@ def start_scan(dir_path, chan):
 
 
 
-	# current_holder = 0
-
-	# parent = "0"
 	for root, dirs, files in os.walk(dir_path):
-		
-		parent = rmap[root]
+
+
+		#--- id родителя
+		parent_id = rmap[root]
 
 
 		
-
+		#--- каталоги
 		for d in dirs:
-			fpath = os.path.join(root, d)
-			rid = str(uuid.uuid4())
-			rmap[fpath] = rid
-			
 
-			full_path = os.path.join(root, d)
-			if not os.path.exists(full_path):
+
+			full_path = os.path.join(root, d)				# полный путь
+			if not os.path.exists(full_path):				# если нет - продолжаем...
 				continue
 
-			st = os.stat(full_path)
+			rid = str(uuid.uuid4())							# id
+			rmap[full_path] = rid							# сохраняем полный путь и id для получения id родителя
 
-			row = make_frow()
-			# row["volume_id"] = volume_id
+			st = os.stat(full_path)							# статистика по файлу
+
+			row = make_frow(rid, d, parent_id, FType.DIR, st)
 			row["root"]	= root
-			row["uuid"] = rid
-			row["parent_id"] = parent
-			row["name"] = d
-			row["type"] = FType.DIR
-			row["size"] = st.st_size
-			row["ctime"] = st.st_ctime
-			row["atime"] = st.st_atime
-			row["mtime"] = st.st_mtime
-			# row["rights"] = oct(st.st_mode & 777)
-			row["rights"] = st.st_mode
 
-			row["owner"] = st.st_uid
-			row["group"] = st.st_gid
-			#row["owner"] = USERS[st.st_uid]
-			#row["group"] = GROUPS[st.st_gid]
 
-			# self.storage.create_file_row(row)
-			# chan.put(row)
 			chan.put(make_event(ETYPE_FILE, row))
-			# time.sleep(0.1)
-
-			# current_holder += 1
-			# if current_holder > f_holder:
-			# 	current_holder = 0
-			# 	chan.put(make_event(ETYPE_PCR))
 
 
+
+
+		#--- файлы
 		for f in files:
-			fpath = os.path.join(root, f)
-			rid = str(uuid.uuid4())
-			
+
 			full_path = os.path.join(root, f)
 			if not os.path.exists(full_path):
 				continue
 
+			rid = str(uuid.uuid4())
+
 			st = os.stat(full_path)
 
-			row = make_frow()
-			# row["volume_id"] = volume_id
+			row = make_frow(rid, f, parent_id, FType.FILE, st)
+
 			row["root"]	= root
-			row["uuid"] = rid
-			row["parent_id"] = parent
-			row["name"] = f
-			row["type"] = FType.FILE
-			row["size"] = st.st_size
-			row["ctime"] = st.st_ctime
-			row["atime"] = st.st_atime
-			row["mtime"] = st.st_mtime
-			row["rights"] = st.st_mode
 
-			row["owner"] = st.st_uid
-			row["group"] = st.st_gid
-			#row["owner"] = USERS[st.st_uid]
-			#row["group"] = GROUPS[st.st_gid]
-
-			# self.storage.create_file_row(row)
-
-			# print(row)
-			# chan.put(row)
 			chan.put(make_event(ETYPE_FILE, row))
-			# time.sleep(0.1)
-
-			# current_holder += 1
-			# if current_holder > f_holder:
-			# 	current_holder = 0
-			# 	chan.put(make_event(ETYPE_PCR))
 
 
-
+		#--- очищаем карту...
 		del rmap[root] 
 
-		# break
-	# self.storage.commit()
-	
-	#--- !!! windows error
-	#  File "G:\_Wrk\_Python\_DCat\DCat\app\logic\scaner.py", line 135, in start_scan
-	#
-	# 	print(rmap)
-	#	File "g:\Python35\lib\encodings\cp866.py", line 19, in encode
-    #	return codecs.charmap_encode(input,self.errors,encoding_map)[0]
-	#	UnicodeEncodeError: 'charmap' codec can't encode character '\xeb' in position 10
-	#	89: character maps to <undefined>
-	
-	
-	# print(rmap)
 
 
-	# row = {
-	# 	"type"	: "finish"
-	# }
-	# chan.put(row)
+	log.info("сканирование завершено")
 	chan.put(make_event(ETYPE_FINISH))
 
 
