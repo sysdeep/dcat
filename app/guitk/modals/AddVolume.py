@@ -102,29 +102,36 @@ class AddVolume(tkinter.Toplevel):
 		# print(edit_frame.grid_size())
 
 
-
+		#--- результат сканирования
 		results_frame = ttk.Frame(self.main_frame)
 		results_frame.pack(fill="x", side="top", padx=10, pady=10)
 
+		#- тек. файл
 		self.cur_file_operate = ttk.Label(results_frame, text="0")
 		self.cur_file_operate.pack(side="left")
 
+		#- разделитель
 		ttk.Label(results_frame, text="/").pack(side="left")
 
+		#- общее кол-во файлов
 		self.total_files = ttk.Label(results_frame, text="0")
 		self.total_files.pack(side="left")
 		self.total_files_count = 0
-		self.current_prc = 0
-		self.current_hold = 0
 
 
+
+
+		#- прогресс
+		self.current_prc = 0						# тек. процент
+		self.current_hold = 0						# коэффициент пересчёта
 
 		self.progress_val = tkinter.IntVar()
 
 		self.progress = ttk.Progressbar(results_frame, orient='horizontal', mode='determinate', variable=self.progress_val)
 		self.progress.pack(side="left", expand=True, fill="both")
 
-		# self.progress.start(50)
+		# self.progress.config(mode="indeterminate")
+		# self.progress.start(30)
 		self.progress_val.set(self.current_prc)
 
 
@@ -326,16 +333,28 @@ class AddVolume(tkinter.Toplevel):
 
 
 	def __start_chan_reader(self):
+		"""
+			чтение из очереди
+
+		"""
 		# log.info("запуск канала чтения потока")
+
+		#--- читаем из очереди в неблокирующем режиме
 		try:
 			msg = self.chan.get(block=False)
 		except:
 			pass
 		else:
-			if msg["etype"] == scaner.ETYPE_START:
-				pass
 
-			elif msg["etype"] == scaner.ETYPE_FINISH:
+			if msg["etype"] == scaner.ETYPE_START:					# запуск
+				#--- задаём тип прогресс бара(бегающий) и запускаем анимацию
+				self.progress.config(mode="indeterminate")
+				self.progress.start(30)
+
+
+			elif msg["etype"] == scaner.ETYPE_FINISH:				# окончание
+
+
 				self.current_prc = 100
 				self.progress_val.set(self.current_prc)
 				self.__finish_scan()
@@ -344,15 +363,22 @@ class AddVolume(tkinter.Toplevel):
 			elif msg["etype"] == scaner.ETYPE_ERROR:
 				pass
 			
-			elif msg["etype"] == scaner.ETYPE_COUNT:
+			elif msg["etype"] == scaner.ETYPE_COUNT:				# кол-во файлов для сканирования
+				#--- меняем тип прогресс бара и останавливаем пред. анимацию
+				self.progress.stop()
+				self.progress.config(mode="determinate")
+
+				#--- отображаем кол-во файлов
 				self.total_files_count = msg["payload"]
 				self.total_files.config(text=str(self.total_files_count))
+
+				#--- расчитываем коэффициент пересчёта в проценты и обнуляем прогресс бар
 				self.current_hold = self.total_files_count/100
 				self.current_prc = 0
 				self.progress_val.set(self.current_prc)
 
 
-			elif msg["etype"] == scaner.ETYPE_FILE:
+			elif msg["etype"] == scaner.ETYPE_FILE:					# запись файла
 
 				file_row = msg["payload"]
 				# print("--->", msg)
@@ -365,12 +391,13 @@ class AddVolume(tkinter.Toplevel):
 				self.files_counter += 1
 
 				# self.cur_file_operate.config(text=msg["name"])
+				#--- тек. обрабатываемый файл
 				self.cur_file_operate.config(text=self.files_counter)
 
 				file_row["volume_id"] = self.volume_id
 				self.storage.create_file_row(file_row)
 
-
+				#--- отображаем процесс
 				self.current_prc = int(self.files_counter / self.current_hold)
 				self.progress_val.set(self.current_prc)
 
