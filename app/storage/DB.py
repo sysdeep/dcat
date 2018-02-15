@@ -69,6 +69,12 @@ class DB(object):
 		self.commit()
 
 
+	def vacuum(self):
+		"""уплотнение базы"""
+		self.cursor = self.connection.cursor()
+		self.cursor.execute("VACUUM")
+		self.commit()
+
 
 	def get_version(self):
 		cursor = self.connection.cursor()

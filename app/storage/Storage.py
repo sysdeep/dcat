@@ -321,6 +321,11 @@ class Storage(object):
 
 
 		ejson.make(file_name_path)
+
+
+	def vacuum(self):
+		"""уплотнение базы"""
+		self.db.vacuum()
 	#--- сервис ---------------------------------------------------------------
 
 

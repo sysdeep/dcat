@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+	модал с информацией о базе
+"""
 import os
 import tkinter
 from tkinter import ttk
@@ -65,7 +68,9 @@ class AboutBase(tkinter.Toplevel):
 
 
 		ttk.Button(controls_frame, text="Закрыть(Ctrl+w)", command=self.destroy, image=ticons.ticon(ticons.CLOSE), compound="left").pack(side="right")
+
 		ttk.Button(controls_frame, text="Сохранить", command=self.__do_save, image=ticons.ticon(ticons.SAVE), compound="left").pack(side="left")
+		ttk.Button(controls_frame, text="Уплотнить", command=self.do_vacuum, image=ticons.ticon(ticons.I_BOOKMARK), compound="left").pack(side="left")
 
 		self.bind_all("<Control-w>", lambda e: self.destroy())
 
@@ -78,11 +83,11 @@ class AboutBase(tkinter.Toplevel):
 
 	def __load(self):
 		"""загрузить данные"""
-		self.label_path.config(text=self.storage.storage_path)
 
-		st = os.stat(self.storage.storage_path)
-		size = naturalsize(st.st_size)
-		self.label_size.config(text=size)
+		if self.storage.is_open:
+			self.label_path.config(text=self.storage.storage_path)
+
+			self.__update_size()
 
 		self.label_version.config(text=self.storage.get_system_value(defs.SYS_KEY_VERSION))
 		self.label_created.config(text=self.storage.get_system_value(defs.SYS_KEY_CREATED))
@@ -119,7 +124,22 @@ class AboutBase(tkinter.Toplevel):
 
 
 
+	def do_vacuum(self):
+		"""уплотнить базу"""
 
+		if self.storage.is_open:
+			self.storage.vacuum()				# уплотняем
+			self.__update_size()				# обновляем инфо о размере
+
+		else:
+			print("storage not open")
+
+
+	def __update_size(self):
+		"""обновить информацию о размере базы"""
+		st = os.stat(self.storage.storage_path)
+		size = naturalsize(st.st_size)
+		self.label_size.config(text=size)
 
 
 
