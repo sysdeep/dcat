@@ -27,8 +27,8 @@ SHOW_EXPORT_VOLUME_OK	= "show_export_volume_ok"		# args: None
 SHOW_EXPORT_VOLUME_ERR	= "show_export_volume_err"		# args: None
 
 SHOW_EXPORT_FTREE 		= "show_export_ftree"			# args: fnode 	-
-SHOW_REMOVE_FTREE		= "show_remove_ftree"			# args: fnode 	-
-SHOW_REMOVE_FTREE_OK	= "show_remove_ftree_ok"		# args: None
+# SHOW_REMOVE_FTREE		= "show_remove_ftree"			# args: fnode 	-
+# SHOW_REMOVE_FTREE_OK	= "show_remove_ftree_ok"		# args: None
 
 
 #--- import

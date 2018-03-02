@@ -22,7 +22,7 @@ class Ctrl(object):
 
 
 		dbus.eon(dbus.SHOW_EXPORT_FTREE, self.show_export_ftree)
-		dbus.eon(dbus.SHOW_REMOVE_FTREE, self.show_remove_ftree)
+		# dbus.eon(dbus.SHOW_REMOVE_FTREE, self.show_remove_ftree)
 
 
 	def __on_show_export_volume(self, volume_id, volume_name):
@@ -78,25 +78,25 @@ class Ctrl(object):
 
 
 
-	def show_remove_ftree(self, fnode):
-		"""запрос удаления ветви файлов"""
-
-
-		result = messagebox.askyesno("Подтверждение удаления", "Удалить выбранный элемент?")
-		if result is False:
-			return False
-
-		storage = get_storage()
-
-		#--- удаляем заданный
-		storage.remove_file(fnode.uuid)
-
-		#--- удаляем все вложенные элементы
-		for item in storage.fetch_parent_files_all(fnode.uuid):
-			storage.remove_file(item.uuid)
-
-		#--- сохраняем изменения
-		storage.commit()
-
-		#--- сообщение об окончании
-		dbus.emit(dbus.SHOW_REMOVE_FTREE_OK)
+	# def show_remove_ftree(self, fnode):
+	# 	"""запрос удаления ветви файлов"""
+	#
+	#
+	# 	result = messagebox.askyesno("Подтверждение удаления", "Удалить выбранный элемент?")
+	# 	if result is False:
+	# 		return False
+	#
+	# 	storage = get_storage()
+	#
+	# 	#--- удаляем заданный
+	# 	storage.remove_file(fnode.uuid)
+	#
+	# 	#--- удаляем все вложенные элементы
+	# 	for item in storage.fetch_parent_files_all(fnode.uuid):
+	# 		storage.remove_file(item.uuid)
+	#
+	# 	#--- сохраняем изменения
+	# 	storage.commit()
+	#
+	# 	#--- сообщение об окончании
+	# 	dbus.emit(dbus.SHOW_REMOVE_FTREE_OK)

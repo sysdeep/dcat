@@ -212,6 +212,14 @@ class Storage(object):
 		self.db.remove_file(file_uuid, commit)
 		return True
 
+
+	def remove_files(self, files_uuid_list):
+		if not self.is_open:
+			return False
+
+		self.db.remove_files(files_uuid_list)
+		return True
+
 	#--- удаление элементов ---------------------------------------------------
 
 

@@ -4,9 +4,10 @@
 import re
 
 import tkinter
-from tkinter import ttk, PhotoImage
+from tkinter import ttk
+from tkinter import messagebox
 
-from app.storage import get_storage, VRow, FRow, FType
+from app.storage import get_storage
 from app.lib import dbus
 from app.lib.fsize import naturalsize
 from ..utils import conv, ticons
@@ -96,7 +97,7 @@ class FList(ttk.Frame):
 		self.litems = {}
 
 
-		dbus.eon(dbus.SHOW_REMOVE_FTREE_OK, self.__on_ftree_removed)
+		# dbus.eon(dbus.SHOW_REMOVE_FTREE_OK, self.__on_ftree_removed)
 
 
 
@@ -238,12 +239,6 @@ class FList(ttk.Frame):
 
 
 
-	#--- bus events -----------------------------------------------------------
-	def __on_ftree_removed(self):
-		"""событие об удалении ветви"""
-
-		self.update_view()
-	#--- bus events -----------------------------------------------------------
 
 
 
@@ -369,7 +364,44 @@ class FList(ttk.Frame):
 		if fnode is None:
 			return False
 
-		dbus.emit(dbus.SHOW_REMOVE_FTREE, fnode)
+
+
+
+		result = messagebox.askyesno("Подтверждение удаления", "Удалить выбранный элемент?")
+		if result is False:
+			return False
+
+
+		#--- удаляем заданный
+		self.storage.remove_file(fnode.uuid)
+		print("removed: ", fnode.name)
+
+		#--- удаляем все вложенные элементы
+		for item in self.storage.fetch_parent_files_all(fnode.uuid):
+			self.storage.remove_file(item.uuid)
+			print("removed: ", item.name)
+
+		#--- тестирование удаления одним махом списка удаляемых(время примерно такоеже...)
+		# ritems = [(fnode.uuid,)]
+		# # self.storage.remove_file(fnode.uuid)
+		# # print("removed: ", fnode.name)
+		#
+		# #--- удаляем все вложенные элементы
+		# for item in self.storage.fetch_parent_files_all(fnode.uuid):
+		# 	# self.storage.remove_file(item.uuid)
+		# 	# print("removed: ", item.name)
+		# 	ritems.append( (item.uuid,) )
+		#
+		# self.storage.remove_files(ritems)
+
+		#--- сохраняем изменения
+		self.storage.commit()
+
+		self.update_view()
+
+
+
+		# dbus.emit(dbus.SHOW_REMOVE_FTREE, fnode)
 	#--- cmenu actions --------------------------------------------------------
 
 
@@ -377,6 +409,12 @@ class FList(ttk.Frame):
 
 
 
+	#--- bus events -----------------------------------------------------------
+	# def __on_ftree_removed(self):
+	# 	"""событие об удалении ветви"""
+	#
+	# 	self.update_view()
+	#--- bus events -----------------------------------------------------------
 
 
 

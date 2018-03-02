@@ -37,6 +37,8 @@ class DB(object):
 		# self.connection = sqlite3.connect(self.db_path, row_factory=sqlite3.Row)
 		self.connection.row_factory = sqlite3.Row
 
+		self.cursor = self.connection.cursor()
+
 
 	def open_db(self, db_path):
 		
@@ -160,6 +162,14 @@ class DB(object):
 
 	def get_parent_files(self, parent_id):
 		"""получить список файлов для заданной директории"""
+		# # cursor = self.connection.cursor()
+		# self.cursor.execute(sql.GET_PARENT_FILES, (parent_id, ))
+		# rows = self.cursor.fetchall()
+		# # result = make_fnodes(rows)
+		# result = loader.make_fnodes(rows)
+		# return result
+
+
 		cursor = self.connection.cursor()
 		cursor.execute(sql.GET_PARENT_FILES, (parent_id, ))
 		rows = cursor.fetchall()
@@ -310,11 +320,18 @@ class DB(object):
 
 	def remove_file(self, file_uuid, commit=False):
 		"""удаление заданной записи файла"""
+
 		cursor = self.connection.cursor()
 		cursor.execute("DELETE FROM files WHERE uuid=?", (file_uuid, ))
 
 		if commit:
+			print("commit file")
 			self.commit()
+
+
+	def remove_files(self, files_uuid_list):
+		cursor = self.connection.cursor()
+		cursor.executemany("DELETE FROM files WHERE uuid=?", files_uuid_list)
 
 
 	def commit(self):
