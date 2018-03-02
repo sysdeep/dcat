@@ -77,21 +77,136 @@ class FList(ttk.Frame):
 
 		self.cmenu = tkinter.Menu(self, tearoff=0)
 		self.cmenu.add_command(label="Свойства", command=self.__show_info, image=ticons.ticon(ticons.INFO), compound="left")
+		self.cmenu.add_command(label="Экспорт", command=self.__show_export, image=ticons.ticon(ticons.I_EXPORT), compound="left")
+		self.cmenu.add_command(label="Удалить", command=self.__show_remove, image=ticons.ticon(ticons.TRASH), compound="left")
 		# self.cmenu.add_command(label="Изменить", command=self.__show_edit, image=self.__icon_menu_edit, compound="left")
 
 
+		#--- хранилище
 		self.storage = get_storage()
 
 
-		#
-		
-		self.current_volume = None
-		# self.current_fnode = None
+
+		#--- тек. объекты тома и папки
+		self.current_vnode = None
+		self.current_fnode = None
 
 
-		self.litems = {}				# список загруженных нод
-		self.open_cb = None
-		self.select_cb = None
+		#--- карта загруженных нод для поиска при событиях от дерева
+		self.litems = {}
+
+
+		dbus.eon(dbus.SHOW_REMOVE_FTREE_OK, self.__on_ftree_removed)
+
+
+
+
+
+
+
+
+	#--- public ---------------------------------------------------------------
+	def show_volume(self, vnode):
+		"""отобразить содержимое тома"""
+
+		self.current_vnode = vnode
+		self.current_fnode = None
+
+		self.nav_bar.reinit()					# обновление панели навигации
+
+		self.update_view()						# перестройка вида
+
+
+	def show_folder(self, fnode):
+		"""отобразить содержимое папки"""
+
+		self.current_fnode = fnode
+
+		self.update_view()						# перестройка вида
+
+
+	def clear(self):
+		"""запрос очистки содержимого"""
+		self.__clear()
+
+	#--- public ---------------------------------------------------------------
+
+
+
+
+
+	#--- view controls --------------------------------------------------------
+	def update_view(self):
+		"""обновление списка отображаемых элементов"""
+
+		#--- очистка
+		self.__clear()
+
+
+		if self.current_fnode:			# если отображался каталог
+			self.__show_folder_items()
+		else:							# иначе том
+			self.__show_volume_items()
+
+
+
+	def __show_volume_items(self):
+		"""отобразить строки тома"""
+
+		items = self.storage.fetch_volume_files(self.current_vnode.uuid)
+		self.__sort_nodes(items)
+		for item in items:
+			self.__insert_file(item)
+
+
+	def __show_folder_items(self):
+		"""отобразить строки папки"""
+
+		items = self.storage.fetch_parent_files(self.current_fnode.uuid)
+
+		# fnodes = self.__sort_nodes(fnodes)
+		self.__sort_nodes(items)
+
+		for item in items:
+			self.__insert_file(item)
+
+
+
+
+	def __clear(self):
+		"""очистка содержимого таблицы"""
+		for row in self.__tree.get_children():
+			self.__tree.delete(row)
+
+		self.litems = {}
+
+
+
+	def __insert_file(self, fnode):
+		"""добавление строки в дерево"""
+
+		if fnode.is_dir():								# папка
+			icon = ticons.ficon(ticons.F_FOLDER)
+			size = ""
+		else:											# файл
+			icon = ticons.ficon(ticons.F_EMPTY)
+			size = naturalsize(fnode.size)
+
+		ivalues = (
+				size,
+				# file_row[FRow.RIGHTS],
+				# file_row[FRow.OWNER],
+				# file_row[FRow.GROUP],
+				conv.convert_ctime(fnode.ctime),
+				# conv.convert_ctime(file_row[FRow.ATIME]),
+				# conv.convert_ctime(file_row[FRow.MTIME]),
+			)
+
+
+		self.__tree.insert("", 'end', fnode.uuid, text=fnode.name, tags=("simple", ), image=icon, values=ivalues)
+
+		#--- создаём карту нод
+		self.litems[fnode.uuid] = fnode
 
 
 
@@ -107,38 +222,7 @@ class FList(ttk.Frame):
 			# self.cmenu.post(e.x_root, e.y_root)
 			self.cmenu.tk_popup(e.x_root, e.y_root)					# автозакрытие при потере фокуса(https://stackoverflow.com/questions/21200516/python3-tkinter-popup-menu-not-closing-automatically-when-clicking-elsewhere)
 
-
-
-
-	def clear(self):
-		self.__clear()
-
-
-	def update_volume(self, volume_uuid):
-		self.current_volume = volume_uuid
-		self.__clear()
-		self.nav_bar.reinit()
-		items = self.storage.fetch_volume_files(volume_uuid)
-
-		self.__sort_nodes(items)
-		for item in items:
-			self.__insert_file(item)
-
-
-
-
-	def update_folder(self, folder_uuid):
-		self.__clear()
-		self.__insert_parent_files(folder_uuid)
-
-
-
-	# def set_open_cb(self, cb):
-	# 	self.open_cb = cb
-
-
-	def set_select_cb(self, cb):
-		self.select_cb = cb
+	#--- view controls --------------------------------------------------------
 
 
 
@@ -146,12 +230,41 @@ class FList(ttk.Frame):
 
 
 
+
+
+
+
+
+
+
+
+	#--- bus events -----------------------------------------------------------
+	def __on_ftree_removed(self):
+		"""событие об удалении ветви"""
+
+		self.update_view()
+	#--- bus events -----------------------------------------------------------
+
+
+
+
+
+
+
+
+	#--- navbar events --------------------------------------------------------
 	def __go_root(self):
-		self.update_volume(self.current_volume)
+		"""перейти в корень тома"""
+		self.show_volume(self.current_vnode)
 
-	def __go_history(self, fnode_uuid):
-		self.update_folder(fnode_uuid)
+	def __go_history(self, fnode):
+		"""перейти в корень заданного каталога"""
+		self.show_folder(fnode)
+	#--- navbar events --------------------------------------------------------
 
+
+
+	
 
 
 
@@ -159,125 +272,116 @@ class FList(ttk.Frame):
 
 
 
-	
-
-	def __insert_file(self, fnode):
-
-		if fnode.is_dir():
-			ftype = "dir"
-			icon = ticons.ficon(ticons.F_FOLDER)
-			size = ""
-		else:
-			ftype = "file"
-			icon = ticons.ficon(ticons.F_EMPTY)
-			size = naturalsize(fnode.size)
-
-
-		ivalues = (
-				size,
-				# file_row[FRow.RIGHTS],
-				# file_row[FRow.OWNER],
-				# file_row[FRow.GROUP],
-				conv.convert_ctime(fnode.ctime),
-				# conv.convert_ctime(file_row[FRow.ATIME]),
-				# conv.convert_ctime(file_row[FRow.MTIME]),
-			)
-
-		
-		self.__tree.insert("", 'end', fnode.uuid, text=fnode.name, tags=("simple", ), image=icon, values=ivalues)
-
-		self.litems[fnode.uuid] = fnode
 
 
 
-	def __insert_parent_files(self, parent_id):
-		fnodes = self.storage.fetch_parent_files(parent_id)
 
 
-		# self.__sort_nodes(fnodes)
-		fnodes = self.__sort_nodes(fnodes)
-
-		for fnode in fnodes:
-			# print(fnode.name)
-			self.__insert_file(fnode)
 
 
-	
-		
 
-	
-	def __update_list(self, fnode):
 
-		if fnode.is_dir():
-			self.__clear()
-			self.__insert_parent_files(fnode.uuid)
-			return False
+	#--- tree events ----------------------------------------------------------
+
+	def __get_selected_fnode(self):
+		"""получить объект fnode из выбора виджета дерева"""
+		selection = self.__tree.selection()
+		if len(selection) == 0:
+			return None
+
+		selected_item = self.__tree.selection()[0]
+		fnode = self.litems[selected_item]
+
+		return fnode
 
 
 
 
 
 	def __select_row(self, e):
-		selection = self.__tree.selection()
-		if len(selection) == 0:
-			return False
-		
-		
-
-		selected_item = self.__tree.selection()[0]
-		fnode = self.litems[selected_item]
-
-		if self.select_cb:
-			self.select_cb(fnode)
-
-
-
+		"""выбор файла - пока пусто(использовался для оперативного отображения информации о ноде)"""
+		# fnode = self.__get_selected_fnode()
+		pass
 
 
 	def __open_row(self, e):
-		selection = self.__tree.selection()
-		if len(selection) == 0:
-			return False
+		"""открытие папки"""
 
-		selected_item = self.__tree.selection()[0]
-		fnode = self.litems[selected_item]
+		fnode = self.__get_selected_fnode()
+
+		if fnode is None:
+			return False
 
 		if fnode.is_file():
 			return False
 
-		self.__update_list(fnode)
-		
-		self.nav_bar.history_push(fnode)
+		self.show_folder(fnode)								# отображаем папку
+		self.nav_bar.history_push(fnode)					# обновляем панель навигации
 
-
+	#--- tree events ----------------------------------------------------------
 	
 
 
 
 
 
-	def __clear(self):
-		for row in self.__tree.get_children():
-			self.__tree.delete(row)
-
-
-		self.litems = {}
 
 
 
 
+
+
+
+
+
+
+	#--- cmenu actions --------------------------------------------------------
 	def __show_info(self):
-		selection = self.__tree.selection()
-		if len(selection) == 0:
+		"""отобразить информацию о ноде"""
+		fnode = self.__get_selected_fnode()
+
+		if fnode is None:
 			return False
 
-
-
-		selected_item = self.__tree.selection()[0]
-		fnode = self.litems[selected_item]
-
-
 		dbus.emit(dbus.SHOW_ABOUT_FILE, fnode)
+
+
+
+	def __show_export(self):
+		"""
+			экспорт заданного поддерева
+			TODO: не завершено...
+		"""
+
+		fnode = self.__get_selected_fnode()
+
+		if fnode is None:
+			return False
+
+		dbus.emit(dbus.SHOW_EXPORT_FTREE, fnode)
+
+
+
+	def __show_remove(self):
+		"""удаление элемента или ветви"""
+		fnode = self.__get_selected_fnode()
+
+		if fnode is None:
+			return False
+
+		dbus.emit(dbus.SHOW_REMOVE_FTREE, fnode)
+	#--- cmenu actions --------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
 
 
 

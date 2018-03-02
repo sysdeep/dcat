@@ -139,14 +139,29 @@ class Storage(object):
 
 
 	def fetch_parent_files(self, parent_id):
-		log.debug("fetch files")
+		"""получить список вложенных файлов 1 уровня для заданного родителя"""
 		if not self.is_open:
 			return []
 
 		files = self.db.get_parent_files(parent_id)
 		return files
 
+	def fetch_parent_files_all(self, parent_id):
+		"""
+			получить список вложенных файлов всех уровней для заданного родителя
+			:arg
+				parent_id [uuid]
+			:return
+				iterator[fnode]
+		"""
 
+		childrens = self.fetch_parent_files(parent_id)
+
+		for c in childrens:
+			yield c
+
+		for c in childrens:
+			yield from self.fetch_parent_files_all(c.uuid)
 
 
 
@@ -187,6 +202,16 @@ class Storage(object):
 		self.db.remove_volume(volume_uuid)
 
 		return True
+
+
+	def remove_file(self, file_uuid, commit=False):
+		"""удаление заданной записи файла"""
+		if not self.is_open:
+			return False
+
+		self.db.remove_file(file_uuid, commit)
+		return True
+
 	#--- удаление элементов ---------------------------------------------------
 
 

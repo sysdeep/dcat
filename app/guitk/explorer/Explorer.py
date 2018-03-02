@@ -34,8 +34,7 @@ class Explorer(tkinter.Frame):
 
 		self.f_list = FList(self)
 		self.f_list.pack(side="right", expand=True, fill="both")
-		self.f_list.set_select_cb(self.__on_select_frow)
-		# self.f_list.set_open_cb(self.__on_open_frow)
+
 
 		# self.info_frame = InfoFrame(self, width=500, height=500)
 		# self.info_frame.pack(side="right", expand=True, fill="both")
@@ -69,8 +68,8 @@ class Explorer(tkinter.Frame):
 	#--- volume actions -------------------------------------------------------
 	def __on_select_volume(self, vnode):
 		self.current_vnode = vnode
-		self.f_list.update_volume(self.current_vnode.uuid)
-		# self.info_frame.update_volume(self.current_vnode)
+		# self.f_list.update_volume(self.current_vnode.uuid)
+		self.f_list.show_volume(self.current_vnode)
 
 
 
@@ -82,15 +81,6 @@ class Explorer(tkinter.Frame):
 
 
 
-
-
-
-
-
-
-	def __on_select_frow(self, fnode):
-		pass
-		# self.info_frame.update_file(fnode)
 
 
 

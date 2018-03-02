@@ -308,8 +308,18 @@ class DB(object):
 		self.commit()
 
 
+	def remove_file(self, file_uuid, commit=False):
+		"""удаление заданной записи файла"""
+		cursor = self.connection.cursor()
+		cursor.execute("DELETE FROM files WHERE uuid=?", (file_uuid, ))
+
+		if commit:
+			self.commit()
+
+
 	def commit(self):
 		"""выполнить коммит и сообщить всем"""
+		self.update_db_timestamp()
 		self.connection.commit()
 		sbus.emit(sbus.DB_COMMITTED)
 

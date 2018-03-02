@@ -75,7 +75,8 @@ class NavBar(tkinter.Frame):
 		fnode = self.history_splice(x)
 
 		if self.cb_go:
-			self.cb_go(fnode.uuid)
+			# self.cb_go(fnode.uuid)
+			self.cb_go(fnode)
 
 
 	def __go_back(self):
@@ -88,7 +89,8 @@ class NavBar(tkinter.Frame):
 
 		fnode = self.history_last()
 		if self.cb_go:
-			self.cb_go(fnode.uuid)
+			# self.cb_go(fnode.uuid)
+			self.cb_go(fnode)
 
 
 	def __go_root(self):

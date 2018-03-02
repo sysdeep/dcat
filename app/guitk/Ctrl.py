@@ -21,6 +21,9 @@ class Ctrl(object):
 		dbus.eon(dbus.SHOW_IMPORT_VOLUME, self.__on_show_import_volume)
 
 
+		dbus.eon(dbus.SHOW_EXPORT_FTREE, self.show_export_ftree)
+		dbus.eon(dbus.SHOW_REMOVE_FTREE, self.show_remove_ftree)
+
 
 	def __on_show_export_volume(self, volume_id, volume_name):
 		"""запрос на сохранение экспорта тома"""
@@ -58,3 +61,39 @@ class Ctrl(object):
 		# if import_file_path:
 		# 	storage = get_storage()
 		# 	storage.import_volume(import_file_path)
+
+
+
+	def show_export_ftree(self, fnode):
+		"""запрос на сохранение экспорта ветви дерева"""
+
+
+		items = [fnode]
+		storage = get_storage()
+		for item in storage.fetch_parent_files_all(fnode.uuid):
+			items.append(item)
+
+
+		print(len(items))
+
+
+
+	def show_remove_ftree(self, fnode):
+		"""запрос удаления ветви файлов"""
+
+
+		result = messagebox.askyesno("Подтверждение удаления", "Удалить выбранный элемент?")
+		if result is False:
+			return False
+
+		storage = get_storage()
+
+		#--- удаляем заданный
+		storage.remove_file(fnode.uuid)
+
+		#--- удаляем все вложенные элементы
+		for item in storage.fetch_parent_files_all(fnode.uuid):
+			storage.remove_file(item.uuid)
+
+		#--- сообщение об окончании
+		dbus.emit(dbus.SHOW_REMOVE_FTREE_OK)
