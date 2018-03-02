@@ -5,6 +5,7 @@ from app.lib import dbus
 
 from . import AddVolume, AboutFile, AboutVolume, AboutBase, Find
 from .settings.Settings import Settings
+from .DataBases import DataBases
 
 class ModalsCtrl(object):
 	def __init__(self, main_win):
@@ -16,6 +17,7 @@ class ModalsCtrl(object):
 		dbus.eon(dbus.SHOW_ABOUT_BASE, self.show_about_base)
 		dbus.eon(dbus.SHOW_FIND, self.show_find)
 		dbus.eon(dbus.SHOW_SETTINGS, self.show_settings)
+		dbus.eon(dbus.SHOW_DATABASES, self.show_databases)
 
 
 	def show_about_volume(self, vnode):
@@ -35,4 +37,8 @@ class ModalsCtrl(object):
 
 	def show_settings(self):
 		Settings(master=self.main_win)
+
+
+	def show_databases(self):
+		DataBases(master=self.main_win)
 

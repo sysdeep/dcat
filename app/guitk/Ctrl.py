@@ -95,5 +95,8 @@ class Ctrl(object):
 		for item in storage.fetch_parent_files_all(fnode.uuid):
 			storage.remove_file(item.uuid)
 
+		#--- сохраняем изменения
+		storage.commit()
+
 		#--- сообщение об окончании
 		dbus.emit(dbus.SHOW_REMOVE_FTREE_OK)

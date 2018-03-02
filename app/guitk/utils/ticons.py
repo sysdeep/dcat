@@ -23,6 +23,7 @@ I_FIND = "i_find"
 I_BOOKMARK = "i_bookmark"
 I_EXPORT = "i_export"
 I_IMPORT = "i_import"
+I_FOLDER_HOME = "i_folder_home"
 
 
 ALIACES = {
@@ -42,7 +43,8 @@ ALIACES = {
 	I_FIND			: "find.png",
 	I_BOOKMARK		: "bookmark.png",
 	I_EXPORT		: "export.png",
-	I_IMPORT		: "import.png"
+	I_IMPORT		: "import.png",
+	I_FOLDER_HOME	: "folder_home.png"
 }
 
 

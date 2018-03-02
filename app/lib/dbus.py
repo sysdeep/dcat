@@ -10,7 +10,7 @@ DATA = {
 }
 
 
-#--- events consts
+#--- actions
 SHOW_ABOUT_VOLUME 		= "show_about_volume"			# args: vnode
 SHOW_ABOUT_FILE 		= "show_about_file"				# args: fnode
 SHOW_ABOUT_BASE 		= "show_about_base"				# args: None
@@ -18,6 +18,7 @@ SHOW_ABOUT_BASE 		= "show_about_base"				# args: None
 SHOW_ADD_VOLUME			= "show_add_volume"				# args: None
 SHOW_FIND				= "show_find"					# args: None
 SHOW_SETTINGS			= "show_settings"				# args: None
+SHOW_DATABASES			= "show_databases"				# args: None
 
 
 #--- export
@@ -35,7 +36,28 @@ SHOW_IMPORT_VOLUME		= "show_import_volume"			# args: None
 
 
 
+REQUEST_OPEN_DB			= "request_open_db"				# args: db_path - событие для MainWindow - открыть заданную базу
+
+
+
+#---
 SCAN_COMPLETE			= "scan_complete"				# args: None
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 def eon(event_name, f):
 	DATA["emitter"].eon(event_name, f)

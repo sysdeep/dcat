@@ -45,6 +45,9 @@ class DBInfo(ttk.Frame):
 		#--- dbinfo
 		ttk.Button(self, text="Info", image=ticons.ticon(ticons.INFO), compound="left", command=self.__show_info).pack(side="right", padx=5)
 
+		#--- show databases
+		ttk.Button(self, text="DBs", image=ticons.ticon(ticons.I_FOLDER_HOME), compound="left", command=self.__show_dbs).pack(side="right", padx=5)
+
 
 
 
@@ -82,3 +85,5 @@ class DBInfo(ttk.Frame):
 	def __show_info(self):
 		dbus.emit(dbus.SHOW_ABOUT_BASE)
 
+	def __show_dbs(self):
+		dbus.emit(dbus.SHOW_DATABASES)

@@ -77,7 +77,7 @@ class FList(ttk.Frame):
 
 		self.cmenu = tkinter.Menu(self, tearoff=0)
 		self.cmenu.add_command(label="Свойства", command=self.__show_info, image=ticons.ticon(ticons.INFO), compound="left")
-		self.cmenu.add_command(label="Экспорт", command=self.__show_export, image=ticons.ticon(ticons.I_EXPORT), compound="left")
+		# self.cmenu.add_command(label="Экспорт", command=self.__show_export, image=ticons.ticon(ticons.I_EXPORT), compound="left")
 		self.cmenu.add_command(label="Удалить", command=self.__show_remove, image=ticons.ticon(ticons.TRASH), compound="left")
 		# self.cmenu.add_command(label="Изменить", command=self.__show_edit, image=self.__icon_menu_edit, compound="left")
 

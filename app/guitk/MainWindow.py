@@ -55,7 +55,7 @@ class MainWindow(tkinter.Tk):
 
 		#--- menu
 		self.menu_bar = BarMenu(self)
-		self.menu_bar.add_last_files(self.usettings.data["lastbases"])
+		# self.menu_bar.add_last_files(self.usettings.data["lastbases"])
 		self.menu_bar.cb_show_open			= self.__on_show_open_db
 		self.menu_bar.cb_show_create 		= self.__on_create_db
 		self.menu_bar.cb_open_last 			= self.__on_open_db
@@ -108,11 +108,15 @@ class MainWindow(tkinter.Tk):
 		# style.configure(".", font=("Play", 12))
 
 
+		#--- проверяем и обновляем список открывавшихся баз
+		self.usettings.check_bases_exists()
 
 
 		#--- открываем последний
 		self.__check_open_last()
 
+
+		dbus.eon(dbus.REQUEST_OPEN_DB, self.__on_open_exist_db)				# открытие заданной базы
 
 
 	def __check_open_last(self):
@@ -152,6 +156,16 @@ class MainWindow(tkinter.Tk):
 			self.__update_title(db_path)
 
 
+
+	def __on_open_exist_db(self, db_path):
+		"""запрос на открытие базы по заданному пути при выборе уже созданной базы из списка"""
+
+		self.storage.close_storage()
+		self.storage.open_storage(db_path)
+
+		self.explorer_frame.refresh()
+		self.__update_db_info()
+		self.__update_title(db_path)
 
 
 
@@ -205,7 +219,7 @@ class MainWindow(tkinter.Tk):
 
 
 	def act_db_backup(self):
-		self.storage.create_current_backup();
+		self.storage.create_current_backup()
 
 
 	def act_exit(self):

@@ -109,6 +109,23 @@ class USettings(object):
 
 
 
+
+	def check_bases_exists(self):
+		"""проверка на существование баз в истории"""
+		dbs = []
+		need_update = False
+		for item in self.data["lastbases"]:
+			if os.path.exists(item):
+				dbs.append(item)
+			else:
+				need_update = True
+
+		self.data["lastbases"] = dbs
+
+		#--- если одна из баз не существует - тогда обновляем конфиг
+		if need_update:
+			self.save()
+
 	
 
 if __name__ == "__main__":

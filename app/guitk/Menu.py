@@ -45,8 +45,10 @@ class BarMenu():
 		self.menu = Menu(self.parent, relief="flat")
 		self.parent.config(menu=self.menu)
 
-		self.last_menu = Menu(self.menu, tearoff=0)
+		# self.last_menu = Menu(self.menu, tearoff=0)
 
+
+		#--- file
 		file_menu = Menu(self.menu, tearoff=0)
 		# self.menu.add_cascade(label="Файл", menu=file_menu, accelerator="Ctrl+f")
 		self.menu.add_cascade(label="Файл", menu=file_menu)
@@ -56,17 +58,16 @@ class BarMenu():
 		file_menu.add_separator()
 		file_menu.add_command(label="Добавить том", command=self.__show_add_volume, image=ticons.ticon(ticons.I_ADD_ITEM), compound="left")
 		file_menu.add_separator()
-		file_menu.add_cascade(label="Last", menu=self.last_menu, image=ticons.ticon(ticons.I_BOOKMARK), compound="left")
-		file_menu.add_separator()
+		# file_menu.add_cascade(label="Last", menu=self.last_menu, image=ticons.ticon(ticons.I_BOOKMARK), compound="left")
+		# file_menu.add_separator()
 		file_menu.add_command(label="Выход", command=self.__c_exit, compound="left", accelerator="Ctrl+q", image=ticons.ticon(ticons.CLOSE))
 
 
-		# settings_menu = Menu(self.menu, tearoff=0)
-		# self.menu.add_cascade(label="Настройки", menu=settings_menu)
-		# settings_menu.add_command(label="Стиль", command=self.__show_style)
+		#--- settings
 		self.menu.add_command(label="Настройки", command=self.__show_settings)
 
 
+		#--- help
 		help_menu = Menu(self.menu, tearoff=0)
 		self.menu.add_cascade(label="Помощь", menu=help_menu)
 
@@ -74,10 +75,10 @@ class BarMenu():
 
 
 
-
-	def add_last_files(self, last_array):
-		for item in last_array:
-			self.last_menu.add_command(label=item, command=lambda x=item: self.__open_last(x))
+	#
+	# def add_last_files(self, last_array):
+	# 	for item in last_array:
+	# 		self.last_menu.add_command(label=item, command=lambda x=item: self.__open_last(x))
 
 
 
@@ -117,9 +118,7 @@ class BarMenu():
 
 
 	def __c_exit(self):
-		print("exit")
 		self.parent.quit()
-		# main_ee.emit("exit")
 
 
 
