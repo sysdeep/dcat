@@ -17,7 +17,7 @@ FILE_DB_TEST = os.path.normpath(os.path.join(DIR_SELF, "..", "..", "simple.db"))
 
 
 
-VERSION = "1.0.0"
+VERSION = "1.0.1"
 ABOUT_NAME = "DCat"
 ABOUT_AUTHOR_NAME = "nia"
 ABOUT_AUTHOR_EMAIL = "sysdeep@yandex.ru"
