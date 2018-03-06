@@ -65,71 +65,78 @@ def make_frow(name, ftype, st):
 
 
 
-
-xroot = etree.Element("catalog", {"name": "catalog1", "description": "catalog description"})
-# description = etree.SubElement(xroot, "description")
-# description.text = "catalog description"
-# volumes = etree.SubElement(xroot, "volumes")
-volume = etree.SubElement(xroot, "volume", {"name": "volume1", "description": "volume description"})
-
-rmap = {
-	SCAN_PATH	: volume
-}
+def start(scan_path, db_file, volume_name):
 
 
 
-for root, dirs, files in os.walk(SCAN_PATH):
+	xroot = etree.Element("catalog", {"name": volume_name, "description": "catalog description"})
+	# description = etree.SubElement(xroot, "description")
+	# description.text = "catalog description"
+	# volumes = etree.SubElement(xroot, "volumes")
+	volume = etree.SubElement(xroot, "volume", {"name": volume_name, "description": "volume description"})
+
+	rmap = {
+		scan_path	: volume
+	}
 
 
 
-	x_el = rmap.get(root)
-
-
-	for dir in dirs:
-		full_path = os.path.join(root, dir)				# полный путь
-		if not os.path.exists(full_path):				# если нет - продолжаем...
-			continue
-
-		st = os.stat(full_path)							# статистика по файлу
-
-		row = make_frow(dir, "d", st)
-
-		# node = etree.SubElement(x_el, "node", {"name": dir, "type": "d"})
-		node = etree.SubElement(x_el, "node", row)
-
-		dir_path = os.path.join(root, dir)
-
-		rmap[dir_path] = node
+	for root, dirs, files in os.walk(scan_path):
 
 
 
-	for f in files:
-		full_path = os.path.join(root, f)				# полный путь
-		if not os.path.exists(full_path):				# если нет - продолжаем...
-			continue
-
-		st = os.stat(full_path)							# статистика по файлу
-
-		row = make_frow(f, "f", st)
-
-		etree.SubElement(x_el, "node", row)
-		# etree.SubElement(x_el, "node", {"name": f, "type": "f"})
+		x_el = rmap.get(root)
 
 
+		for dir in dirs:
+			full_path = os.path.join(root, dir)				# полный путь
+			if not os.path.exists(full_path):				# если нет - продолжаем...
+				continue
 
-	del rmap[root]
+			st = os.stat(full_path)							# статистика по файлу
+
+			row = make_frow(dir, "d", st)
+
+			# node = etree.SubElement(x_el, "node", {"name": dir, "type": "d"})
+			node = etree.SubElement(x_el, "node", row)
+
+			dir_path = os.path.join(root, dir)
+
+			rmap[dir_path] = node
+
+
+
+		for f in files:
+			full_path = os.path.join(root, f)				# полный путь
+			if not os.path.exists(full_path):				# если нет - продолжаем...
+				continue
+
+			st = os.stat(full_path)							# статистика по файлу
+
+			row = make_frow(f, "f", st)
+
+			etree.SubElement(x_el, "node", row)
+			# etree.SubElement(x_el, "node", {"name": f, "type": "f"})
+
+
+
+		del rmap[root]
 
 
 
 
-with gzip.open(GFILE, "wb") as fd:
-	fd.write(etree.tostring(xroot, encoding="utf-8"))
+	with gzip.open(db_file, "wb") as fd:
+		fd.write(etree.tostring(xroot, encoding="utf-8"))
 
 
-#
-#
-#
-# with open(XFILE, "wb") as fd:
-# 	fd.write(etree.tostring(xroot, encoding="utf-8"))
-#
+	# with gzip.open(GFILE, "wb") as fd:
+	# 	fd.write(etree.tostring(xroot, encoding="utf-8"))
+
+
+	#
+	#
+	#
+	# with open(XFILE, "wb") as fd:
+	# 	fd.write(etree.tostring(xroot, encoding="utf-8"))
+	#
 

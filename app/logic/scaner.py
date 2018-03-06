@@ -168,6 +168,88 @@ def start_scan(dir_path, chan):
 
 
 
+def start_scan_for_storage(dir_path, storage, vol_id):
+	"""!!! для тестов с прямой записью в базу"""
+
+
+	#--- карта - path : id
+	rmap = {
+		dir_path		: "0"
+	}
+
+
+
+	for root, dirs, files in os.walk(dir_path):
+
+
+		#--- id родителя
+		parent_id = rmap[root]
+
+
+
+		#--- каталоги
+		for d in dirs:
+
+
+			full_path = os.path.join(root, d)				# полный путь
+			if not os.path.exists(full_path):				# если нет - продолжаем...
+				continue
+
+			rid = str(uuid.uuid4())							# id
+			rmap[full_path] = rid							# сохраняем полный путь и id для получения id родителя
+
+			st = os.stat(full_path)							# статистика по файлу
+
+			row = make_frow(rid, d, parent_id, FType.DIR, st)
+			row["root"]	= root
+			row["volume_id"]	= vol_id
+
+			storage.create_file_row(row)
+
+
+			# chan.put(make_event(ETYPE_FILE, row))
+
+
+
+
+		#--- файлы
+		for f in files:
+
+			full_path = os.path.join(root, f)
+			if not os.path.exists(full_path):
+				continue
+
+			rid = str(uuid.uuid4())
+
+			st = os.stat(full_path)
+
+			row = make_frow(rid, f, parent_id, FType.FILE, st)
+
+			row["root"]	= root
+
+			row["volume_id"]	= vol_id
+			# chan.put(make_event(ETYPE_FILE, row))
+
+			storage.create_file_row(row)
+
+
+		#--- очищаем карту...
+		del rmap[root]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
