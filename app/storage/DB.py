@@ -237,7 +237,16 @@ class DB(object):
 		)
 		cursor = self.connection.cursor()
 		cursor.execute("UPDATE volumes SET name=?, vtype=?, description=?, updated=? WHERE uuid=?", ivalues)
-		self.update_db_timestamp()
+
+
+		if commit:
+			self.commit()
+
+
+	def update_file_description(self, file_uuid, description, commit=False):
+		"""обновление описания файла"""
+		cursor = self.connection.cursor()
+		cursor.execute("UPDATE files SET description=? WHERE uuid=?", (description, file_uuid))
 
 		if commit:
 			self.commit()
@@ -341,9 +350,9 @@ class DB(object):
 			self.commit()
 
 
-	def remove_files(self, files_uuid_list):
-		cursor = self.connection.cursor()
-		cursor.executemany("DELETE FROM files WHERE uuid=?", files_uuid_list)
+	# def remove_files(self, files_uuid_list):
+	# 	cursor = self.connection.cursor()
+	# 	cursor.executemany("DELETE FROM files WHERE uuid=?", files_uuid_list)
 
 
 	def commit(self):

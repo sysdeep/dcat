@@ -12,7 +12,7 @@ DATA = {
 
 #--- actions
 SHOW_ABOUT_VOLUME 		= "show_about_volume"			# args: vnode
-SHOW_ABOUT_FILE 		= "show_about_file"				# args: fnode
+# SHOW_ABOUT_FILE 		= "show_about_file"				# args: fnode			2018.03.06 - removed(modal in flist)
 SHOW_ABOUT_BASE 		= "show_about_base"				# args: None
 # SHOW_EDIT_VOLUME 		= "show_edit_volume"			# args: vnode
 SHOW_ADD_VOLUME			= "show_add_volume"				# args: None

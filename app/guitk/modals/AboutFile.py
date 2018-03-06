@@ -36,6 +36,7 @@ class AboutFile(tkinter.Toplevel):
 		self.minsize(400, 300)
 
 		self.fnode = fnode
+		self.cb_updated = None
 
 
 		self.main_frame = ttk.Frame(self, padding=10)
@@ -61,10 +62,34 @@ class AboutFile(tkinter.Toplevel):
 			irow.vkey.grid(row=i, column=1, sticky="w")
 
 
+
+
+
+
+		#--- edit description field
+		frame_description = ttk.Frame(self.main_frame, padding=5)
+		frame_description.pack(side="top", expand=True, fill="both")
+
+
+		ttk.Label(frame_description, text="описание").pack(fill="x", side="top")
+		self.description = tkinter.Text(frame_description, height=6, width=20)
+		self.description.pack(side="left", fill="both", expand=True)
+
+		#- vertical scroll
+		ysb = ttk.Scrollbar(frame_description, orient="vertical", command=self.description.yview)
+		self.description['yscroll'] = ysb.set
+		ysb.pack(side="right", expand=False, fill="y")
+
+
+
+
+		#--- controls
 		controls_frame = ttk.Frame(self.main_frame)
 		controls_frame.pack(fill="both", side="bottom", padx=5, pady=5)
 
 		ttk.Button(controls_frame, text="Закрыть(Ctrl+w)", command=self.destroy, image=ticons.ticon(ticons.CLOSE), compound="left").pack(side="right")
+
+		ttk.Button(controls_frame, text="Сохранить", command=self.__do_save, image=ticons.ticon(ticons.SAVE), compound="left").pack(side="left")
 
 		self.bind_all("<Control-w>", lambda e: self.destroy())
 
@@ -104,6 +129,7 @@ class AboutFile(tkinter.Toplevel):
 
 			irow.update(value)
 
+		self.description.insert(tkinter.END, fnode.description)
 
 
 	def __find_volume_name(self, volume_id):
@@ -121,9 +147,16 @@ class AboutFile(tkinter.Toplevel):
 
 
 
+	def __do_save(self):
+		"""сохранить изменения"""
+		description = self.description.get(1.0, tkinter.END)
 
+		storage = get_storage()
 
+		storage.update_file_description(self.fnode.uuid, description, commit=True)
 
+		if self.cb_updated:
+			self.cb_updated()
 
 
 

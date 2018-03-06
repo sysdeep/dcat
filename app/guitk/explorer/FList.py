@@ -14,6 +14,7 @@ from ..utils import conv, ticons
 
 from .LNode import LNode
 from .NavBar import NavBar
+from ..modals.AboutFile import AboutFile
 
 
 
@@ -91,6 +92,9 @@ class FList(ttk.Frame):
 		#--- тек. объекты тома и папки
 		self.current_vnode = None
 		self.current_fnode = None
+
+
+		self.modal_about = None
 
 
 		#--- карта загруженных нод для поиска при событиях от дерева
@@ -338,7 +342,12 @@ class FList(ttk.Frame):
 		if fnode is None:
 			return False
 
-		dbus.emit(dbus.SHOW_ABOUT_FILE, fnode)
+		self.modal_about = AboutFile(fnode, master=self)
+		self.modal_about.cb_updated = self.__on_file_updated
+
+
+
+
 
 
 
@@ -371,41 +380,6 @@ class FList(ttk.Frame):
 		if result is False:
 			return False
 
-		# @tools.dtimeit
-		# def get_all_branch_gen(fnode):
-		# 	"""
-		# 		2.68
-		# 		index - 0.10822153091430664
-		# 	"""
-		# 	print("get branch gen")
-		# 	for item in self.storage.fetch_parent_files_all(fnode.uuid):
-		# 		self.storage.remove_file(item.uuid)
-		# 		# print("removed: ", item.name)
-		#
-		#
-		#
-		#
-		# @tools.dtimeit
-		# def get_all_branch_rec(fnode):
-		# 	"""
-		# 		2.27
-		# 		index - 0.06787323951721191
-		# 	"""
-		# 	print("get branch rec")
-		# 	def qqq(fnode):
-		#
-		# 		self.storage.remove_file(fnode.uuid)
-		# 		files = self.storage.fetch_parent_files(fnode.uuid)
-		#
-		# 		for f in files:
-		# 			qqq(f)
-		#
-		# 	qqq(fnode)
-		#
-		# get_all_branch_gen(fnode)
-		# # get_all_branch_rec(fnode)
-
-
 
 		#--- удаляем заданный
 		self.storage.remove_file(fnode.uuid)
@@ -418,21 +392,6 @@ class FList(ttk.Frame):
 
 
 
-
-
-		#--- тестирование удаления одним махом списка удаляемых(время примерно такоеже...)
-		# ritems = [(fnode.uuid,)]
-		# # self.storage.remove_file(fnode.uuid)
-		# # print("removed: ", fnode.name)
-		#
-		# #--- удаляем все вложенные элементы
-		# for item in self.storage.fetch_parent_files_all(fnode.uuid):
-		# 	# self.storage.remove_file(item.uuid)
-		# 	# print("removed: ", item.name)
-		# 	ritems.append( (item.uuid,) )
-		#
-		# self.storage.remove_files(ritems)
-
 		#--- сохраняем изменения
 		self.storage.commit()
 
@@ -441,6 +400,11 @@ class FList(ttk.Frame):
 
 
 		# dbus.emit(dbus.SHOW_REMOVE_FTREE, fnode)
+
+
+
+
+
 	#--- cmenu actions --------------------------------------------------------
 
 
@@ -457,7 +421,13 @@ class FList(ttk.Frame):
 
 
 
-
+	#--- events ---------------------------------------------------------------
+	def __on_file_updated(self):
+		"""событие от модального окна файла об обновлении"""
+		self.update_view()
+		self.modal_about.destroy()
+		self.modal_about = None
+	#--- events ---------------------------------------------------------------
 
 
 

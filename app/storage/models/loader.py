@@ -17,6 +17,7 @@ def make_fnode(file_data):
 	fnode.size = file_data["size"]
 	fnode.ctime = file_data["ctime"]
 	fnode.ftype = file_data["type"]
+	fnode.description = file_data["description"]
 	return fnode
 
 

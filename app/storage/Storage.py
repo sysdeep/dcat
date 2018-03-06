@@ -213,12 +213,12 @@ class Storage(object):
 		return True
 
 
-	def remove_files(self, files_uuid_list):
-		if not self.is_open:
-			return False
-
-		self.db.remove_files(files_uuid_list)
-		return True
+	# def remove_files(self, files_uuid_list):
+	# 	if not self.is_open:
+	# 		return False
+	#
+	# 	self.db.remove_files(files_uuid_list)
+	# 	return True
 
 	#--- удаление элементов ---------------------------------------------------
 
@@ -260,6 +260,10 @@ class Storage(object):
 		system_data = cache.get_system()
 		system_data[key] = value
 		cache.set_system(system_data)
+
+	def update_file_description(self, file_uuid, description, commit=False):
+		self.db.update_file_description(file_uuid, description, commit)
+
 	#--- обновление элементов -------------------------------------------------
 
 
