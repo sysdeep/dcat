@@ -8,7 +8,7 @@ from tkinter import ttk
 from tkinter import messagebox
 
 from app.storage import get_storage
-from app.lib import dbus, tools
+from app.lib import dbus, tools, strings
 from app.lib.fsize import naturalsize
 from ..utils import conv, ticons
 
@@ -32,9 +32,16 @@ class FList(ttk.Frame):
 
 		self.__sort_dir = False
 
+
+
+		# tree_frame = ttk.Frame(self)
+		# tree_frame.pack(side="bottom", expand=True, fill="both")
+
+
 		columns=('size', 
 			# 'rights', "owner", "group", 
-			"ctime", 
+			"ctime",
+			# "description",
 			# "atime", "mtime"
 			)
 		self.__tree = ttk.Treeview(self, show="tree headings", selectmode='browse', columns=columns)
@@ -44,6 +51,7 @@ class FList(ttk.Frame):
 		# self.__tree.heading("owner", text="Владелец")
 		# self.__tree.heading("group", text="Группа")
 		self.__tree.heading("ctime", text="Создание")
+		# self.__tree.heading("description", text="Описание")
 		# self.__tree.heading("atime", text="Доступ")
 		# self.__tree.heading("mtime", text="Модификация")
 		self.__tree.heading('#0', text='Название')
@@ -54,6 +62,7 @@ class FList(ttk.Frame):
 		# self.__tree.column("owner", minwidth=80, width=80)
 		# self.__tree.column("group", minwidth=80, width=80)
 		self.__tree.column("ctime", minwidth=200, width=200)
+		# self.__tree.column("description", minwidth=200, width=200, stretch=False)
 		# self.__tree.column("atime", minwidth=90, width=90)
 		# self.__tree.column("mtime", minwidth=100, width=100)
 
@@ -61,13 +70,24 @@ class FList(ttk.Frame):
 		# for c in columns:
 		# 	self.__tree.heading(c, text=c, command=lambda c=c: self.__sort(c))
 
+
+		# #--- horizontal scroll
+		# xsb = ttk.Scrollbar(self, orient="horizontal", command= self.__tree.xview)
+		# self.__tree['xscroll'] = xsb.set
+		# xsb.pack(side="bottom", expand=False, fill="x")
+
 		self.__tree.pack(side="left", expand=True, fill="both")
 
 
 		#--- vertical scroll
 		ysb = ttk.Scrollbar(self, orient="vertical", command= self.__tree.yview)
 		self.__tree['yscroll'] = ysb.set
-		ysb.pack(side="right", expand=False, fill="y")
+		ysb.pack(side="right", expand=False, fill="y", anchor="e")
+
+
+
+
+
 
 		self.__tree.column("#0", width=300)
 		self.__tree.tag_bind("simple", "<<TreeviewSelect>>", self.__select_row)
@@ -203,6 +223,7 @@ class FList(ttk.Frame):
 				# file_row[FRow.OWNER],
 				# file_row[FRow.GROUP],
 				conv.convert_ctime(fnode.ctime),
+				# strings.cut_text(fnode.description, 15)
 				# conv.convert_ctime(file_row[FRow.ATIME]),
 				# conv.convert_ctime(file_row[FRow.MTIME]),
 			)
