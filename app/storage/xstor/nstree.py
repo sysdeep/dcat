@@ -16,6 +16,7 @@ class NSNode(object):
 
 
 
+
 class NSTree(object):
 
 	def __init__(self):
@@ -31,6 +32,7 @@ class NSTree(object):
 		self.root.tree_rk 		= 1
 		self.root.tree_level 	= 0
 		self.root.name 			= "root"
+		self.nodes.append(self.root)
 
 
 
@@ -52,16 +54,38 @@ class NSTree(object):
 		parent_rk = parent_node.tree_rk
 		# parent_lk = parent_node.tree_lk
 
-		#--- 1 - update after
-		for node in self.nodes:
-			if node.tree_lk > parent_rk:
-				node.tree_lk += 2
-				node.tree_rk += 2
 
-		#--- 2 - update parent
+
+
+		#--- 6319 files - 4.95996880531311
+		#--- 3536 files - 1.379138708114624
+
+		#--- 1 - update after
+		# UPDATE my_tree SET node.tree_lk = node.tree_lk + 2, node.tree_rk = node.tree_rk + 2 WHERE node.tree_lk > parent_rk
+		# for node in self.nodes:
+		# 	if node.tree_lk > parent_rk:
+		# 		node.tree_lk += 2
+		# 		node.tree_rk += 2
+		#
+		# #--- 2 - update parent
+		# # UPDATE my_tree SET right_key = right_key + 2 WHERE right_key >= $right_key AND left_key < $right_key
+		# for node in self.nodes:
+		# 	if node.tree_rk >= parent_rk and node.tree_lk < parent_rk:
+		# 		node.tree_rk += 2
+
+
+
+		#--- 6319 files - 2.702838897705078
+		#--- 3536 files - 0.7530725002288818
+
+		# UPDATE my_tree SET right_key = right_key + 2, left_key = IF(left_key > $right_key, left_key + 2, left_key) WHERE right_key >= $right_key
+
 		for node in self.nodes:
-			if node.tree_rk >= parent_rk and node.tree_lk < parent_rk:
+			if node.tree_rk >= parent_rk:
 				node.tree_rk += 2
+				if node.tree_lk > parent_rk:
+					node.tree_lk += 2
+
 
 		#--- 3 - add node
 		new_node.tree_level = parent_node.tree_level + 1
@@ -104,3 +128,12 @@ class NSTree(object):
 
 
 		return del_nodes
+
+
+
+	def print_tree(self):
+		nodes = sorted(self.nodes, key=lambda node: node.tree_lk)
+
+		for n in nodes:
+			intd = "\t"*n.tree_level
+			print("{} {} - lk: {}, rk: {}".format(intd, n.name, n.tree_lk, n.tree_rk))

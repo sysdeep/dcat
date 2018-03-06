@@ -65,6 +65,6 @@ def make_sql():
 
 
 
-make_xml()
-# make_sql()
+# make_xml()
+make_sql()
 

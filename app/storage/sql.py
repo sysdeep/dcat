@@ -71,6 +71,11 @@ CREATE_FILE_ROW = """
 """
 
 
+CREATE_FILES_INDEX_UUID = """CREATE INDEX `uuid_index` ON `files` (`uuid` ASC);"""
+CREATE_FILES_INDEX_PARENT_ID = """CREATE INDEX `parent_id_index` ON `files` (`parent_id` ASC);"""
+
+
+
 GET_VOLUMES = """
     SELECT * FROM volumes;
 """

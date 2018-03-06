@@ -8,7 +8,7 @@ from tkinter import ttk
 from tkinter import messagebox
 
 from app.storage import get_storage
-from app.lib import dbus
+from app.lib import dbus, tools
 from app.lib.fsize import naturalsize
 from ..utils import conv, ticons
 
@@ -371,15 +371,54 @@ class FList(ttk.Frame):
 		if result is False:
 			return False
 
+		# @tools.dtimeit
+		# def get_all_branch_gen(fnode):
+		# 	"""
+		# 		2.68
+		# 		index - 0.10822153091430664
+		# 	"""
+		# 	print("get branch gen")
+		# 	for item in self.storage.fetch_parent_files_all(fnode.uuid):
+		# 		self.storage.remove_file(item.uuid)
+		# 		# print("removed: ", item.name)
+		#
+		#
+		#
+		#
+		# @tools.dtimeit
+		# def get_all_branch_rec(fnode):
+		# 	"""
+		# 		2.27
+		# 		index - 0.06787323951721191
+		# 	"""
+		# 	print("get branch rec")
+		# 	def qqq(fnode):
+		#
+		# 		self.storage.remove_file(fnode.uuid)
+		# 		files = self.storage.fetch_parent_files(fnode.uuid)
+		#
+		# 		for f in files:
+		# 			qqq(f)
+		#
+		# 	qqq(fnode)
+		#
+		# get_all_branch_gen(fnode)
+		# # get_all_branch_rec(fnode)
+
+
 
 		#--- удаляем заданный
 		self.storage.remove_file(fnode.uuid)
-		print("removed: ", fnode.name)
+		# print("removed: ", fnode.name)
 
 		#--- удаляем все вложенные элементы
 		for item in self.storage.fetch_parent_files_all(fnode.uuid):
 			self.storage.remove_file(item.uuid)
-			print("removed: ", item.name)
+			# print("removed: ", item.name)
+
+
+
+
 
 		#--- тестирование удаления одним махом списка удаляемых(время примерно такоеже...)
 		# ritems = [(fnode.uuid,)]

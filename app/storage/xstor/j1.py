@@ -5,6 +5,9 @@ import time
 from .nstree import NSTree
 
 SCAN_PATH = "/home/nia/Documents/_Comcon"
+SCAN_PATH = "/home/nia/Development/_Python/_DCat/sdir"
+SCAN_PATH = "/home/nia/Development/_Python/_DCat"
+SCAN_PATH = "/home/nia/Documents/_Comcon"
 
 
 
@@ -64,6 +67,8 @@ def start(scan_path, db_file, volume_name):
 
 		del rmap[root]
 
+	# print(tree.nodes)
+	# tree.print_tree()
 	print(len(tree.nodes))
 
 

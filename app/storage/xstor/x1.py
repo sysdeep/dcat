@@ -3,6 +3,7 @@
 
 import os
 import gzip
+import uuid
 import xml.etree.ElementTree as etree
 
 SCAN_PATH = "/mnt/backup"
@@ -43,7 +44,7 @@ def make_frow(name, ftype, st):
 	item = {
 
 
-		# "uuid": uid,
+		"id": str(uuid.uuid4()),
 		"name": name,
 		"type": ftype,
 

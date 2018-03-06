@@ -1,11 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
 
+	версии базы:
+		2 - system + дата обновления, volumes + дата обновления
+		3 - system + descriptions, volumes + descriptions
+		4 - добавлены индексы к uuid и parent_id для fales
+"""
 import sqlite3
 import time
 
 from app import log
 from app.lib.fdate import sql_date
+from app.lib import tools
 
 from . import migrations
 from . import sql
@@ -16,7 +23,7 @@ from . import sbus
 
 
 #--- BD module version
-VERSION = "3"
+VERSION = "4"
 
 
 
@@ -68,6 +75,11 @@ class DB(object):
 		self.cursor.execute(sql.CREATE_TIMESTAMP_CREATED, (sql_date(),))
 		self.cursor.execute(sql.CREATE_TIMESTAMP_UPDATED, (sql_date(),))
 		self.cursor.execute(sql.CREATE_SYSTEM_DESCRIPTION, ("init",))
+		self.cursor.execute(sql.CREATE_FILES_INDEX_UUID)
+		self.cursor.execute(sql.CREATE_FILES_INDEX_PARENT_ID)
+
+
+
 		self.commit()
 
 
@@ -159,7 +171,7 @@ class DB(object):
 		result = loader.make_fnodes(rows)
 		return result
 
-
+	# @tools.dtimeit
 	def get_parent_files(self, parent_id):
 		"""получить список файлов для заданной директории"""
 		# # cursor = self.connection.cursor()
@@ -361,8 +373,18 @@ class DB(object):
 		if db_version == "1.0":
 			migration_steps.append(migrations.up1_to_2)
 			migration_steps.append(migrations.up2_to_3)
+			migration_steps.append(migrations.up3_to_4)
+
 		elif db_version == "2":
 			migration_steps.append(migrations.up2_to_3)
+			migration_steps.append(migrations.up3_to_4)
+
+		elif db_version == "3":
+			migration_steps.append(migrations.up3_to_4)
+
+		else:
+			log.warning("не найдены инструкции для миграции на новую версию базы")
+			return False
 
 
 
