@@ -21,3 +21,10 @@ class Explorer(QWidget):
 
 		self.main_layout.addWidget(self.volumes_list)
 		self.main_layout.addWidget(self.files_list)
+
+
+
+	def refresh(self):
+		print("need...")
+		# self.f_list.clear()
+		# self.v_list.reload_volumes()

@@ -9,6 +9,9 @@ from PyQt5.QtGui import QFontDatabase
 from PyQt5.QtCore import QTimer, pyqtSignal
 
 
+from app import shared
+from app.storage import get_storage
+
 from .MainMenu import MainMenu
 from .MainToolBar import MainToolBar
 from .explorer import Explorer
@@ -69,6 +72,20 @@ class MainWindow(QMainWindow):
 		self.init_gui()
 
 
+		self.storage = get_storage()
+
+		self.usettings = shared.get_usettings()
+
+		# --- проверяем и обновляем список открывавшихся баз
+		self.usettings.check_bases_exists()
+
+		# --- открываем последний
+		self.__check_open_last()
+
+
+
+
+
 
 	def init_gui(self):
 		"""построение интерфейса"""
@@ -112,9 +129,39 @@ class MainWindow(QMainWindow):
 		self.show()
 
 
-	def init_central_gui(self):
-		#--- mnemo bar
-		self.setCentralWidget(self.mnemo)
+	def __check_open_last(self):
+		#--- если в настройках флаг открывать последний
+		is_open_last = self.usettings.data["open_last"]
+		if is_open_last == 0:
+			return False
+
+		last = self.usettings.get_last_base()
+
+		if last:
+			self.__on_open_db(last)
+
+
+
+
+	def __on_open_db(self, db_path):
+		"""запрос на открытие базы по заданному пути"""
+
+		# #--- проверка существования базы
+		# if not os.path.exists(db_path):
+		# 	self.usettings.remove_last(db_path)
+		# 	return False
+
+		self.storage.close_storage()
+		self.storage.open_storage(db_path)
+
+		self.explorer.refresh()
+		# self.__update_db_info()
+		#
+		# self.usettings.update_last_base(db_path)
+		# self.__update_title(db_path)
+
+
+
 
 
 
