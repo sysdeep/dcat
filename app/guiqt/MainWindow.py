@@ -10,6 +10,8 @@ from PyQt5.QtCore import QTimer, pyqtSignal
 
 
 from .MainMenu import MainMenu
+from .MainToolBar import MainToolBar
+from .explorer import Explorer
 
 
 class MainWindow(QMainWindow):
@@ -35,6 +37,8 @@ class MainWindow(QMainWindow):
 
 		#--- объекты
 		self.main_menu	= None			# меню
+		self.main_toolbar = None
+		self.explorer = None
 		# self.mnemo 		= None			# мнемосхема
 		# self.bar_menu	= None
 		# self.server 	= None			# ссылка на сервер
@@ -85,6 +89,10 @@ class MainWindow(QMainWindow):
 
 
 		self.main_menu = MainMenu(self)
+		self.main_toolbar = MainToolBar(self)
+
+		self.explorer = Explorer()
+		self.setCentralWidget(self.explorer)
 
 		# self.init_central_gui()
 

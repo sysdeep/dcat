@@ -24,6 +24,22 @@ class MainMenu(object):
 		action_open = QAction("Открыть", self.main_window)
 		file_menu.addAction(action_open)
 
+		action_create = QAction("Создать", self.main_window)
+		file_menu.addAction(action_create)
+
+		action_backup = QAction("BackUp", self.main_window)
+		file_menu.addAction(action_backup)
+
+		file_menu.addSeparator()
+
+		action_add_volume = QAction("Добавить том", self.main_window)
+		file_menu.addAction(action_add_volume)
+
+		file_menu.addSeparator()
+
+		action_exit = QAction("Выход", self.main_window)
+		file_menu.addAction(action_exit)
+
 
 		#--- control center
 		# control_center_action = QAction("Центр настроек", self.parent)
@@ -36,5 +52,11 @@ class MainMenu(object):
 		# --- Settings
 		settings_menu = self.menu.addMenu("Настройки")
 
+		action_settings = QAction("Настройки", self.main_window)
+		settings_menu.addAction(action_settings)
+
 		# --- help
 		help_menu = self.menu.addMenu("Помощь")
+
+		action_about = QAction("О программе", self.main_window)
+		help_menu.addAction(action_about)
