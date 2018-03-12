@@ -8,6 +8,8 @@
 from PyQt5.QtWidgets import QAction, QShortcut, QMenu
 from PyQt5.QtGui import QKeySequence
 
+from . import icons
+
 class MainMenu(object):
 	def __init__(self, main_window):
 		self.main_window = main_window
@@ -22,22 +24,29 @@ class MainMenu(object):
 		file_menu = self.menu.addMenu("Файл")
 
 		action_open = QAction("Открыть", self.main_window)
+		action_open.setIcon(icons.get_icon(icons.I_OPEN_FILE))
 		file_menu.addAction(action_open)
 
 		action_create = QAction("Создать", self.main_window)
+		action_create.setIcon(icons.get_icon(icons.I_CREATE_FILE))
 		file_menu.addAction(action_create)
 
 		action_backup = QAction("BackUp", self.main_window)
+		action_backup.setIcon(icons.get_icon(icons.I_SAVE_AS))
 		file_menu.addAction(action_backup)
 
 		file_menu.addSeparator()
 
 		action_add_volume = QAction("Добавить том", self.main_window)
+		action_add_volume.setIcon(icons.get_icon(icons.I_ADD_ITEM))
 		file_menu.addAction(action_add_volume)
 
 		file_menu.addSeparator()
 
 		action_exit = QAction("Выход", self.main_window)
+		action_exit.setIcon(icons.get_icon(icons.I_EXIT))
+		action_exit.triggered.connect(self.main_window.act_exit)
+		action_exit.setShortcut("Ctrl+q")
 		file_menu.addAction(action_exit)
 
 

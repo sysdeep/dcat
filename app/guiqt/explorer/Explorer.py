@@ -26,5 +26,9 @@ class Explorer(QWidget):
 
 	def refresh(self):
 		print("need...")
+
+		self.volumes_list.reload()
+
+
 		# self.f_list.clear()
 		# self.v_list.reload_volumes()

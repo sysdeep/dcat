@@ -8,6 +8,8 @@
 from PyQt5.QtWidgets import QAction, QShortcut, QMenu
 from PyQt5.QtGui import QKeySequence
 
+from . import icons
+
 class MainToolBar(object):
 	def __init__(self, main_window):
 		self.main_window = main_window
@@ -22,6 +24,7 @@ class MainToolBar(object):
 		file_toolbar = self.main_window.addToolBar("File")
 
 		action_open = QAction("Открыть", self.main_window)
+		action_open.setIcon(icons.get_icon(icons.I_OPEN_FILE))
 		file_toolbar.addAction(action_open)
 
 
