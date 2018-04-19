@@ -105,7 +105,7 @@ class MainWindow(tkinter.Tk):
 
 
 		# style.configure("TButton", font=("Play", 12))
-		# style.configure(".", font=("Play", 12))
+		# style.configure(".", font=("Play", 10))
 
 
 		#--- проверяем и обновляем список открывавшихся баз
@@ -116,7 +116,8 @@ class MainWindow(tkinter.Tk):
 		self.__check_open_last()
 
 
-		dbus.eon(dbus.REQUEST_OPEN_DB, self.__on_open_exist_db)				# открытие заданной базы
+		#--- events
+		dbus.eon(dbus.REQUEST_OPEN_DB, self.__on_open_db)				# открытие заданной базы
 
 
 	def __check_open_last(self):
@@ -154,18 +155,6 @@ class MainWindow(tkinter.Tk):
 			self.__update_db_info()
 			self.usettings.update_last_base(db_path)
 			self.__update_title(db_path)
-
-
-
-	def __on_open_exist_db(self, db_path):
-		"""запрос на открытие базы по заданному пути при выборе уже созданной базы из списка"""
-
-		self.storage.close_storage()
-		self.storage.open_storage(db_path)
-
-		self.explorer_frame.refresh()
-		self.__update_db_info()
-		self.__update_title(db_path)
 
 
 
