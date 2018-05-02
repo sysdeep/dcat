@@ -3,7 +3,7 @@
 
 
 
-from .common import get_volume_icon, get_icon
+from .common import get_volume_icon, get_ftype_icon, get_icon
 
 
 

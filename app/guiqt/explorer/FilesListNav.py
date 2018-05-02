@@ -16,3 +16,9 @@ class FilesListNav(QWidget):
 
 		self.main_layout.addWidget(self.btn_root)
 		self.main_layout.addStretch()
+
+
+
+
+	def reinit(self):
+		print("FilesLisNav - reinit!!!")

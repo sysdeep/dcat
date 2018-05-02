@@ -20,5 +20,10 @@ VOLUME_ICONS = {
 }
 
 
+FTYPE_ICONS = {
+	"folder"	: "folder.png",
+	"empty"		: "empty.png",
+}
+
 IPACK_OXYGEN = "oxygen"				# доступные наборы
 IPACK = IPACK_OXYGEN				# тек набор

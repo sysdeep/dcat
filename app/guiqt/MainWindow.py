@@ -27,8 +27,8 @@ class MainWindow(QMainWindow):
 		self.title 		= "MS3"
 
 		#--- размеры
-		# self.max_x = 1600
-		# self.max_y = 950
+		self.max_x = 800
+		self.max_y = 600
 
 		#--- стиль окна
 		# self.wstyle = ""
@@ -92,8 +92,8 @@ class MainWindow(QMainWindow):
 
 		#--- window meta
 		self.setWindowTitle(self.title)
-		# self.setMinimumWidth(self.max_x)							# min width
-		# self.setMinimumHeight(self.max_y)
+		self.setMinimumWidth(self.max_x)							# min width
+		self.setMinimumHeight(self.max_y)
 
 
 		#--- window style
@@ -154,7 +154,7 @@ class MainWindow(QMainWindow):
 		self.storage.close_storage()
 		self.storage.open_storage(db_path)
 
-		self.explorer.refresh()
+		self.explorer.reload()
 		# self.__update_db_info()
 		#
 		# self.usettings.update_last_base(db_path)
