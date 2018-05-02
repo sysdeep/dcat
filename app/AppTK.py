@@ -6,7 +6,7 @@ import signal
 from .guitk import MainWindow
 
 
-class Application(object):
+class AppTK(object):
 	def __init__(self):
 
 
