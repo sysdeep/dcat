@@ -37,6 +37,7 @@ class FilesList(QWidget):
 		self.ilist.setColumnWidth(1, 100)
 		self.ilist.setColumnWidth(2, 150)
 		self.ilist.pressed.connect(self.__on_selected)
+		self.ilist.doubleClicked.connect(self.__on_open)
 		self.main_layout.addWidget(self.ilist)
 
 
@@ -67,15 +68,17 @@ class FilesList(QWidget):
 
 
 
+
+
+
+
+
+
+	#--- public ---------------------------------------------------------------
 	def clear_list(self):
 		"""очистка содержимого таблицы"""
 		self.ilist.clear()
 
-
-
-
-
-	# --- public ---------------------------------------------------------------
 	def show_volume(self, vnode):
 		"""отобразить содержимое тома"""
 
@@ -87,6 +90,14 @@ class FilesList(QWidget):
 		self.update_view()  # перестройка вида
 
 
+	def show_folder(self, fnode):
+		"""отобразить содержимое папки"""
+
+		self.current_fnode = fnode
+
+		self.update_view()						# перестройка вида
+
+	#--- public ---------------------------------------------------------------
 
 
 	# --- view controls --------------------------------------------------------
@@ -111,6 +122,8 @@ class FilesList(QWidget):
 		for item in items:
 			self.__insert_file(item)
 
+
+
 	def __show_folder_items(self):
 		"""отобразить строки папки"""
 
@@ -119,8 +132,18 @@ class FilesList(QWidget):
 		# fnodes = self.__sort_nodes(fnodes)
 		self.__sort_nodes(items)
 
+		# if self.current_fnode_uuid:
+		# 	self.__insert_go_parent()
+
 		for item in items:
 			self.__insert_file(item)
+
+
+	# def __insert_go_parent(self):
+	# 	tree_item = QTreeWidgetItem(["..", "", ""])
+	# 	# tree_item.setIcon(0, icon)
+	# 	# tree_item.setData(0, Qt.UserRole + 1, fnode.uuid)
+	# 	self.ilist.addTopLevelItem(tree_item)
 
 	def __insert_file(self, fnode):
 		"""добавление строки в дерево"""
@@ -158,16 +181,150 @@ class FilesList(QWidget):
 		# --- создаём карту нод
 		self.litems[fnode.uuid] = fnode
 
+	# def __make_cmenu(self, e):
+	# 	"""отображение контекстного меню"""
+	# 	cmenu_selection = self.__tree.identify_row(e.y)  # тек. елемент под курсором
+	#
+	# 	if cmenu_selection:
+	# 		self.__tree.selection_set(cmenu_selection)  # выделяем его
+	# 		# self.__select_row(None)									# выполняем действия по отображению выбора
+	#
+	# 		# --- отображение меню
+	# 		# self.cmenu.post(e.x_root, e.y_root)
+	# 		self.cmenu.tk_popup(e.x_root,
+	# 							e.y_root)  # автозакрытие при потере фокуса(https://stackoverflow.com/questions/21200516/python3-tkinter-popup-menu-not-closing-automatically-when-clicking-elsewhere)
+
+	# --- view controls --------------------------------------------------------
 
 
 
+
+
+	# --- navbar events --------------------------------------------------------
+	def __go_root(self):
+		"""перейти в корень тома"""
+		self.show_volume(self.current_vnode)
+
+	def __go_history(self, fnode):
+		"""перейти в корень заданного каталога"""
+		self.show_folder(fnode)
+
+	# --- navbar events --------------------------------------------------------
+
+
+
+
+
+
+
+	#--- tree events ----------------------------------------------------------
 	def __on_selected(self, tree_item):
 		uuid = tree_item.data(Qt.UserRole + 1)
-		print(uuid)
+		if self.current_fnode_uuid == uuid:
+			return False
+		self.current_fnode_uuid = uuid
+
+
+	def __on_open(self, tree_item):
+
+		uuid = tree_item.data(Qt.UserRole + 1)
+		fnode = self.litems[uuid]
+
+		if fnode is None:
+			return False
+
+		if fnode.is_file():
+			return False
+
+		self.show_folder(fnode)  # отображаем папку
+		self.nav_bar.history_push(fnode)  # обновляем панель навигации
+	#--- tree events ----------------------------------------------------------
+
+
+
+	#--- cmenu actions --------------------------------------------------------
+	# def __show_info(self):
+	# 	"""отобразить информацию о ноде"""
+	# 	fnode = self.__get_selected_fnode()
+	#
+	# 	if fnode is None:
+	# 		return False
+	#
+	# 	self.modal_about = AboutFile(fnode, master=self)
+	# 	self.modal_about.cb_updated = self.__on_file_updated
+	#
+	#
+	#
+	#
+	#
+	#
+	#
+	# def __show_export(self):
+	# 	"""
+	# 		экспорт заданного поддерева
+	# 		TODO: не завершено...
+	# 	"""
+	#
+	# 	fnode = self.__get_selected_fnode()
+	#
+	# 	if fnode is None:
+	# 		return False
+	#
+	# 	dbus.emit(dbus.SHOW_EXPORT_FTREE, fnode)
+	#
+	#
+	#
+	# def __show_remove(self):
+	# 	"""удаление элемента или ветви"""
+	# 	fnode = self.__get_selected_fnode()
+	#
+	# 	if fnode is None:
+	# 		return False
+	#
+	#
+	#
+	#
+	# 	result = messagebox.askyesno("Подтверждение удаления", "Удалить выбранный элемент?")
+	# 	if result is False:
+	# 		return False
+	#
+	#
+	# 	#--- удаляем заданный
+	# 	self.storage.remove_file(fnode.uuid)
+	# 	# print("removed: ", fnode.name)
+	#
+	# 	#--- удаляем все вложенные элементы
+	# 	for item in self.storage.fetch_parent_files_all(fnode.uuid):
+	# 		self.storage.remove_file(item.uuid)
+	# 		# print("removed: ", item.name)
+	#
+	#
+	#
+	# 	#--- сохраняем изменения
+	# 	self.storage.commit()
+	#
+	# 	self.update_view()
+	#
+	#
+	#
+	# 	# dbus.emit(dbus.SHOW_REMOVE_FTREE, fnode)
+	#
+	#
+
+
+
+	#--- cmenu actions --------------------------------------------------------
 
 
 
 
+	#--- events ---------------------------------------------------------------
+	def __on_file_updated(self):
+		"""событие от модального окна файла об обновлении"""
+		self.update_view()
+		self.modal_about.destroy()
+		self.modal_about = None
+	#--- events ---------------------------------------------------------------
 
 
 
