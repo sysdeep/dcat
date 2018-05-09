@@ -3,7 +3,7 @@
 
 
 
-from app.App import Application
+from app.AppTK import AppTK
 
-my_app = Application()
+my_app = AppTK()
 my_app.start()
