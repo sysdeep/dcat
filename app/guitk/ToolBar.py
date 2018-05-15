@@ -44,11 +44,20 @@ class ToolBar(ttk.Frame):
 		btn_find.pack(side="left")
 
 
-		# lqqq = ttk.Label(self, text="QQQ", image=ticons.ticon(ticons.I_IMPORT), compound="left")
+		# i = ttk.Frame(self, borderwidth=2, padding=10, cursor="hand2")
+		# i.bind("<Button-1>", lambda x: print("click"))
+		
+		# i.pack()
+
+		# lqqq = ttk.Label(i, image=ticons.ticon(ticons.I_IMPORT), compound="left")
 		# lqqq.bind("<Button-1>", lambda x: print("laabel click"))
-		# lqqq.bind("<Enter>", lambda x: print("enter"))
-		# lqqq.bind("<Leave>", lambda x: print("leave"))
+		# # lqqq.bind("<Enter>", lambda x: print("enter"))
+		# # lqqq.bind("<Leave>", lambda x: print("leave"))
 		# lqqq.pack()
+
+		
+
+
 
 	def __open_db(self):
 		self.cb_open_db()
