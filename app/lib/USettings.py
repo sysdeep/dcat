@@ -19,19 +19,26 @@ import os
 
 APP_NAME = "dcat"
 SETINGS_FILE = "settings.json"
-
+MAX_LAST_BASES = 20
 
 
 class USettings(object):
+	"""
+		хранилище настроек
+		набор настроек хранится в словаре data
+
+		при загрузке конфига происходит перетерание ключей словаря data, тем самым - мы не боимся добавлять переменные в код
+	"""
 	def __init__(self):
 		self.settings_path = self.__make_os_file_path()
 		self.file_path = os.path.join(self.settings_path, SETINGS_FILE)
 
 
 		self.data = {
-			"version" 		: "0.1",
-			"lastbases" 	: [],
-			"open_last"		: 1,
+			"version" 			: "0.1",
+			"lastbases" 		: [],
+			"open_last"			: 1,
+			"max_last_bases"	: MAX_LAST_BASES,			# кол-во сохранённых баз
 
 
 			# "style"			: "clam"
@@ -62,19 +69,36 @@ class USettings(object):
 
 
 	def open_settings(self):
+		"""загрузка данных из конфига"""
 		with open(self.file_path, "r", encoding="utf-8") as fd:
 			fcontent = fd.read()
-			self.data = json.loads(fcontent)
+			settings_data = json.loads(fcontent)
+
+			#--- обновляем все ключи данных
+			for key, value in settings_data.items():
+				self.data[key] = value
+
 
 
 
 	def update_last_base(self, value):
+		"""
+			обновление списка последних баз. 
+				если база есть в списке - удалем её и добавляем в конец
+				если кол-во записей больше максимального - очищаем старые
+			Args:
+				value 	[string] - путь до базы
+		"""
+
+		#--- удаляем уже сущ.
 		if value in self.data["lastbases"]:
 			self.data["lastbases"].remove(value)
 
-		if len(self.data["lastbases"]) > 10:
+		#--- проверяем на переполнение
+		if len(self.data["lastbases"]) > self.data["max_last_bases"]:
 			self.data["lastbases"].pop()
 
+		#--- добавляем
 		self.data["lastbases"].append(value)
 
 		self.save()
