@@ -106,6 +106,7 @@ class MainWindow(tkinter.Tk):
 
 		# style.configure("TButton", font=("Play", 12))
 		# style.configure(".", font=("Play", 10))
+		# style.configure(".", font=("Ubuntu", 10))
 
 
 		#--- проверяем и обновляем список открывавшихся баз
