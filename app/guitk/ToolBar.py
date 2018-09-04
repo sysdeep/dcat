@@ -4,6 +4,7 @@
 import tkinter
 from tkinter import ttk
 
+from app import log
 from app.lib import dbus
 from .utils import ticons
 
@@ -110,5 +111,5 @@ class ToolBarButton(ttk.Label):
 		if self.command:
 			try:
 				self.command()
-			except:
-				pass
+			except Exception as e:
+				log.exception(e)

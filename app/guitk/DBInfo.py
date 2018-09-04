@@ -48,7 +48,10 @@ class DBInfo(ttk.Frame):
 		#--- show databases
 		ttk.Button(self, text="DBs", image=ticons.ticon(ticons.I_FOLDER_HOME), compound="left", command=self.__show_dbs).pack(side="right", padx=5)
 
-
+		# qqq = ttk.Menubutton(self, text="File")
+		# qqq.pack()
+		#
+		# qqq["menu"]	= tkinter.Menu(qqq)
 
 
 	def set_path(self, value):

@@ -43,6 +43,7 @@ class BarMenu():
 		
 	def makeMenu(self):
 		self.menu = Menu(self.parent, relief="flat")
+		# self.menu = Menu(self.parent)
 		self.parent.config(menu=self.menu)
 
 		# self.last_menu = Menu(self.menu, tearoff=0)
