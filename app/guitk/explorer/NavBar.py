@@ -12,7 +12,7 @@ from ..utils import ticons
 
 
 
-class NavBar(tkinter.Frame):
+class NavBar(ttk.Frame):
 	def __init__(self, parent, *args, **kwargs):
 		super(NavBar, self).__init__(parent, *args, **kwargs)
 
