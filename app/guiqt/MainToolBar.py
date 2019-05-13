@@ -25,6 +25,7 @@ class MainToolBar(object):
 
 		action_open = QAction("Открыть", self.main_window)
 		action_open.setIcon(icons.get_icon(icons.I_OPEN_FILE))
+		action_open.triggered.connect(self.__on_show_open)
 		file_toolbar.addAction(action_open)
 
 
@@ -64,3 +65,6 @@ class MainToolBar(object):
 		#
 		# action_about = QAction("О программе", self.main_window)
 		# help_menu.addAction(action_about)
+
+	def __on_show_open(self):
+		print("show open")
