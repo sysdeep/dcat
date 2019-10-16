@@ -25,6 +25,7 @@ class FilesList(QWidget):
 		self.main_layout.setContentsMargins(0, 0, 0, 0)
 
 		self.nav_bar = FilesListNav()
+		self.nav_bar.go_root_signal.connect(self.__go_root)
 		self.main_layout.addWidget(self.nav_bar)
 
 

@@ -4,9 +4,10 @@
 
 from PyQt5.QtWidgets import QApplication, QPushButton, QLabel, QHBoxLayout, QVBoxLayout, QWidget, QTreeWidget
 from PyQt5.QtGui import QFontDatabase
-
+from PyQt5.QtCore import Qt, pyqtSignal
 
 class FilesListNav(QWidget):
+	go_root_signal = pyqtSignal()
 	def __init__(self, parent=None):
 		super(FilesListNav, self).__init__(parent)
 
@@ -17,7 +18,18 @@ class FilesListNav(QWidget):
 		self.history_stack = []
 		self.__stack_items_count = 0
 
+		self.__buttons = []
 
+		self.history_layout = QHBoxLayout()
+
+		self.btn_root = QPushButton("/")
+		self.btn_root.clicked.connect(self.__go_root)
+		
+		
+		
+		self.main_layout.addWidget(self.btn_root)
+		self.main_layout.addLayout(self.history_layout)
+		self.main_layout.addStretch()
 
 
 
@@ -40,26 +52,26 @@ class FilesListNav(QWidget):
 		self.__stack_items_count = len(inames)
 		self.__update_btn_back()
 
-		btn_root = QPushButton("/")
-		btn_root.clicked.connect(self.__go_root)
-		self.main_layout.addWidget(btn_root)
+		
 
 		__last_btn = None
 		for i, iname in enumerate(inames):
 			iname += " >"
 			btn = QPushButton(iname)
 			btn.clicked.connect(lambda x=i: self.__go(x))
-			self.main_layout.addWidget(btn)
+			self.history_layout.addWidget(btn)
 			__last_btn = btn
 
 		if __last_btn:
 			__last_btn.setDisabled(True)
 
-		self.main_layout.addStretch()
+		
 
 
 	def __clear_stack(self):
 		print("clear_stack")
+		w = self.history_layout.takeAt(0)
+		print(w)
 		# for widget in self.main_layout.ch
 		# for widget in self.stack_frame.winfo_children():
 		# 	widget.destroy()
@@ -77,6 +89,7 @@ class FilesListNav(QWidget):
 		# self.history_clear()
 		# if self.cb_root:
 		# 	self.cb_root()
+		self.go_root_signal.emit()
 
 	def __go(self, x):
 		print("__go", x)
