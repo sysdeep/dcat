@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+from os.path import expanduser
 
 
-
-from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QStyleFactory
+from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QStyleFactory, QFileDialog
 from PyQt5.QtGui import QFontDatabase
 from PyQt5.QtCore import QTimer, pyqtSignal
 
@@ -39,8 +39,14 @@ class MainWindow(QMainWindow):
 
 
 		#--- объекты
-		self.main_menu	= None			# меню
-		self.main_toolbar = None
+		self.main_menu	= MainMenu()			# меню
+		self.main_menu.s_opendb.connect(self.__on_show_open_db)
+		self.setMenuBar(self.main_menu)
+
+		self.main_toolbar = MainToolBar()
+		self.main_toolbar.s_opendb.connect(self.__on_show_open_db)
+		self.addToolBar(self.main_toolbar)
+
 		self.explorer = None
 		# self.mnemo 		= None			# мнемосхема
 		# self.bar_menu	= None
@@ -105,8 +111,8 @@ class MainWindow(QMainWindow):
 		# self.setGeometry(300, 300, 300, 300)
 
 
-		self.main_menu = MainMenu(self)
-		self.main_toolbar = MainToolBar(self)
+		
+		
 
 		self.explorer = Explorer()
 		self.setCentralWidget(self.explorer)
@@ -138,12 +144,22 @@ class MainWindow(QMainWindow):
 		last = self.usettings.get_last_base()
 
 		if last:
-			self.__on_open_db(last)
+			self.__open_db(last)
 
 
 
 
-	def __on_open_db(self, db_path):
+	def __on_show_open_db(self):
+		"""отображение открытия базы"""
+		home_path = expanduser("~")
+		fname = QFileDialog.getOpenFileName(self, "Выбор базы", home_path, "dcat files (*.dcat)")
+
+		if fname and len(fname[0]):
+			self.__open_db(fname[0])	
+
+
+
+	def __open_db(self, db_path):
 		"""запрос на открытие базы по заданному пути"""
 
 		# #--- проверка существования базы

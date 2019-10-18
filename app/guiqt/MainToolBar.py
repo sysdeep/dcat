@@ -5,45 +5,38 @@
 
 """
 
-from PyQt5.QtWidgets import QAction, QShortcut, QMenu
+from PyQt5.QtWidgets import QAction, QShortcut, QMenu, QToolBar
 from PyQt5.QtGui import QKeySequence
+from PyQt5.QtCore import pyqtSignal
 
 from . import icons
 
-class MainToolBar(object):
-	def __init__(self, main_window):
-		self.main_window = main_window
+class MainToolBar(QToolBar):
+
+	s_opendb = pyqtSignal()
 
 
+	def __init__(self, parent=None):
+		super(MainToolBar, self).__init__(parent)
+
+		self.addAction(icons.get_icon(icons.I_OPEN_FILE), "Открыть", lambda: self.s_opendb.emit())
 
 
+		# action_create = QAction("Создать", self.main_window)
+		# file_toolbar.addAction(action_create)
 
+		# action_backup = QAction("BackUp", self.main_window)
+		# file_toolbar.addAction(action_backup)
 
+		# file_toolbar.addSeparator()
 
-		#--- File
-		file_toolbar = self.main_window.addToolBar("File")
+		# action_add_volume = QAction("Добавить том", self.main_window)
+		# file_toolbar.addAction(action_add_volume)
 
-		action_open = QAction("Открыть", self.main_window)
-		action_open.setIcon(icons.get_icon(icons.I_OPEN_FILE))
-		action_open.triggered.connect(self.__on_show_open)
-		file_toolbar.addAction(action_open)
+		# file_toolbar.addSeparator()
 
-
-		action_create = QAction("Создать", self.main_window)
-		file_toolbar.addAction(action_create)
-
-		action_backup = QAction("BackUp", self.main_window)
-		file_toolbar.addAction(action_backup)
-
-		file_toolbar.addSeparator()
-
-		action_add_volume = QAction("Добавить том", self.main_window)
-		file_toolbar.addAction(action_add_volume)
-
-		file_toolbar.addSeparator()
-
-		action_exit = QAction("Выход", self.main_window)
-		file_toolbar.addAction(action_exit)
+		# action_exit = QAction("Выход", self.main_window)
+		# file_toolbar.addAction(action_exit)
 
 		#
 		# #--- control center
@@ -66,5 +59,3 @@ class MainToolBar(object):
 		# action_about = QAction("О программе", self.main_window)
 		# help_menu.addAction(action_about)
 
-	def __on_show_open(self):
-		print("show open")
