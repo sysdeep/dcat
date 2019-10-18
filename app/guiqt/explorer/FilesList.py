@@ -26,6 +26,8 @@ class FilesList(QWidget):
 
 		self.nav_bar = FilesListNav()
 		self.nav_bar.go_root_signal.connect(self.__go_root)
+		self.nav_bar.go_node_signal.connect(self.show_folder)
+
 		self.main_layout.addWidget(self.nav_bar)
 
 
@@ -93,6 +95,7 @@ class FilesList(QWidget):
 
 	def show_folder(self, fnode):
 		"""отобразить содержимое папки"""
+
 
 		self.current_fnode = fnode
 
