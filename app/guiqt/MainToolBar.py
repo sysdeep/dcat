@@ -15,6 +15,7 @@ class MainToolBar(QToolBar):
 
 	s_opendb = pyqtSignal()
 	s_createdb = pyqtSignal()
+	s_addvolume = pyqtSignal()
 
 
 	def __init__(self, parent=None):
@@ -22,6 +23,7 @@ class MainToolBar(QToolBar):
 
 		self.addAction(icons.get_icon(icons.I_OPEN_FILE), "Открыть", lambda: self.s_opendb.emit())
 		self.addAction(icons.get_icon(icons.I_CREATE_FILE), "Создать", lambda: self.s_createdb.emit())
+		self.addAction(icons.get_icon(icons.I_ADD_ITEM), "Добавить том", lambda: self.s_addvolume.emit())
 
 
 		# action_create = QAction("Создать", self.main_window)

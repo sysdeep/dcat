@@ -44,11 +44,14 @@ class MainWindow(QMainWindow):
 		self.main_menu	= MainMenu()			# меню
 		self.main_menu.s_opendb.connect(self.__on_show_open_db)
 		self.main_menu.s_createdb.connect(self.__on_show_create_db)
+		self.main_menu.s_addvolume.connect(self.__on_show_add_volume)
+		self.main_menu.s_exit.connect(self.act_exit)
 		self.setMenuBar(self.main_menu)
 
 		self.main_toolbar = MainToolBar()
 		self.main_toolbar.s_opendb.connect(self.__on_show_open_db)
 		self.main_toolbar.s_createdb.connect(self.__on_show_create_db)
+		self.main_toolbar.s_addvolume.connect(self.__on_show_add_volume)
 		self.addToolBar(self.main_toolbar)
 
 		self.explorer = None
@@ -176,7 +179,10 @@ class MainWindow(QMainWindow):
 			file_path = fname[0] if fname[0].endswith(".dcat") else fname[0] + ".dcat"
 			self.__create_db(file_path)
 			
-			
+
+	def __on_show_add_volume(self):
+		"""отображение модала дожавления тома"""
+		print("__on_show_add_volume")		
 
 
 

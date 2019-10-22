@@ -15,6 +15,8 @@ class MainMenu(QMenuBar):
 	
 	s_opendb = pyqtSignal()
 	s_createdb = pyqtSignal()
+	s_addvolume = pyqtSignal()
+	s_exit = pyqtSignal()
 
 	def __init__(self, parent=None):
 		super(MainMenu, self).__init__(parent)
@@ -26,6 +28,10 @@ class MainMenu(QMenuBar):
 		
 		file_menu.addAction(icons.get_icon(icons.I_OPEN_FILE), "Открыть", lambda: self.s_opendb.emit())
 		file_menu.addAction(icons.get_icon(icons.I_CREATE_FILE), "Создать", lambda: self.s_createdb.emit())
+		file_menu.addSeparator()
+		file_menu.addAction(icons.get_icon(icons.I_ADD_ITEM), "Добавить том", lambda: self.s_addvolume.emit())
+		file_menu.addSeparator()
+		file_menu.addAction(icons.get_icon(icons.I_EXIT), "Выход", lambda: self.s_exit.emit())
 
 		
 
