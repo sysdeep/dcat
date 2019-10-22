@@ -3,7 +3,9 @@
 
 
 
-VOLUME_TYPE = ("cd", "audio_cd", "dvd", "folder", "hdd", "hdd_usb", "flash", "sd", "floppy", "net", "tape", "crypted", "other")
+VOLUME_TYPE = ("cd", "audio_cd", "dvd", "folder", "hdd", "hdd_usb", "flash", "sd", "floppy", "net", "tape", "crypted",
+			   # "other"
+			   )
 
 
 
