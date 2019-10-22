@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from os.path import expanduser
+# from os.path import expanduser, basename
+import os.path
 
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QStyleFactory, QFileDialog
@@ -11,6 +12,7 @@ from PyQt5.QtCore import QTimer, pyqtSignal
 
 from app import shared
 from app.storage import get_storage
+from app.rc import VERSION, ABOUT_NAME
 
 from .MainMenu import MainMenu
 from .MainToolBar import MainToolBar
@@ -41,10 +43,12 @@ class MainWindow(QMainWindow):
 		#--- объекты
 		self.main_menu	= MainMenu()			# меню
 		self.main_menu.s_opendb.connect(self.__on_show_open_db)
+		self.main_menu.s_createdb.connect(self.__on_show_create_db)
 		self.setMenuBar(self.main_menu)
 
 		self.main_toolbar = MainToolBar()
 		self.main_toolbar.s_opendb.connect(self.__on_show_open_db)
+		self.main_toolbar.s_createdb.connect(self.__on_show_create_db)
 		self.addToolBar(self.main_toolbar)
 
 		self.explorer = None
@@ -132,6 +136,7 @@ class MainWindow(QMainWindow):
 		# 	self.showMaximized()
 		# else:															# по умолчанию не меньше настроек
 		#
+		self.__update_title()
 		self.show()
 
 
@@ -149,35 +154,83 @@ class MainWindow(QMainWindow):
 
 
 
+
+
+
+
 	def __on_show_open_db(self):
 		"""отображение открытия базы"""
-		home_path = expanduser("~")
+		home_path = os.path.expanduser("~")
 		fname = QFileDialog.getOpenFileName(self, "Выбор базы", home_path, "dcat files (*.dcat)")
 
 		if fname and len(fname[0]):
 			self.__open_db(fname[0])	
 
 
+	def __on_show_create_db(self):
+		"""отображение модала сохранения файла"""
+		home_path = os.path.expanduser("~")
+		fname = QFileDialog.getSaveFileName(self, "Расположение новой базы", home_path, "dcat files (*.dcat)")
+		
+		if fname and len(fname[0]):
+			file_path = fname[0] if fname[0].endswith(".dcat") else fname[0] + ".dcat"
+			self.__create_db(file_path)
+			
+			
+
+
+
+
+
+
+
+
+
 
 	def __open_db(self, db_path):
 		"""запрос на открытие базы по заданному пути"""
 
-		# #--- проверка существования базы
-		# if not os.path.exists(db_path):
-		# 	self.usettings.remove_last(db_path)
-		# 	return False
-
+	
 		self.storage.close_storage()
 		self.storage.open_storage(db_path)
 
 		self.explorer.reload()
 		# self.__update_db_info()
 		#
-		# self.usettings.update_last_base(db_path)
-		# self.__update_title(db_path)
+		self.usettings.update_last_base(db_path)
+		self.__update_title(db_path)
+
+
+	def __create_db(self, db_path):
+
+		if os.path.exists(db_path):
+			print("Unable create db - file already exists...")
+			return False
+
+		self.storage.close_storage()
+		self.storage.create_storage(db_path)
+
+		self.explorer.reload()
+		# self.__update_db_info()
+
+		self.usettings.update_last_base(db_path)
+		self.__update_title(db_path)
 
 
 
+
+
+	def __update_title(self, db_path=None):
+		"""обновить заголовок"""
+		if db_path:
+			text = "{} v {} - [{}]".format(ABOUT_NAME, VERSION, os.path.basename(db_path))
+		else:
+			text = "{} v {}".format(ABOUT_NAME, VERSION)
+		self.setWindowTitle(text)
+
+		#--- статусная строка
+		status_text = db_path if db_path else "---"
+		self.statusBar().showMessage(status_text)
 
 
 

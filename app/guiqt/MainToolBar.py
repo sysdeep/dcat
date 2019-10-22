@@ -14,12 +14,14 @@ from . import icons
 class MainToolBar(QToolBar):
 
 	s_opendb = pyqtSignal()
+	s_createdb = pyqtSignal()
 
 
 	def __init__(self, parent=None):
 		super(MainToolBar, self).__init__(parent)
 
 		self.addAction(icons.get_icon(icons.I_OPEN_FILE), "Открыть", lambda: self.s_opendb.emit())
+		self.addAction(icons.get_icon(icons.I_CREATE_FILE), "Создать", lambda: self.s_createdb.emit())
 
 
 		# action_create = QAction("Создать", self.main_window)

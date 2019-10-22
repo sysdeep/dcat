@@ -14,6 +14,7 @@ from . import icons
 class MainMenu(QMenuBar):
 	
 	s_opendb = pyqtSignal()
+	s_createdb = pyqtSignal()
 
 	def __init__(self, parent=None):
 		super(MainMenu, self).__init__(parent)
@@ -22,7 +23,9 @@ class MainMenu(QMenuBar):
 
 		#--- File
 		file_menu = self.addMenu("Файл")
+		
 		file_menu.addAction(icons.get_icon(icons.I_OPEN_FILE), "Открыть", lambda: self.s_opendb.emit())
+		file_menu.addAction(icons.get_icon(icons.I_CREATE_FILE), "Создать", lambda: self.s_createdb.emit())
 
 		
 
