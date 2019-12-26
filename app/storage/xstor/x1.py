@@ -6,8 +6,8 @@ import gzip
 import uuid
 import xml.etree.ElementTree as etree
 
-SCAN_PATH = "/mnt/backup"
-# SCAN_PATH = "/home/nia"
+# SCAN_PATH = "/mnt/backup"
+SCAN_PATH = "/home/nia/Android"
 # SCAN_PATH = "/home/nia/Work/_LinuxServer"
 XFILE = "/home/nia/Development/_Python/_DCat/x1.xml"
 GFILE = "/home/nia/Development/_Python/_DCat/x1.xml.gz"
@@ -81,6 +81,7 @@ def start(scan_path, db_file, volume_name):
 	}
 
 
+	files_count = 0
 
 	for root, dirs, files in os.walk(scan_path):
 
@@ -97,6 +98,7 @@ def start(scan_path, db_file, volume_name):
 			st = os.stat(full_path)							# статистика по файлу
 
 			row = make_frow(dir, "d", st)
+			files_count += 1
 
 			# node = etree.SubElement(x_el, "node", {"name": dir, "type": "d"})
 			node = etree.SubElement(x_el, "node", row)
@@ -115,6 +117,7 @@ def start(scan_path, db_file, volume_name):
 			st = os.stat(full_path)							# статистика по файлу
 
 			row = make_frow(f, "f", st)
+			files_count += 1
 
 			etree.SubElement(x_el, "node", row)
 			# etree.SubElement(x_el, "node", {"name": f, "type": "f"})
@@ -124,7 +127,7 @@ def start(scan_path, db_file, volume_name):
 		del rmap[root]
 
 
-
+	print(files_count)
 
 	with gzip.open(db_file, "wb") as fd:
 		fd.write(etree.tostring(xroot, encoding="utf-8"))
@@ -141,3 +144,7 @@ def start(scan_path, db_file, volume_name):
 	# 	fd.write(etree.tostring(xroot, encoding="utf-8"))
 	#
 
+
+
+if __name__ == "__main__":
+	start(SCAN_PATH, GFILE, "t1")
