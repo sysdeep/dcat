@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import struct
+import gzip
 
 class DataRecord(object):
 	def __init__(self, bdata=None):
@@ -14,6 +15,7 @@ class DataRecord(object):
 		self.size = 0
 		self.name = ""
 
+		# self.__bdata = bdata
 		if bdata:
 			self.unpack(bdata)
 
@@ -33,17 +35,27 @@ class DataRecord(object):
 		bstr = self.name.encode(encoding="utf-8")
 		bdata += bstr
 
+		# flat:  134, gip:  135
+		# flat:   90, gip:  103
+		# flat:   69, gip:   83
+		# flat:   30, gip:   45
+		# flat:   17, gip:   32
+		# gzip_bdata = gzip.compress(bdata)
+		# print("flat: {:>4}, gip: {:>4}".format(len(bdata), len(gzip_bdata)))
+
 		return bdata
 
 
 
 	def unpack(self, bdata):
+		# print("rbdata len: ", len(bdata))
 		bhead = bdata[0:8]
 		head_dataset = struct.unpack("<II", bhead)
 		self.ftype = head_dataset[0]
 		self.size = head_dataset[1]
 
-		bname = bdata[8: -1]
+		bname = bdata[8: len(bdata) + 1]
+		# print(bdata)
 		self.name = bname.decode(encoding="utf-8")
 		
 
@@ -66,7 +78,7 @@ class Data(object):
 
 
 	def get_record(self, start, size):
-		brecord = self.__bdata[start : size]
+		brecord = self.__bdata[start : start + size]
 
 		record = DataRecord(brecord)
 		return record

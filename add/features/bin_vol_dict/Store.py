@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import os
 import os.path
+import gzip
 
 from Header import Header
 from Dict import Dict
@@ -62,6 +63,15 @@ class Store(object):
 			fdata_start += len(rb)
 
 		header.data_size = len(fdata_bin)
+
+
+
+		# flat: 1496, gzip: 8182
+		# gzip_fdata_bin = gzip.compress(fdata_bin,9)
+
+		# print("-"*80)
+		# print("flat: {:>4}, gzip: {:>4}".format(len(gzip_fdata_bin), len(fdata_bin)))
+		# print("-"*80)
 
 		#--- make binary
 		bdata = b""
@@ -124,6 +134,8 @@ class Store(object):
 			bdata = fd.read(header.data_size)
 			fdata = Data(bdata)
 
+			print()
+			print("root files: ")
 			for r in fdict.records_map.values():
 				if r.pid == 0:
 					ff = fdata.get_record(r.daddr, r.dsize)
