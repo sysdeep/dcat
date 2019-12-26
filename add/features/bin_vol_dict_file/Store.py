@@ -8,7 +8,15 @@ from Header import Header
 from Dict import Dict
 from Data import Data, DataRecord
 
+"""
+dict_start: 3582 
+dict_size: 2080 
+data_start: 32 
+data_size: 3550
 
+
+data writed, cur pos:  3582
+"""
 
 class Store(object):
 	def __init__(self):
@@ -58,10 +66,13 @@ class Store(object):
 		self.header.data_size = end_of_data_addr - Header.SIZE
 		self.header.dict_start = end_of_data_addr
 		self.header.dict_size = self.fdict.get_bdata_size()
+		print(self.header)
 
 		bin_header = self.header.pack()
 		self.__fd.seek(0)
 		self.__fd.write(bin_header)
+		self.__fd.close()
+		self.__fd = None
 
 		# header = Header()
 		# fdict = Dict()
@@ -199,16 +210,17 @@ class Store(object):
 			
 
 			#--- data
-			for r in fdict.records_map.values():
-				if r.pid == 0:
-					# print(r.fid, r.pid)
-					start = r.daddr
-					size = r.dsize
-					fd.seek(start)
-					bfile_data = fd.read(size)
-					record = DataRecord(bfile_data)
-					print(record)
+			# for r in fdict.records_map.values():
+			# 	if r.pid == 0:
+			# 		# print(r.fid, r.pid)
+			# 		start = r.daddr
+			# 		size = r.dsize
+			# 		fd.seek(start)
+			# 		bfile_data = fd.read(size)
+			# 		record = DataRecord(bfile_data)
+			# 		print(record)
 
+			Store.reprint(fd, fdict, 0, 0)
 
 
 			# bdata = fd.read(header.data_size)
@@ -222,3 +234,18 @@ class Store(object):
 			# 		print(ff)
 
 
+	@staticmethod
+	def reprint(fd, fdict, parent_id, ind):
+
+		for r in fdict.records_map.values():
+			if r.pid == parent_id:
+				start = r.daddr
+				size = r.dsize
+				fd.seek(start)
+				bfile_data = fd.read(size)
+				record = DataRecord(bfile_data)
+				print(ind*"\t" + record.name)
+				
+
+				if record.ftype == 2:
+					Store.reprint(fd, fdict, r.fid, ind+1)
