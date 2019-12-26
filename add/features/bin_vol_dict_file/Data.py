@@ -99,11 +99,12 @@ class Data(object):
 		record.pid = parent_id
 		record.fid = self.current_id
 
-		self.records.append(record)
+		# self.records.append(record)
 
 		self.current_id += 1
 
-		return record.fid
+		# return record.fid
+		return record
 
 	def append_dir(self, name, parent_id=0):
 		print("append dir: ", name)
@@ -114,8 +115,9 @@ class Data(object):
 		record.pid = parent_id
 		record.fid = self.current_id
 
-		self.records.append(record)
+		# self.records.append(record)
 
 		self.current_id += 1
 
-		return record.fid
+		# return record.fid
+		return record

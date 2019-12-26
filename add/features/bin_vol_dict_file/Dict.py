@@ -70,11 +70,13 @@ class Dict(object):
 			self.records_map[record.fid] = record
 
 
-	def append_record(self, fid, pid):
+	def append_record(self, fid, pid, addr, size):
 
 		record = DictRecord()
 		record.fid = fid
 		record.pid = pid
+		record.daddr = addr
+		record.dsize = size
 
 		# self.records.append(record)
 		self.records_map[fid] = record
@@ -84,10 +86,10 @@ class Dict(object):
 
 
 
-	def set_addr(self, fid, addr, size):
-		record = self.records_map[fid]
-		record.daddr = addr
-		record.dsize = size
+	# def set_addr(self, fid, addr, size):
+	# 	record = self.records_map[fid]
+	# 	record.daddr = addr
+	# 	record.dsize = size
 
 
 
