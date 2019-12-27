@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import struct
+from tools import dtimeit
 
 class DictRecord(object):
 	SIZE = 16
@@ -22,8 +23,8 @@ class DictRecord(object):
 			self.dsize
 		)
 
-		bdata = b""
-		bdata  += struct.pack("<IIII", *dataset)
+		
+		bdata = struct.pack("<IIII", *dataset)
 		return bdata
 
 	def unpack(self, bdata):
@@ -41,21 +42,32 @@ class DictRecord(object):
 
 class Dict(object):
 	def __init__(self, bdata=None):
-		self.records_map = {}
+		self.records = []
 
 
 		if bdata:
 			self.unpack(bdata)
 		
 
-
+	# @dtimeit
 	def pack(self):
 
-		bdata = b""
-		for record in self.records_map.values():
-			bdata += record.pack()
+		# bdata = b""
+		bdata_list = []
+		for record in self.records:
+			bdata_list.append(record.pack())
 
+		bdata = b"".join(bdata_list)
+		
 		return bdata
+
+
+		#--- !!! конкатинация бинарной строки занимает много времени !!!
+		# bdata = b""
+		# for record in self.records:
+		# 	bdata += record.pack()
+
+		# return bdata
 
 
 	def unpack(self, bdata):
@@ -67,7 +79,7 @@ class Dict(object):
 			end = start + DictRecord.SIZE
 			brecord = bdata[start : end]
 			record = DictRecord(brecord)
-			self.records_map[record.fid] = record
+			self.records.append(record)
 
 
 	def append_record(self, fid, pid, addr, size):
@@ -79,12 +91,15 @@ class Dict(object):
 		record.dsize = size
 
 		# self.records.append(record)
-		self.records_map[fid] = record
+		self.records.append(record)
 	
 	def get_bdata_size(self):
-		return len(self.records_map) * DictRecord.SIZE
+		return self.records_count * DictRecord.SIZE
 
 
+	@property
+	def records_count(self):
+		return len(self.records)
 
 	# def set_addr(self, fid, addr, size):
 	# 	record = self.records_map[fid]

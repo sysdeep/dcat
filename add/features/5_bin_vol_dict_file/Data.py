@@ -4,6 +4,8 @@ import struct
 import gzip
 
 class DataRecord(object):
+	STRUCT_STR = "<IIIIIfffI"
+	HEAD_SIZE = 36
 	def __init__(self, bdata=None):
 
 		self.fid = 0
@@ -15,6 +17,14 @@ class DataRecord(object):
 		self.size = 0
 		self.name = ""
 
+		self.st_mode = 0
+		self.st_uid = 0
+		self.st_gid = 0
+
+		self.st_ctime = 0
+		self.st_atime = 0
+		self.st_mtime = 0
+
 		# self.__bdata = bdata
 		if bdata:
 			self.unpack(bdata)
@@ -22,18 +32,30 @@ class DataRecord(object):
 	
 	def pack(self):
 		
-		# 8b
+		name_bdata = self.name.encode(encoding="utf-8")
+		name_len = len(name_bdata)
+
+
 		dataset = (
-			self.ftype,
-			self.size,
+			self.ftype,			# 0
+			self.size,			# 1
+
+			self.st_mode,		# 2
+			self.st_uid,		# 3
+			self.st_gid,		# 4
+
+			self.st_ctime,		# 5
+			self.st_atime,		# 6
+			self.st_mtime,		# 7
+
+			name_len,			# 8
+
 		)
 
-		bdata = b""
-		bdata  += struct.pack("<II", *dataset)
-
-
-		bstr = self.name.encode(encoding="utf-8")
-		bdata += bstr
+		
+		main_bdata = struct.pack(self.STRUCT_STR, *dataset)
+		
+		bdata = b"".join([main_bdata, name_bdata])
 
 		# flat:  134, gip:  135
 		# flat:   90, gip:  103
@@ -48,19 +70,42 @@ class DataRecord(object):
 
 
 	def unpack(self, bdata):
-		# print("rbdata len: ", len(bdata))
-		bhead = bdata[0:8]
-		head_dataset = struct.unpack("<II", bhead)
+		
+		bhead = bdata[0:self.HEAD_SIZE]
+		head_dataset = struct.unpack(self.STRUCT_STR, bhead)
 		self.ftype = head_dataset[0]
 		self.size = head_dataset[1]
 
-		bname = bdata[8: len(bdata) + 1]
-		# print(bdata)
+		self.st_mode = head_dataset[2]
+		self.st_uid = head_dataset[3]
+		self.st_gid = head_dataset[4]
+
+		self.st_ctime = head_dataset[5]
+		self.st_atime = head_dataset[6]
+		self.st_mtime = head_dataset[7]
+
+		name_len = head_dataset[8]
+
+		bname = bdata[self.HEAD_SIZE: len(bdata) + 1]
+		
 		self.name = bname.decode(encoding="utf-8")
 		
 
 	def __str__(self):
 		return "{}".format(self.name)
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 class Data(object):

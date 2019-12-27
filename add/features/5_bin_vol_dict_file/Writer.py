@@ -16,6 +16,10 @@ import os.path
 from Header import Header
 from Dict import Dict
 from Data import DataRecord
+from tools import dtimeit, ETimer
+
+
+FILES_LIST = []
 
 class Writer(object):
 	def __init__(self, scan_path, out_file):
@@ -30,15 +34,30 @@ class Writer(object):
 		fd = open(self.out_file, "wb")
 		fd.seek(Header.SIZE)
 
-		Writer.rescan(self.scan_path, fd, self.fdict, 0, 1)
+		etimer = ETimer()
+		# Writer.rescan(self.scan_path, fd, self.fdict, 0, 1)
+		self.__start_scan(self.scan_path, fd, self.fdict, 0, 1)
+		etimer.elapsed("finish scan")
 
 		end_of_data_addr = fd.tell()
 
 		print("data writed, cur pos: ", end_of_data_addr)
-		print("files: ", len(self.fdict.records_map))
+		print("files: ", self.fdict.records_count)
 
-
+		etimer.elapsed("start pack dict")
 		bin_fdict = self.fdict.pack()
+		etimer.elapsed("finish pack dict")
+		# print(len(bin_fdict))
+
+		# etimer.elapsed("start pack files")
+		# bbb = b""
+		# vvv = []
+		# for r in FILES_LIST:
+		# 	# bbb += 
+		# 	vvv.append(r.pack())
+
+		# bbb.join(vvv)
+		# etimer.elapsed("finish pack files")
 
 
 		fd.write(bin_fdict)
@@ -48,6 +67,9 @@ class Writer(object):
 		self.header.data_size = end_of_data_addr - Header.SIZE
 		self.header.dict_start = end_of_data_addr
 		self.header.dict_size = self.fdict.get_bdata_size()
+		self.header.total_records = self.fdict.records_count
+
+		self.header.print_header()
 
 		bin_header = self.header.pack()
 		fd.seek(0)
@@ -56,18 +78,26 @@ class Writer(object):
 		fd.close()
 
 
+	@dtimeit
+	def __start_scan(self, scan_path, fd, fdict: Dict, parent_id, last_id):
+		Writer.rescan(scan_path, fd, fdict, parent_id, last_id)
+
+
 
 	@staticmethod
 	def rescan(scan_path, fd, fdict: Dict, parent_id, last_id):
 
+		
 		fid = last_id
 
 		for f in os.listdir(scan_path):
 		
 			full_path = os.path.join(scan_path, f)
 			
+			
 			if os.path.isfile(full_path):
-				record = Writer.make_file(f, parent_id, fid)
+				st = os.stat(full_path)		
+				record = Writer.make_file(f, parent_id, fid, st)
 				brecord = record.pack()
 
 				#--- make index
@@ -80,7 +110,8 @@ class Writer(object):
 				fid += 1
 
 			elif os.path.isdir(full_path):
-				record = Writer.make_dir(f, parent_id, fid)
+				st = os.stat(full_path)	
+				record = Writer.make_dir(f, parent_id, fid, st)
 				brecord = record.pack()
 
 				#--- make index
@@ -101,38 +132,31 @@ class Writer(object):
 
 
 	@staticmethod
-	def make_file(name, pid, fid):
-		# print(fid)
-		record = DataRecord()
-		record.name = name
-		record.ftype = 1
-		record.pid = pid
-		record.fid = fid
-
-		# record.fid = self.current_id
-
-		# self.records.append(record)
-
-		# self.current_id += 1
-
-		# return record.fid
-		return record
+	def make_file(name, pid, fid, st):
+		return Writer.make_ffile(name, pid, fid, st, 1)
 
 
 	@staticmethod
-	def make_dir(name, pid, fid):
-		# print(fid)
+	def make_dir(name, pid, fid, st):
+		return Writer.make_ffile(name, pid, fid, st, 2)
+
+
+	@staticmethod
+	def make_ffile(name, pid, fid, st, ftype):
 		record = DataRecord()
 		record.name = name
-		record.ftype = 2
+		record.ftype = ftype
 		record.pid = pid
 		record.fid = fid
-		
-		# record.fid = self.current_id
 
-		# self.records.append(record)
+		record.size = st.st_size
+		record.st_mode = st.st_mode
 
-		# self.current_id += 1
+		record.st_uid = st.st_uid
+		record.st_gid = st.st_gid
 
-		# return record.fid
+		record.st_ctime = st.st_ctime
+		record.st_atime = st.st_atime
+		record.st_mtime = st.st_mtime
+	
 		return record

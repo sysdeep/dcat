@@ -4,11 +4,12 @@
 from Store import Store
 from Writer import Writer
 from Reader import Reader
+from tools import ETimer
 # lin
 SCAN_PATH = "/home/nia/Music"
-SCAN_PATH = "/home/nia/Android"
-SCAN_PATH = "/home/nia/Development/_Comcon"							# 896833 - 23.0 Mb
-XFILE = "/home/nia/Development/_Python/_DCat/binvoldict.binvoldict"
+# SCAN_PATH = "/home/nia/Android"
+# SCAN_PATH = "/home/nia/Development/_Comcon"							# 896833 - 37.4 Mb
+XFILE = "/home/nia/Development/_Python/_DCat/features_files/binvoldict.binvoldict"
 
 
 # win
@@ -30,8 +31,11 @@ XFILE = "/home/nia/Development/_Python/_DCat/binvoldict.binvoldict"
 
 
 #--- new objects
+etimer = ETimer()
 Writer(SCAN_PATH, XFILE).start()
+etimer.elapsed("write")
 Reader(XFILE).print_root_files()
+etimer.elapsed("read")
 # Reader(XFILE).print_tree()
 
 

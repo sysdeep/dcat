@@ -23,17 +23,22 @@ class Reader(object):
 
 	def print_root_files(self):
 		
-		for r in self.fdict.records_map.values():
+
+		self.header.print_header()
+		
+		for r in self.fdict.records:
 			if r.pid == 0:
 				start = r.daddr
 				size = r.dsize
 				self.__fd.seek(start)
 				bfile_data = self.__fd.read(size)
 				record = DataRecord(bfile_data)
-				print(record.name)
+				print("{} : {:>8} {:>8}".format(record.name, record.size, record.st_ctime))
 
 
 	def print_tree(self):
+
+		self.header.print_header()
 
 		Reader.reprint(self.__fd, self.fdict, 0, 0)
 
@@ -41,7 +46,7 @@ class Reader(object):
 	@staticmethod
 	def reprint(fd, fdict, parent_id, ind):
 
-		for r in fdict.records_map.values():
+		for r in fdict.records:
 			if r.pid == parent_id:
 				start = r.daddr
 				size = r.dsize
