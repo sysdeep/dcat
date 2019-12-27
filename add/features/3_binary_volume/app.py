@@ -1,27 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from Store import Store
+# from Store import Store
 from Writer import Writer
 from Reader import Reader
 from tools import ETimer
 # lin
 SCAN_PATH = "/home/nia/Music"
 SCAN_PATH = "/home/nia/Android"
-SCAN_PATH = "/home/nia/Development/_Comcon"							# 896833 - 37.4 Mb
-XFILE = "/home/nia/Development/_Python/_DCat/features_files/binvoldict.binvoldict"
+SCAN_PATH = "/home/nia/Development/_Comcon"							
+# SCAN_PATH = "/home/nia/Development/_Python/_DCat/features_files/dataset"
+XFILE = "/home/nia/Development/_Python/_DCat/features_files/binvolmem.bin"
 
 
-# win
-# flat - 9.59 kb
-
-""" 
-
-    74075
-        size        - 2.66 Mb
-        time        - 5 min
-        mem         - 40 mb
-"""
 # SCAN_PATH = "E:\\Screens"
 # SCAN_PATH = "E:\\_Comcon"
 # XFILE = "E:\\Tmp\\binvoldict.binvoldict"
@@ -40,11 +31,3 @@ etimer.elapsed("read")
 
 
 
-
-
-
-# storew = Store()
-# storew.make_db(SCAN_PATH, XFILE)
-
-# storer = Store()
-# storer.read_db(XFILE)
