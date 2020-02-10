@@ -73,7 +73,8 @@ VOLUME_ICONS = {
 	"net"       : "nfs_unmount.png",
 	"tape"      : "media_tape.png",
 	"crypted"	: "decrypted.png",
-	"other"     : "contents.png"
+	"other"     : "contents.png",
+	"bd"		: "bd_rom.png",
 }
 
 
