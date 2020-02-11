@@ -74,7 +74,7 @@ VOLUME_ICONS = {
 	"tape"      : "media_tape.png",
 	"crypted"	: "decrypted.png",
 	"other"     : "contents.png",
-	"bd"		: "bd_rom.png",
+	"bdrom"		: "bd_rom.png",
 }
 
 
