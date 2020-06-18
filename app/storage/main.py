@@ -5,7 +5,7 @@ from . import shared
 from .Storage import Storage
 
 
-def get_storage():
+def get_storage() -> Storage:
     storage = shared.get_storage()
     if storage is None:
         storage = Storage()

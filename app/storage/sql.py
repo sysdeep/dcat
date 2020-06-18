@@ -92,6 +92,12 @@ GET_VOLUME_ROOT_FILES = """
         FROM files WHERE volume_id=? AND parent_id='0';
 """
 
+GET_VOLUME_ELEMENTS_COUNT = """
+    SELECT count(*) as count
+        FROM files WHERE volume_id=?;
+"""
+
+
 
 GET_PARENT_FILES = """
     SELECT uuid, parent_id, volume_id, name, type, rights, sowner, sgroup, size, ctime, atime, mtime, category, description 

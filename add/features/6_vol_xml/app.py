@@ -52,5 +52,6 @@ DB = "6_xml"
 store = Store()
 # store.create(XDB, DB)
 store.open_db(os.path.join(XDB, DB))
+# store.add_volume("vol1", SCAN_PATH)
 
-store.add_volume("vol 1", SCAN_PATH)
+store.read_volume("vol1", SCAN_PATH) 

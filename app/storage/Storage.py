@@ -15,6 +15,7 @@ from . import cache
 from . import defs
 from .export import ejson, evolume
 from .importer import ivolume
+from .models.VNode import VNode
 
 
 class Storage(object):
@@ -183,6 +184,10 @@ class Storage(object):
 		result = finder.find_top_items(self.db, fnodes)
 
 		return result
+	
+	def get_volume_elements_count(self, vnode: VNode) -> int:
+		"""получить общее кол-во элементов тома"""
+		return self.db.get_volume_elements_count(vnode.uuid)
 	#--- получение элементов --------------------------------------------------
 
 

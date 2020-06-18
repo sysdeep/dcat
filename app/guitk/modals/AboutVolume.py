@@ -69,6 +69,11 @@ class AboutVolume(tkinter.Toplevel):
 		ttk.Label(edit_frame, text="Путь").grid(row=row, column=0, sticky="e", pady=2, padx=5)
 		self.__label_path = ttk.Label(edit_frame)
 		self.__label_path.grid(row=row, column=1, sticky="w", pady=2, padx=5)
+		
+		row += 1
+		ttk.Label(edit_frame, text="Кол-во элементов").grid(row=row, column=0, sticky="e", pady=2, padx=5)
+		self.__label_elements_count = ttk.Label(edit_frame)
+		self.__label_elements_count.grid(row=row, column=1, sticky="w", pady=2, padx=5)
 
 
 		#--- edit description field
@@ -118,6 +123,10 @@ class AboutVolume(tkinter.Toplevel):
 		self.__label_created.config(text=self.vnode.created)
 		self.__label_updated.config(text=self.vnode.updated)
 		self.__label_path.config(text=self.vnode.path)
+		
+		
+		elements_count = self.storage.get_volume_elements_count(self.vnode)
+		self.__label_elements_count.config(text=str(elements_count))
 
 
 	def __update_volume_vtype(self, e):

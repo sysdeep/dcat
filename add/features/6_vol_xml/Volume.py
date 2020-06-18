@@ -132,3 +132,36 @@ class Volume(object):
 			fd.write(etree.tostring(xroot, encoding="utf-8"))
 
 		return True
+
+
+	def read_volume(self, volume_name, scan_path) -> bool:
+
+		# volume_header = VolumeHeader()
+		# volume_header.name = volume_name
+		# volume_header.description = "new volume"
+		# volume_header.scan_path = scan_path
+
+		new_name = volume_name + ".gz"
+		full_path = os.path.join(self.__db_path, new_name)
+
+		# xroot = etree.Element("catalog", volume_header.to_dict())
+
+		# start_scan(xroot, scan_path)
+		print("before open")
+		with gzip.open(full_path, "rb") as fd:
+			bdata = fd.read()
+			print(len(bdata))
+			xroot = etree.fromstring(bdata)
+			# fd.write(etree.tostring(xroot, encoding="utf-8"))
+
+		print(xroot)
+		print("nodes: ", len(xroot))
+		# for x in xroot:
+		# 	print(x)
+
+		return True
+
+
+
+
+

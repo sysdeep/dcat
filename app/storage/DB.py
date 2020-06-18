@@ -170,6 +170,16 @@ class DB(object):
 		# result = make_fnodes(rows)
 		result = loader.make_fnodes(rows)
 		return result
+	
+	def get_volume_elements_count(self, volume_id) -> int:
+		cursor = self.connection.cursor()
+		cursor.execute(sql.GET_VOLUME_ELEMENTS_COUNT, (volume_id, ))
+		res = cursor.fetchone()
+		if res is None:
+			return -1
+		
+		return res[0]
+
 
 	# @tools.dtimeit
 	def get_parent_files(self, parent_id):

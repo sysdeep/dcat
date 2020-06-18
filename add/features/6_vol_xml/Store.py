@@ -40,6 +40,16 @@ class Store(object):
 		return True
 
 
+	def read_volume(self, volume_name: str, scan_path: str) -> bool:
+
+		#--- create volume
+		vol = Volume(self.__db_path)
+		# r = vol.create(volume_name, scan_path)
+		vol.read_volume(volume_name, scan_path)
+
+		#--- update dict
+		#
+		return True
 
 
 	def get_volumes(self):
