@@ -9,7 +9,7 @@ from app.lib import dbus
 
 from .VList import VList
 from .FList import FList
-
+from .info_frame import InfoFrame
 
 
 
@@ -18,18 +18,23 @@ class Explorer(tkinter.Frame):
 		super(Explorer, self).__init__(parent, *args, **kwargs)
 
 
-
+		#--- volumes
 		self.v_list = VList(self)
 		self.v_list.pack(side="left", expand=False, fill="y")
-		self.v_list.set_select_cb(self.__on_select_volume)
-		self.v_list.set_remove_cb(self.__on_remove_volume)
+		self.v_list.set_select_cb(self.__on_volume_selected)
+		self.v_list.set_remove_cb(self.__on_volume_do_remove)
 
-		self.f_list = FList(self)
-		self.f_list.pack(side="right", expand=True, fill="both")
+		#--- volume/file info frame
+		self.__info_frame = InfoFrame(self, width=500, height=500)
+		self.__info_frame.pack(side="right", expand=True, fill="both")
+
+		#--- files
+		self.__f_list = FList(self)
+		self.__f_list.signal_file_selected.connect(self.__on_fnode_selected)
+		self.__f_list.pack(side="right", expand=True, fill="both")
 
 
-		# self.info_frame = InfoFrame(self, width=500, height=500)
-		# self.info_frame.pack(side="right", expand=True, fill="both")
+		
 		#
 
 		self.storage = get_storage()
@@ -52,21 +57,27 @@ class Explorer(tkinter.Frame):
 
 
 	def refresh(self):
-		self.f_list.clear()
-		self.v_list.reload_volumes()
+		"""полное обновление"""
+		self.__f_list.clear()										# очистка списка файлов
+		self.__info_frame.drop_volume()								# сброс информации о томе
+		self.v_list.reload_volumes()								# обновление списка томов
 
 
 
 	#--- volume actions -------------------------------------------------------
-	def __on_select_volume(self, vnode):
+	def __on_volume_selected(self, vnode):
+		"""событие выбора тома"""
 		self.current_vnode = vnode
-		# self.f_list.update_volume(self.current_vnode.uuid)
-		self.f_list.show_volume(self.current_vnode)
-
-
-
-	def __on_remove_volume(self, volume_uuid):
 		
+		self.__f_list.show_volume(self.current_vnode)				# обновляем список файлов
+		self.__info_frame.update_volume(vnode)						# обновляем инфо о томе
+		self.__info_frame.drop_file()								# т.к. том новый - файлов нет
+		
+
+
+
+	def __on_volume_do_remove(self, volume_uuid):
+		"""запрос на удаление тома"""
 		self.storage.remove_volume(volume_uuid)
 		self.refresh()
 	#--- volume actions -------------------------------------------------------
@@ -75,7 +86,11 @@ class Explorer(tkinter.Frame):
 
 
 
-
+	#--- events ---------------------------------------------------------------
+	def __on_fnode_selected(self, fnode):
+		"""событие о выборе ноды"""
+		self.__info_frame.update_file(fnode)			# обновляем инфо ноды
+	#--- events ---------------------------------------------------------------
 
 
 

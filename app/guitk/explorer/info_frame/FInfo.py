@@ -4,6 +4,8 @@
 import tkinter
 from tkinter import ttk
 
+from app.storage.models.FNode import FNode
+
 
 class IRow(object):
     def __init__(self, parent, name, sname):
@@ -15,9 +17,16 @@ class IRow(object):
         self.lkey = ttk.Label(self.parent, text=lkey_text)
         self.vkey = ttk.Label(self.parent, text="")
 
+    #--- public ---------------------------------------------------------------
     def update(self, value):
+        """установка значения"""
         self.vkey.config(text=value)
 
+
+    def drop(self):
+        """сброс"""
+        self.vkey.config(text="")
+    #--- public ---------------------------------------------------------------
 
 
 
@@ -52,9 +61,9 @@ class FInfo(ttk.Frame):
 
 
 
-
-    def update_info(self, fnode):
-        
+    #--- public ---------------------------------------------------------------
+    def update_info(self, fnode: FNode):
+        """обновление данных"""
 
         for irow in self.items:
 
@@ -73,6 +82,12 @@ class FInfo(ttk.Frame):
 
             irow.update(value)
 
+    def drop_info(self):
+        """очистка данных"""
+
+        for irow in self.items:
+            irow.drop()
+    #--- public ---------------------------------------------------------------
 
 
 

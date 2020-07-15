@@ -3,24 +3,30 @@
 
 import tkinter
 from tkinter import ttk
-from ..utils import events, conv
+# from ...utils import events, conv
 
 from .VInfo import VInfo
 from .FInfo import FInfo
 
 # from . import qicon
 from app.storage import get_storage, FRow, FType, VRow
+from app.storage.models.VNode import VNode
+from app.storage.models.FNode import FNode
+
+
+
+
 
 class InfoFrame(ttk.Frame):
 	def __init__(self, parent, *args, **kwargs):
 		super(InfoFrame, self).__init__(parent, *args, **kwargs)
 
 
-		self.vinfo = VInfo(self, width=600)
-		self.vinfo.pack(side="top", fill="x", ipadx=5, ipady=5)
+		self.__volume_info_frame = VInfo(self, width=600)
+		self.__volume_info_frame.pack(side="top", fill="x", ipadx=5, ipady=5)
 
-		self.finfo = FInfo(self)
-		self.finfo.pack(side="top", fill="x", pady=20)
+		self.__file_info_frame = FInfo(self)
+		self.__file_info_frame.pack(side="top", fill="x", pady=20)
 
 
 		self.storage = get_storage()
@@ -32,18 +38,30 @@ class InfoFrame(ttk.Frame):
 		# events.on(events.Event.TREE_SELECT, self.__on_tree_selected)
 
 
-
-	def update_volume(self, vnode):
-		self.vinfo.update_info(vnode)
-
-
-	def update_file(self, fnode):
-		self.finfo.update_info(fnode)
+	#--- public ---------------------------------------------------------------
+	def update_volume(self, vnode: VNode):
+		"""инфо о томе"""
+		self.__volume_info_frame.update_info(vnode)
 
 
-	def on_select_file(self, lnode):
-		self.finfo.update_info(lnode.data)
-		# self.__on_tree_selected(lnode)
+	def update_file(self, fnode: FNode):
+		"""инфо о файле"""
+		self.__file_info_frame.update_info(fnode)
+
+
+	def drop_volume(self):
+		"""сброс инфо о томе и соответственно о файле"""
+		self.__volume_info_frame.drop_info()						# drop volume
+		self.__file_info_frame.drop_info()							# drop file
+
+	def drop_file(self):
+		"""сброс инфо о файле"""
+		self.__file_info_frame.drop_info()
+
+	# def on_select_file(self, lnode):
+	# 	self.__file_info_frame.update_info(lnode.data)
+	# 	# self.__on_tree_selected(lnode)
+	#--- public ---------------------------------------------------------------
 
 
 	# def __on_tree_selected(self, item):

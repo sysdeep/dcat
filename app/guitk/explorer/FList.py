@@ -9,6 +9,7 @@ from tkinter import messagebox
 
 from app.storage import get_storage
 from app.lib import dbus, tools, strings
+from app.lib.EventEmitter import Signal
 from app.lib.fsize import naturalsize
 from ..utils import conv, ticons
 
@@ -124,7 +125,8 @@ class FList(ttk.Frame):
 		# dbus.eon(dbus.SHOW_REMOVE_FTREE_OK, self.__on_ftree_removed)
 
 
-
+		#--- signals
+		self.signal_file_selected = Signal()			# up signal(FNode)
 
 
 
@@ -319,9 +321,15 @@ class FList(ttk.Frame):
 
 
 	def __select_row(self, e):
-		"""выбор файла - пока пусто(использовался для оперативного отображения информации о ноде)"""
-		# fnode = self.__get_selected_fnode()
-		pass
+		"""выбор файла"""
+
+		fnode = self.__get_selected_fnode()
+
+		if fnode is None:
+			return False
+
+		#--- send to up
+		self.signal_file_selected.emit(fnode)
 
 
 	def __open_row(self, e):
