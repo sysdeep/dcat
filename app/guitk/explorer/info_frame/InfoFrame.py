@@ -5,6 +5,7 @@ import tkinter
 from tkinter import ttk
 # from ...utils import events, conv
 
+from .DInfo import DInfo
 from .VInfo import VInfo
 from .FInfo import FInfo
 
@@ -21,6 +22,9 @@ class InfoFrame(ttk.Frame):
 	def __init__(self, parent, *args, **kwargs):
 		super(InfoFrame, self).__init__(parent, *args, **kwargs)
 
+
+		self.__db_info_frame = DInfo(parent=self)
+		self.__db_info_frame.pack(side="top", fill="x")
 
 		self.__volume_info_frame = VInfo(self, width=600)
 		self.__volume_info_frame.pack(side="top", fill="x", ipadx=5, ipady=5)
