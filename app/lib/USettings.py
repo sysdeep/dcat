@@ -19,7 +19,7 @@ import os
 
 APP_NAME = "dcat"
 SETINGS_FILE = "settings.json"
-MAX_LAST_BASES = 20
+MAX_LAST_BASES = 50
 
 
 class USettings(object):
@@ -92,12 +92,14 @@ class USettings(object):
 				value 	[string] - путь до базы
 		"""
 
-		#--- удаляем уже сущ.
+		#--- уже сущ. - ничего не делаем
 		if value in self.data["lastbases"]:
-			self.data["lastbases"].remove(value)
+			return False
+			# self.data["lastbases"].remove(value)
 
 		#--- проверяем на переполнение
-		if len(self.data["lastbases"]) > self.data["max_last_bases"]:
+		# if len(self.data["lastbases"]) > self.data["max_last_bases"]:
+		if len(self.data["lastbases"]) > MAX_LAST_BASES:
 			self.data["lastbases"].pop()
 
 		#--- добавляем

@@ -36,7 +36,7 @@ class Explorer(tkinter.Frame):
 
 		#--- volume/file info frame
 		self.__info_frame = InfoFrame(self, width=500, height=500)
-		self.__info_frame.pack(side="right", expand=True, fill="both")
+		self.__info_frame.pack(side="right", expand=False, fill="both")
 
 		#--- files
 		self.__f_list = FList(self)

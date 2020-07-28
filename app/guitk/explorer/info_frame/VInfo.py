@@ -43,6 +43,21 @@ class VInfo(ttk.Frame):
 		# self.configure(width=500, relief="groove", style="new.TFrame")
 		# self.configure(style="new.TFrame")
 
+
+
+		# # self.__text = tkinter.Text(self, width=60)
+		# self.__text = tkinter.Text(self)
+		# self.__text.pack(side="top", expand=False)
+		# self.__text.insert(tkinter.END, "Bye Bye..... sljkhlkajs j;laks j;ak ja;lk j;alk ja;lskdj; a;s ;laks jd;laksjd ;a sj;'akj;aksjd;alksjd;alksjd")
+		#
+		# #--- horisontal scroll
+		# hsb = ttk.Scrollbar(self, orient="horizontal", command=self.__text.xview)
+		# self.__text['xscroll'] = hsb.set
+		# # hsb.pack(side="right", expand=False, fill="y")
+		# hsb.pack(expand=True, fill="x")
+
+
+
 		#--- title
 		ttk.Label(self, text="Свойства тома").pack(side="top")
 
@@ -58,19 +73,37 @@ class VInfo(ttk.Frame):
 			self.__make_irow("path", "Путь"),
 			self.__make_irow("vtype", "Тип"),
 		)
+		
+		self.__add_items = (
+			self.__make_irow("fnodes_count", "Кол-во элементов"),
+		)
 
-
+		gi = 0
 		for i, irow in enumerate(self.__items):
-
-			irow.lkey.grid(row=i, column=0, sticky="e")
-			irow.vkey.grid(row=i, column=1, sticky="w")
+			gi = gi + i
+			irow.lkey.grid(row=gi, column=0, sticky="e")
+			irow.vkey.grid(row=gi, column=1, sticky="w")
+		
+		gi += 1
+		for i, irow in enumerate(self.__add_items):
+			gi = gi + i
+			irow.lkey.grid(row=gi, column=0, sticky="e")
+			irow.vkey.grid(row=gi, column=1, sticky="w")
 			
-
+		#--- description
+		# self.__description = tkinter.Label(self, wraplength=20, text="very long description")
+		# self.__description.pack(side="top")
+		
+		#--- controls
+		# self.__controls = ttk.Frame(self)
+		# self.__controls.pack(side="bottom", fill="x", expand=True)
+		#
+		# ttk.Button(self.__controls, text="Edit").pack()
 
 
 
 	#--- public ---------------------------------------------------------------
-	def update_info(self, vnode):
+	def update_info(self, vnode, elements_count=0):
 		"""обновление данных"""
 		for irow in self.__items:
 			try:
@@ -79,10 +112,19 @@ class VInfo(ttk.Frame):
 				value = "---"
 
 			irow.update(value)
+			
+		# TODO: да да... очень криво...
+		# print(elements_count)
+		for irow in self.__add_items:
+			if irow.name == "fnodes_count":
+				irow.update(str(elements_count))
 
 	def drop_info(self):
 		"""очистка данных"""
 		for irow in self.__items:
+			irow.drop()
+			
+		for irow in self.__add_items:
 			irow.drop()
 	#--- public ---------------------------------------------------------------
 

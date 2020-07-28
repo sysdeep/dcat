@@ -45,7 +45,10 @@ class InfoFrame(ttk.Frame):
 	#--- public ---------------------------------------------------------------
 	def update_volume(self, vnode: VNode):
 		"""инфо о томе"""
-		self.__volume_info_frame.update_info(vnode)
+		
+		elements_count = self.storage.get_volume_elements_count(vnode)
+		self.__volume_info_frame.update_info(vnode, elements_count)
+		
 
 
 	def update_file(self, fnode: FNode):
