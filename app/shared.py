@@ -4,17 +4,17 @@
 from .lib.USettings import USettings
 
 DATA = {
-	"usettings"	: None,
+	"usettings"	: USettings(),
 }
 
 
 
 
-def get_usettings():
-	usettings = DATA.get("usettings")
-	if usettings is None:
-		usettings = USettings()
-		usettings.open_settings()
-		DATA["usettings"] = usettings
+def get_usettings() -> USettings:
+	# usettings = DATA.get("usettings")
+	# if usettings is None:
+	# 	usettings = USettings()
+	# 	usettings.open_settings()
+	# 	DATA["usettings"] = usettings
 	return DATA["usettings"]
 

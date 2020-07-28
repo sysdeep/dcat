@@ -8,6 +8,7 @@ from app.lib import dbus
 
 
 from .VList import VList
+from .DBList import DBList
 from .FList import FList
 from .info_frame import InfoFrame
 
@@ -18,11 +19,20 @@ class Explorer(tkinter.Frame):
 		super(Explorer, self).__init__(parent, *args, **kwargs)
 
 
+		#--- right side
+		__right_side = tkinter.Frame(self)
+		__right_side.pack(side="left", expand=False, fill="y")
+
+
 		#--- volumes
-		self.v_list = VList(self)
-		self.v_list.pack(side="left", expand=False, fill="y")
+		self.v_list = VList(__right_side)
+		self.v_list.pack(side="top", expand=True, fill="y")
 		self.v_list.set_select_cb(self.__on_volume_selected)
 		self.v_list.set_remove_cb(self.__on_volume_do_remove)
+		
+		#--- databases
+		self.__dblist = DBList(__right_side)
+		self.__dblist.pack(side="top", expand=False, fill="y")
 
 		#--- volume/file info frame
 		self.__info_frame = InfoFrame(self, width=500, height=500)

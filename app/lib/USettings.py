@@ -29,6 +29,8 @@ class USettings(object):
 
 		при загрузке конфига происходит перетерание ключей словаря data, тем самым - мы не боимся добавлять переменные в код
 	"""
+	# EV_SAVED = "EV_SAVED"
+	# EV_OPENED = "EV_OPENED"
 	def __init__(self):
 		self.settings_path = self.__make_os_file_path()
 		self.file_path = os.path.join(self.settings_path, SETINGS_FILE)
@@ -151,6 +153,16 @@ class USettings(object):
 			self.save()
 
 	
+	#--- events ---------------------------------------------------------------
+	# def connect(self, ev, handler):
+	# 	pass
+	#
+	# def disconnect(self, ev, handler):
+	# 	pass
+	#--- events ---------------------------------------------------------------
+
+
+
 
 if __name__ == "__main__":
 

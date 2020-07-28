@@ -4,6 +4,7 @@
 import sys
 import signal
 from .guitk import MainWindow
+from .shared import get_usettings
 
 
 class AppTK(object):
@@ -13,6 +14,10 @@ class AppTK(object):
 		#--- перехват системных сигналов
 		signal.signal(signal.SIGINT, self.__signal_handler)			# обработка Ctrl+C
 
+		#--- настройки приложения
+		get_usettings().open_settings()
+		
+		#--- главное окно
 		self.gui = MainWindow()
 
 
