@@ -16,6 +16,7 @@ class Ctrl(object):
 
 		#--- bind events
 		dbus.eon(dbus.SHOW_EXPORT_VOLUME, self.__on_show_export_volume)
+		dbus.eon(dbus.SHOW_EXPORT_VOLUME_A, self.__on_show_export_volume_a)
 		dbus.eon(dbus.SHOW_EXPORT_VOLUME_OK, self.__on_show_export_volume_ok)
 
 		dbus.eon(dbus.SHOW_IMPORT_VOLUME, self.__on_show_import_volume)
@@ -35,6 +36,17 @@ class Ctrl(object):
 		if export_file_path:
 			storage = get_storage()
 			storage.export_volume(volume_id, export_file_path)
+
+	def __on_show_export_volume_a(self, volume_id, volume_name):
+		"""запрос на сохранение экспорта тома"""
+		title = "Расположение файла экспорта тома: " + volume_name
+		file_name = volume_name + ".sson"
+		export_file_path = asksaveasfilename(defaultextension=".sson", title=title, initialfile=file_name)
+		# print(export_file_path)
+
+		if export_file_path:
+			storage = get_storage()
+			storage.export_volume_a(volume_id, export_file_path)
 
 
 
