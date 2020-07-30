@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import gzip
+import re
 
 def __kv(key, value):
 	return "{}:{}\n".format(key, value)
@@ -15,6 +16,8 @@ def __vol_info(data: dict):
 	result += __kv("version", 1)
 	result += __kv("name", data["name"])
 	result += __kv("description", data["description"])
+	# result += __kv("description", re.escape(data["description"]))
+	result += __kv("description", data["description"].encode())
 	result += __kv("created", data["created"])
 	result += __kv("vtype", data["vtype"])
 	return result
