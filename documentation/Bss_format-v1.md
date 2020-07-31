@@ -7,8 +7,12 @@
 
 ## Форматы данных
 
-- uint 4 - unsigned int 4 bytes
+- uint 4 - unsigned int 4 bytes (I)(2 147 483 647)
+- ushort 2 - unsigned short 2 bytes (H)(65535)
 - bstr - счётная строка [[str_len - uint 4][binary string - str_len]]
+
+
+
 
 ## Структура документа
 
@@ -62,9 +66,29 @@
 
 
 
-# TODO
+
 
 ## Структура Записи данных - row_struct
+
+[type][size][ctime][rights][fid][pid][reserv][reserv][name][description]
+
+- type 			[ushort 2]	- тип файла(каталог/файл...)
+- size 			[uint 4]	- размер записи
+- ctime 		[uint 4]	- дата создания файла(unix timestamp)
+- rights 		[ushort 2]	- код доступа(unix 777)
+- fid 			[uint 4]	- id записи
+- pid 			[uint 4]	- id родителя(0 - корень)
+- reserv 		[uint 4]	- резерв
+- name 			[bstr]		- название
+- description 	[bstr]		- произвольное описание
+
+
+Эти не пригодились ещё нигде...
+
+- owner 		?[uint 4]	- владелец
+- group			?[uint 4]	- группа
+
+
 
 
 
