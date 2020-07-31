@@ -56,6 +56,7 @@ class VList(tkinter.Frame):
 		self.cmenu.add_command(label="Удалить", command=self.__remove_volume, image=ticons.ticon(ticons.TRASH), compound="left")
 		self.cmenu.add_command(label="Экспорт", command=self.__export_volume, image=ticons.ticon(ticons.I_EXPORT), compound="left")
 		self.cmenu.add_command(label="Экспорт A", command=self.__export_volume_a, image=ticons.ticon(ticons.I_EXPORT), compound="left")
+		self.cmenu.add_command(label="Экспорт B", command=self.__export_volume_b, image=ticons.ticon(ticons.I_EXPORT), compound="left")
 		# self.cmenu.add_separator()
 		# self.cmenu.add_command(label="Закрыть", command=self.__hide_cmenu)
 
@@ -214,6 +215,16 @@ class VList(tkinter.Frame):
 		vnode = self.__volumes_map[self.current_volume_id]
 
 		dbus.emit(dbus.SHOW_EXPORT_VOLUME_A, self.current_volume_id, vnode.name)
+		
+		
+	def __export_volume_b(self):
+		"""отобразить окно экспорта заданного тома"""
+		if self.current_volume_id is None:
+			return False
+
+		vnode = self.__volumes_map[self.current_volume_id]
+
+		dbus.emit(dbus.SHOW_EXPORT_VOLUME_B, self.current_volume_id, vnode.name)
 
 
 
