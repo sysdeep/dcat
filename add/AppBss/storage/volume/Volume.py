@@ -4,6 +4,7 @@ import gzip
 from enum import Enum
 import struct
 import datetime
+import time
 from .BReader import BReader
 
 def ushort2(v: bytes) -> int:
@@ -15,7 +16,16 @@ def uint4(v: bytes) -> int:
 def ulong8(v: bytes) -> int:
 	return struct.unpack("<Q", v)[0]
 
+def timeit(func):
+	def timed(*args, **kwargs):
+		ts = time.time()
+		result = func(*args, **kwargs)
+		te = time.time()
 
+		print("timeit: ", te - ts)
+		return result
+
+	return timed
 
 
 DET = "-"*10
@@ -149,9 +159,13 @@ class Volume(object):
 
 
 	def read_body(self):
+		self.__roots = []
+		self.__tmap = {}
+		
 		fd = gzip.open(self.path, "rb")
 		fd.seek(self.__body_start)
 		
+		t1 = time.time()
 		
 		current_file = 0
 		while True:
@@ -186,10 +200,13 @@ class Volume(object):
 				break
 			
 		fd.close()
+		t2 = time.time()
+		
+		print("parse body time: ", t2-t1)
 		
 		self.__link()
 
-
+	@timeit
 	def __link(self):
 		for r in self.__tmap.values():
 			if r.parent == 0:

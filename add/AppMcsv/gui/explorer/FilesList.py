@@ -225,7 +225,7 @@ class FilesList(QWidget):
 		self.ilist.addTopLevelItem(tree_item)
 		
 		
-		print(r.childrens)
+		# print(r.childrens)
 		for node in r.childrens:
 			self.__re_insert(node, tree_item)
 			# ti = QTreeWidgetItem([node.name, size, ctime])

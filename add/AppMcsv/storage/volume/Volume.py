@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import gzip
 from enum import Enum
-
+import time
 
 DET = "-"*10
 
@@ -97,11 +97,14 @@ class Volume(object):
 
 
 	def read_body(self):
+		self.__tree = []
+		self.__tmap = {}
 		fd = gzip.open(self.path, "rt", encoding="utf-8")
 		
+		t1 = time.time()
 		
 		section = Sections.header
-		c = 1000
+		c = 10000000000
 		while True:
 		
 			line = fd.readline().strip()
@@ -116,7 +119,7 @@ class Volume(object):
 					# pass header
 					pass
 			elif section == Sections.body:
-				print(line)
+				# print(line)
 				
 				record = parse_record(line)
 				# self.__tree.append(record)
@@ -135,8 +138,16 @@ class Volume(object):
 			if c < 0:
 				print("emerg")
 				break
-			
+		print("*"*20)
+		print("files: ", c)
+		print("*"*20)
 		fd.close()
+		
+		
+		t2 = time.time()
+		
+		print("parse body time: ", t2-t1)
+		
 		
 		self.__link()
 

@@ -23,7 +23,7 @@ class Explorer(QWidget):
 		
 		volumes = []
 		for vol in storage.volumes:
-			print(vol.name)
+			# print(vol.name)
 			v = Vnode(vol.name, vol.name)
 			volumes.append(v)
 		
@@ -67,7 +67,7 @@ class Explorer(QWidget):
 	def __on_volume_selected(self, volume_uuid):
 		
 		
-		print(volume_uuid)
+		# print(volume_uuid)
 		
 		storage = get_storage()
 		fvol = None
@@ -81,12 +81,12 @@ class Explorer(QWidget):
 			fvol.read_body()
 			records = fvol.get_root()
 			
-			print("-"*20)
+			# print("-"*20)
 			for r in records:
-				print(r.name)
+				# print(r.name)
 				# self.files_list.insert_file(r.name)
 				self.files_list.insert_record(r)
-			print("-"*20)
+			# print("-"*20)
 		
 		
 		
