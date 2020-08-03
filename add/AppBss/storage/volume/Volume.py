@@ -159,6 +159,8 @@ class Volume(object):
 
 
 	def read_body(self):
+		print("read body of: ", self.name)
+		print("files to read: ", self.__total_records)
 		self.__roots = []
 		self.__tmap = {}
 		
@@ -186,6 +188,10 @@ class Volume(object):
 			#--- [row_struct]
 			row_data = fd.read(row_len)
 			record = self.__un_row(row_data)		# TODO
+			# record = Record()
+			# record.name = "q1"
+			# record.parent_id = 0
+			# record.uuid = 234
 			
 			self.__tmap[record.uuid] = record
 			if record.parent == 0:
@@ -198,7 +204,10 @@ class Volume(object):
 				print("processed records > total records - break")
 				print(current_file, " > ", self.__total_records)
 				break
-			
+		
+
+		print("read files: ", current_file)
+
 		fd.close()
 		t2 = time.time()
 		
@@ -206,15 +215,20 @@ class Volume(object):
 		
 		self.__link()
 
+		# print("tmap len: ", len(self.__tmap))
+
 	@timeit
 	def __link(self):
 		for r in self.__tmap.values():
 			if r.parent == 0:
 				continue
 			
+			
 			parent_node = self.__tmap.get(r.parent)
 			if parent_node:
 				parent_node.append(r)
+			else:
+				print("node not found...")
 			
 
 
@@ -268,6 +282,24 @@ class Volume(object):
 	
 	
 	def __un_row(self, bdata) -> Record:
+
+
+		# res = struct.unpack("<H", bdata[0:2])
+		# res = struct.unpack("<Q", bdata[2:2+8])
+		# res = struct.unpack("<Q", bdata[2+8:2+8+8])
+		# res = struct.unpack("<H", bdata[2+8+8:2+8+8+2])
+		# res = struct.unpack("<I", bdata[2+8+8+2:2+8+8+2+4])
+		# res = struct.unpack("<I", bdata[2+8+8+2+4:2+8+8+2+4+4])
+
+		# r = Record()
+		# r.name = "name"
+		# r.uuid = 1
+		# r.parent = 0
+		# r.ftype = 1
+
+		# return r
+
+
 		reader = BReader(bdata)
 	
 		#--- type 			[ushort 2]	- тип файла(каталог/файл...)
@@ -289,10 +321,10 @@ class Volume(object):
 		pid = reader.read_uint()				# TODO
 		
 		#--- name 			[bstr]		- название
-		name = reader.read_string()
-		
+		# name = reader.read_string()
+		name = "Name"
 		#--- description 	[bstr]		- произвольное описание
-		description = reader.read_string()
+		# description = reader.read_string()
 	
 		# print("\t", name)
 	

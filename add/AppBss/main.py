@@ -10,7 +10,7 @@ from .shared import get_storage
 TMP_STORAGE = "/home/nia/Development/_Python/_DCat/ExportB/gz"
 
 class AppQT(object):
-	def __init__(self):
+	def __init__(self, store_path=None):
 
 
 
@@ -18,8 +18,11 @@ class AppQT(object):
 		signal.signal(signal.SIGINT, self.__signal_handler)			# обработка Ctrl+C
 
 
+
+		read_dir = store_path if store_path else TMP_STORAGE
+
 		
-		get_storage().read_dir(TMP_STORAGE)
+		get_storage().read_dir(read_dir)
 
 		self.app = QApplication(sys.argv)
 		self.gui = MainWindow(None)
@@ -41,7 +44,12 @@ class AppQT(object):
 
 
 if __name__ == "__main__":
-	app = AppQT()
+
+	if len(sys.argv) > 1:
+		path = sys.argv[1]
+	else:
+		path = None
+	app = AppQT(store_path=path)
 	app.start()
 	
 	
