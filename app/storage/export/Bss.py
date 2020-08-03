@@ -5,6 +5,7 @@ import re
 import base64
 import struct
 from app.lib import tools
+import time
 
 
 MAGIC = 0xfafb
@@ -28,7 +29,24 @@ def __pack_str(text: str):
 	return bdata
 
 
-
+VOLUME_ICONS = {
+	"cd"        : 1,
+	"dvd"       : 2,
+	"bdrom"		: 3,
+	"crypted"	: 4,
+	"folder"    : 5,
+	
+	"audio_cd"  : 6,
+	"hdd"       : 7,
+	"hdd_usb"   : 8,
+	"flash"     : 9,
+	"sd"        : 10,
+	"floppy"    : 11,
+	"net"       : 12,
+	"tape"      : 13,
+	"other"     : 14,
+	
+}
 
 
 
@@ -36,17 +54,45 @@ def __pack_str(text: str):
 def __vol_info(data: dict, records_len: int):
 	"""
 	{'created': '2017-09-27 11:05:42', 'name': 'oxygen_16x16', 'description': None,
-	'updated': None, 'uuid': '3a618114-f766-4767-a058-79d3a1b1da07', 'vtype': 'cd', 'path': '/home/nia/Development/_Python/_DCat/oxygen_16x16'}
+	'updated': None, 'uuid': '3a618114-f766-4767-a058-79d3a1b1da07',
+	'vtype': 'cd', 'path': '/home/nia/Development/_Python/_DCat/oxygen_16x16'}
+	
+	
+	
+	 %Y  Year with century as a decimal number.
+    %m  Month as a decimal number [01,12].
+    %d  Day of the month as a decimal number [01,31].
+    %H  Hour (24-hour clock) as a decimal number [00,23].
+    %M  Minute as a decimal number [00,59].
+    %S  Second as a decimal number [00,61].
+    %z  Time zone offset from UTC.
+    %a  Locale's abbreviated weekday name.
+    %A  Locale's full weekday name.
+    %b  Locale's abbreviated month name.
+    %B  Locale's full month name.
+    %c  Locale's appropriate date and time representation.
+    %I  Hour (12-hour clock) as a decimal number [01,12].
+    %p  Locale's equivalent of either AM or PM.
+
 	
 	"""
+	try:
+		time_tuple = time.strptime(data["created"], "%Y-%m-%d %H:%M:%S")
+		timestamp = int(time.mktime(time_tuple))
+	except Exception as e:
+		print(e)
+		timestamp = 0
+		
+	icon_id = VOLUME_ICONS.get(data["vtype"], 14)			# or other
+	
 	
 	bdata = b''
 	
 	#--- [created](8)
-	bdata += __ulong8(0)				# TODO
+	bdata += __ulong8(timestamp)
 	
 	#--- [icon](2)
-	bdata += __ushort2(1)				# TODO
+	bdata += __ushort2(icon_id)
 	
 	#--- [records](8)
 	bdata += __ulong8(records_len)
@@ -86,23 +132,25 @@ def __format_row(row_data: dict) -> bytes:
 	
 	bdata = b''
 	
-	#--- type 			[ushort 2]	- тип файла(каталог/файл...)
-	bdata += __ushort2(1)				# TODO
+	#--- type 			[ushort 2]	- тип файла(каталог - 0/файл - 1)
+	bdata += __ushort2(row_data["ftype"])
 	
 	#--- size 			[ulong 8]	- размер записи
 	bdata += __ulong8(row_data["size"])
 	
 	#--- ctime 		[ulong 8]	- дата создания файла(unix timestamp)
-	bdata += __ulong8(0)				# TODO
+	bdata += __ulong8(int(row_data["ctime"]))
 	
 	#--- rights 		[ushort 2]	- код доступа(unix 777)
 	bdata += __ushort2(row_data["rights"])
 	
 	#--- fid 			[uint 4]	- id записи
-	bdata += __uint4(0)					# TODO
+	# bdata += __uint4(0)					# TODO
+	bdata += __uint4(row_data["uuid"])
 	
 	#--- pid 			[uint 4]	- id родителя(0 - корень)
-	bdata += __uint4(0)					# TODO
+	# bdata += __uint4(0)					# TODO
+	bdata += __uint4(row_data["parent_id"])
 	
 	#--- name 			[bstr]		- название
 	bdata += __pack_str(row_data["name"])
@@ -116,8 +164,43 @@ def __format_row(row_data: dict) -> bytes:
 
 
 
+def __convert_files(files: list):
+	
+	omap = {
+		"0"	: 0,
+	}			# uuid: new id
+	
+	
+	new_id = 1
+	
+	#--- fix root parent
+	# for row in files:
+	# 	if row["parent_id"] == "0":
+	# 		row["parent_id"] = 0
+	
+	#--- update fid
+	for row in files:
+		omap[row["uuid"]] = new_id
+		row["uuid"] = new_id
+		new_id += 1
+		
+	#--- update parents
+	for row in files:
+		try:
+			new_parent_id = omap[row["parent_id"]]
+		except:
+			print("!!! no found parent in omap")
+			continue
+			
+		row["parent_id"] = new_parent_id
+
 @tools.dtimeit
 def start_export(vol_info: dict, files_list: list, file_path: str):
+	
+	
+	
+	#--- convert files(fid/pid)
+	__convert_files(files_list)
 	
 	
 	

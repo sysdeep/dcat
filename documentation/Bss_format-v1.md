@@ -73,7 +73,7 @@
 
 [type][size][ctime][rights][fid][pid][name][description]
 
-- type 			[ushort 2]	- тип файла(каталог/файл...)
+- type 			[ushort 2]	- тип файла(каталог - 0/файл - 1)
 - size 			[ulong 8]	- размер файла
 - ctime 		[ulong 8]	- дата создания файла(unix timestamp)
 - rights 		[ushort 2]	- код доступа(unix 777)
@@ -107,3 +107,27 @@
 - Повторить чтение данных
 - Проверить контроль
 
+
+
+
+## Коды типов иконок
+```
+VOLUME_ICONS = {
+	"cd"        : 1,
+	"dvd"       : 2,
+	"bdrom"		: 3,
+	"crypted"	: 4,
+	"folder"    : 5,
+
+	"audio_cd"  : 6,
+	"hdd"       : 7,
+	"hdd_usb"   : 8,
+	"flash"     : 9,
+	"sd"        : 10,
+	"floppy"    : 11,
+	"net"       : 12,
+	"tape"      : 13,
+	"other"     : 14,
+
+}
+```
