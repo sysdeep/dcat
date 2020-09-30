@@ -25,6 +25,7 @@ SHOW_DATABASES			= "show_databases"				# args: None
 SHOW_EXPORT_VOLUME		= "show_export_volume"			# args: volume_id, volume_name
 SHOW_EXPORT_VOLUME_A	= "show_export_volume_a"		# args: volume_id, volume_name
 SHOW_EXPORT_VOLUME_B	= "show_export_volume_b"		# args: volume_id, volume_name
+SHOW_EXPORT_VOLUME_10	= "show_export_volume_10"		# args: volume_id, volume_name
 SHOW_EXPORT_VOLUME_OK	= "show_export_volume_ok"		# args: None
 SHOW_EXPORT_VOLUME_ERR	= "show_export_volume_err"		# args: None
 

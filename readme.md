@@ -9,3 +9,13 @@
 - tkinter
 - sqlite3
 
+
+
+
+
+
+
+### Dev
+
+- 8 - python3 -m add.AppBss.main
+- 10 - python3 -m add.features.10_binmap.viewer.main

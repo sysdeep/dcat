@@ -13,7 +13,7 @@ from . import sbus
 from . import finder
 from . import cache
 from . import defs
-from .export import ejson, evolume, Mcsv, Bss
+from .export import ejson, evolume, Mcsv, Bss, e_10
 from .importer import ivolume
 from .models.VNode import VNode
 
@@ -423,6 +423,50 @@ class Storage(object):
 		# 	dbus.emit(dbus.SHOW_EXPORT_VOLUME_ERR)
 	
 		Bss.start_export(volume_info, files_list=files, file_path=export_file_path)
+		dbus.emit(dbus.SHOW_EXPORT_VOLUME_OK)
+		
+		
+		
+		
+		
+	def export_volume_10(self, volume_id, export_file_path):
+		"""new experiment"""
+		log.debug("export volume - " + volume_id)
+		log.debug("export path - " + export_file_path)
+
+		#--- sysinfo
+		sys_info = self.get_system_info()
+		sys_info["sorage_path"] = self.storage_path
+
+		#--- volume info
+		vnode = self.db.get_volume(volume_id)
+		volume_info = vnode.make_data_dict()
+
+
+		#--- files
+		files = []
+		fnodes = self.db.get_volume_all_files(volume_id)
+		for fnode in fnodes:
+			result = fnode.make_data_dict()
+			files.append(result)
+
+
+		print("-"*20)
+		print(sys_info)
+		print("-"*20)
+		print(volume_info)
+		print("-"*20)
+		# print(files)
+		print("-"*20)
+		# print(export_file_path)
+		print("-"*20)
+		# result = evolume.export(sys_info, volume_info, files, export_file_path)
+		# if result:
+		# 	dbus.emit(dbus.SHOW_EXPORT_VOLUME_OK)
+		# else:
+		# 	dbus.emit(dbus.SHOW_EXPORT_VOLUME_ERR)
+	
+		e_10.start_export(volume_info, files_list=files, file_path=export_file_path)
 		dbus.emit(dbus.SHOW_EXPORT_VOLUME_OK)
 
 
