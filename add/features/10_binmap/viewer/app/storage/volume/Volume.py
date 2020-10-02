@@ -138,10 +138,11 @@ class Record:
 		self.uid = 0			# 4
 		self.parent_id = 0		# 5
 		self.name_pos = 0		# 6
+		self.name_size = 0		# 7
 		
 		
 	def unpack(self, bdata: bytes):
-		row_tuple = struct.unpack("<HQQHIII", bdata)
+		row_tuple = struct.unpack("<HQQHIIII", bdata)
 		self.ftype = row_tuple[0]
 		self.size = row_tuple[1]
 		self.ctime = row_tuple[2]
@@ -149,6 +150,9 @@ class Record:
 		self.uid = row_tuple[4]
 		self.parent_id = row_tuple[5]
 		self.name_pos = row_tuple[6]
+		self.name_size = row_tuple[7]
+
+
 
 	def pack(self) -> bytes:
 
@@ -160,7 +164,8 @@ class Record:
 		
 		
 class Records:
-	RECORD_LEN = 32			# длина бинарных данных 1 записи
+	# RECORD_LEN = 32			# длина бинарных данных 1 записи
+	RECORD_LEN = 36			# длина бинарных данных 1 записи
 	def __init__(self):
 		self.__buffer = BytesIO()
 		self.items_count = 0
@@ -219,6 +224,16 @@ class Texts:
 		str_bdata = self.__buffer.read(str_len)
 		
 		return str_bdata.decode("utf-8")
+
+
+	def get_item_v2(self, pos, size):
+		# print("pos", pos)
+		self.__buffer.seek(pos)
+		
+		
+		str_bdata = self.__buffer.read(size)
+		
+		return str_bdata.decode("utf-8")
 	
 	
 	
@@ -255,7 +270,27 @@ class Volume(object):
 		self.records = Records()
 		self.texts = Texts()
 		
-		
+
+
+	@staticmethod
+	@timeit
+	def test_unpack_texts(records, texts):
+		print("unpack all texts")
+		for r in records:
+			name = texts.get_item_v2(r.name_pos, r.name_size)
+			r.qqqname = name
+			# print(name)
+
+
+	# @staticmethod
+	# @timeit
+	# def test_unpack_texts(records, texts):
+	# 	print("unpack all texts")
+	# 	for r in records:
+	# 		name = texts.get_item(r.name_pos)
+	# 		r.qqqname = name
+	# 		# print(name)
+
 		
 	def load(self):
 		fd = gzip.open(self.path, "rb")
@@ -303,6 +338,12 @@ class Volume(object):
 		print("section_texts readed len:", len(section_texts))
 		self.texts.set_bdata(section_texts)
 		
+
+
+		self.test_unpack_texts(self.records.items, self.texts)
+
+
+
 		# self.__total_records = self.__un_header(header_data)
 		
 		# #--- [magic](2)
@@ -359,6 +400,7 @@ class Volume(object):
 	@timeit
 	def get_vrecords(self, parent_id: int) -> list:
 		"""получить список готовых записей"""
+		print("get vrecords")
 		result = []
 		
 		for r in self.records.items:
@@ -371,7 +413,8 @@ class Volume(object):
 				
 				vr = VRecord()
 				vr.ftype = r.ftype
-				vr.name = self.texts.get_item(r.name_pos)
+				# vr.name = self.texts.get_item(r.name_pos)
+				vr.name = self.texts.get_item_v2(r.name_pos, r.name_size)
 				vr.uid = r.uid
 				result.append(vr)
 		

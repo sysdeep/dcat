@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import os
-from .volume.Volume import Volume
+# from .volume.Volume import Volume
+
+from app.lib.volume import Volume
+
 
 class Storage(object):
 	def __init__(self):
@@ -19,9 +22,13 @@ class Storage(object):
 	#
 	
 	
-	def open_volume(self, volume_path) -> Volume:
-		self.volume = Volume(volume_path)
-		self.volume.load()
-		# vol.read_body()
+	def open_volume(self, volume_path: str) -> Volume:
+		
+		
+		
+		self.volume = Volume()
+		
+		self.volume.load(volume_path)
+		
 		
 		return self.volume

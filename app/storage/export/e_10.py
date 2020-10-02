@@ -191,6 +191,7 @@ class RowData:
 		self.parent_id = 0
 		
 		self.text_data_pos = 0
+		self.text_data_size = 0			# v2
 	
 	def set_data(self, row_data: dict):
 		
@@ -238,6 +239,7 @@ class RowData:
 		
 		#--- text_data local offset 			[uint 4]
 		buf.write(uint4(self.text_data_pos))
+		buf.write(uint4(self.text_data_size))		# v2
 		
 		return buf
 
@@ -369,10 +371,14 @@ def __create_sections(files_list: list) -> (BytesIO, BytesIO):
 		
 		
 		
+		bname = fdata["name"].encode(encoding="utf-8")
+		rd.text_data_size = len(bname)
+		
+		# td = TextData()
+		# td.set_data(fdata)
 		
 		
-		td = TextData()
-		td.set_data(fdata)
+		
 		
 		
 		# try:
@@ -389,8 +395,9 @@ def __create_sections(files_list: list) -> (BytesIO, BytesIO):
 		
 		
 		
-		btd = td.make()
-		section_text.write(btd.getbuffer())
+		# btd = td.make()
+		# section_text.write(btd.getbuffer())
+		section_text.write(bname)
 		
 		
 		
@@ -401,7 +408,7 @@ def __create_sections(files_list: list) -> (BytesIO, BytesIO):
 		
 		
 		brd.close()
-		btd.close()
+		# btd.close()
 
 
 	# section_data.close()

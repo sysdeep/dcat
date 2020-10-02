@@ -45,7 +45,7 @@ class App(object):
 
 
 		get_storage().open_volume(self.db_path)
-		self.gui.explorer.start()
+		# self.gui.explorer.start()
 
 		sys.exit(self.app.exec_())
 

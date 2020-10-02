@@ -9,6 +9,13 @@ python3 ./main.py /home/nia/Development/_Python/_DCat/Export10/Video.bm.gz
 ```
 
 
+Apps
+- size - 2.6M
+- records - 313057
+- parse table - 0.53
+- parse texts - 0.23
+
+
 
 
 
