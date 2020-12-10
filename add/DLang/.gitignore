@@ -1,0 +1,15 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/dcat_example
+dcat_example.so
+dcat_example.dylib
+dcat_example.dll
+dcat_example.a
+dcat_example.lib
+dcat_example-test-*
+*.exe
+*.o
+*.obj
+*.lst

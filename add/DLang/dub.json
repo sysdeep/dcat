@@ -1,0 +1,16 @@
+{
+	"authors": [
+		"Diver"
+	],
+	"copyright": "Copyright © 2020, Diver",
+	"dependencies": {
+		"tkd": "~>1.1.13"
+	},
+	"description": "A minimal D application.",
+	"license": "proprietary",
+	"name": "dcat_example",
+	"lflags-windows_not_working": [
+		"/subsystem:windows"
+	],
+	"targetType": "executable",
+}
