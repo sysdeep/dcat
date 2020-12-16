@@ -82,6 +82,20 @@ class MainWindow(QMainWindow):
 		# dbus.eon(dbus.SHOW_MODAL_REQRES, self.__on_show_modal_reqres)
 		# dbus.eon(dbus.SHOW_MODAL_INFO_DATA, self.__on_show_modal_info_data)
 
+		#--- window meta
+		self.setWindowTitle(self.title)
+		self.setMinimumWidth(self.max_x)							# min width
+		self.setMinimumHeight(self.max_y)
+
+		self.explorer = MainFrame()
+		self.setCentralWidget(self.explorer)
+
+		# self.init_central_gui()
+
+
+		#--- status bar
+		self.statusBar().showMessage('ready')
+
 		self.init_gui()
 
 
@@ -94,20 +108,20 @@ class MainWindow(QMainWindow):
 		#
 		# # --- открываем последний
 		# self.__check_open_last()
+		# 
+		# 
+		self.show()
 
 
 
-
+	def start(self):
+		self.explorer.start()
 
 
 	def init_gui(self):
 		"""построение интерфейса"""
 
-		#--- window meta
-		self.setWindowTitle(self.title)
-		self.setMinimumWidth(self.max_x)							# min width
-		self.setMinimumHeight(self.max_y)
-
+		
 
 		#--- window style
 		# styles = QStyleFactory.keys()
@@ -121,14 +135,7 @@ class MainWindow(QMainWindow):
 		
 		
 
-		self.explorer = MainFrame()
-		self.setCentralWidget(self.explorer)
-
-		# self.init_central_gui()
-
-
-		#--- status bar
-		self.statusBar().showMessage('ready')
+		
 
 
 
@@ -140,7 +147,7 @@ class MainWindow(QMainWindow):
 		# else:															# по умолчанию не меньше настроек
 		#
 		# self.__update_title()
-		self.show()
+		
 
 	#
 	# def __check_open_last(self):

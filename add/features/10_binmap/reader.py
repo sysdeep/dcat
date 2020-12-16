@@ -21,9 +21,9 @@ def timeit(func):
 	return timed
 
 PATH = "/home/nia/Development/_Python/_DCat/Export10"
-FILE = "Video.bm.gz"
+# FILE = "Video.bm.gz"
 # FILE = "Apps.bss.gz"
-# FILE = "_DNote.bss.gz"
+FILE = "_DNote.bm.gz"
 
 FULL_PATH = os.path.join(PATH, FILE)
 

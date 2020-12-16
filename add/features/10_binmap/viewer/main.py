@@ -7,7 +7,8 @@ from app.App import App
 
 
 
-DB_PATH = "/home/nia/Development/_Python/_DCat/Export10/Video.bm.gz"
+# DB_PATH = "/home/nia/Development/_Python/_DCat/Export10/Video.bm.gz"
+DB_PATH = "/home/nia/Development/_Python/_DCat/Export10/Video.gz"
 # DB_PATH = "/home/nia/Development/_Python/_DCat/Export10/Apps.bm.gz"
 
 
