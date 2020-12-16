@@ -5,8 +5,14 @@ import os.path
 from app.lib.volume import Volume
 from app.lib.volume.FileRecord import FileRecord
 
-SQLITE_DB = "/home/nia/2.dcat"
-OUT_PATH = "/home/nia/Temp/dcat_export"
+#--- lin
+# SQLITE_DB = "/home/nia/2.dcat"
+# OUT_PATH = "/home/nia/Temp/dcat_export"
+
+
+#--- win
+SQLITE_DB = "E:\\_Wrk\\_Python\\_DCat\\Bin10Test\\P50-61.dcat"
+OUT_PATH = "E:\\_Wrk\\_Python\\_DCat\\Bin10Test\\files"
 
 
 VOLUME_ICONS = {

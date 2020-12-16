@@ -72,11 +72,11 @@ class VolumeInfo(QGroupBox):
 
 
 		self.__name.setText(header_data.name)
-		# self.__path.setText(header_data.path)
-		# self.__icon.setText(str(header_data.icon_id))
-		# self.__records_len.setText(str(header_data.records_len))
-		# self.__sdata_len.setText(str(header_data.section_table_len))
-		# self.__tdata_len.setText(str(header_data.section_text_len))
+		self.__path.setText(header_data.scan_path)
+		self.__icon.setText(str(header_data.icon))
+		self.__records_len.setText(str(header_data.records))
+		self.__sdata_len.setText(str(header_data.table_len))
+		self.__tdata_len.setText(str(header_data.heap_len))
 		
 
 

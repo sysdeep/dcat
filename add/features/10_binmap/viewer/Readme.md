@@ -4,8 +4,16 @@
 ## Lin test
 
 ```
+
+#--- lin
 python3 ./main.py /home/nia/Development/_Python/_DCat/Export10/Apps.bm.gz
 python3 ./main.py /home/nia/Development/_Python/_DCat/Export10/Video.bm.gz
+
+
+
+#--- win
+python3 main.py E:\_Wrk\_Python\_DCat\Bin10Test\files\P50.hmap.gz
+
 ```
 
 

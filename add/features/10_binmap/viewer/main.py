@@ -6,11 +6,14 @@ import sys
 from app.App import App
 
 
-
+#--- lin
 # DB_PATH = "/home/nia/Development/_Python/_DCat/Export10/Video.bm.gz"
 DB_PATH = "/home/nia/Development/_Python/_DCat/Export10/Video.gz"
 # DB_PATH = "/home/nia/Development/_Python/_DCat/Export10/Apps.bm.gz"
 
+
+#--- win
+DB_PATH = """E:\\_Wrk\\_Python\\_DCat\\Bin10Test\\files\\P50.hmap.gz"""
 
 
 
