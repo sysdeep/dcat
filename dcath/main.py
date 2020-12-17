@@ -1,0 +1,31 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+import sys
+
+from app.VolumeViewerQt import VolumeViewerQt
+
+
+#--- lin
+# DB_PATH = "/home/nia/Development/_Python/_DCat/Export10/Video.bm.gz"
+DB_PATH = "/home/nia/Development/_Python/_DCat/Export10/app2/oxygen_16x16.hmap.gz"
+# DB_PATH = "/home/nia/Development/_Python/_DCat/Export10/app2/Apps.hmap.gz"
+# DB_PATH = "/home/nia/Development/_Python/_DCat/Export10/Apps.bm.gz"
+
+
+#--- win
+# DB_PATH = """E:\\_Wrk\\_Python\\_DCat\\Bin10Test\\files\\P50.hmap.gz"""
+
+
+
+
+if __name__ == "__main__":
+
+	if len(sys.argv) > 1:
+		path = sys.argv[1]
+	else:
+		path = DB_PATH
+	app = VolumeViewerQt()
+	app.start(db_path=path)
+	
+	
