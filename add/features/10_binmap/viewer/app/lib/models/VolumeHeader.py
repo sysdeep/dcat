@@ -31,7 +31,7 @@ class VolumeHeader:
 	def __init__(self):
 		self.created = 0			# 0
 		self.icon = 0				# 1
-		self.records = 0			# 2
+		self.records = 0			# 2		- кол-во записей
 		self.table_len = 0			# 3
 		self.heap_len = 0			# 4
 		self.npos = 0				# 5

@@ -3,7 +3,7 @@
 import os
 # from .volume.Volume import Volume
 
-from app.lib.volume import Volume
+from app.lib.models.Volume import Volume
 
 
 class Storage(object):

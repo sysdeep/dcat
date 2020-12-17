@@ -65,7 +65,9 @@ class Explorer(QWidget):
 
 	def show_root(self):
 		storage = get_storage()
-		self.files_list.set_items(storage.volume.get_vrecords(0))
+
+		root_items = storage.volume.get_root_files()
+		self.files_list.set_items(root_items)
 
 	def reload(self):
 		"""сброс вида к дефолтному"""

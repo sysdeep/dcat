@@ -18,7 +18,7 @@ from io import BytesIO
 class FileRecord:
 	BDATA_SIZE = 40
 	def __init__(self):
-		self.ftype = 0
+		self.ftype = 0				# тип записи
 		self.size = 0
 		self.ctime = 0
 		self.rights = 0
@@ -82,12 +82,14 @@ class FileRecord:
 	
 	def write_heap(self, heap: BytesIO):
 		
+		# if self.pid == 0:
+		# 	print("write heap: ", self.name)
 		b_name = self.name.encode(encoding="utf-8")
 		b_description = self.description.encode(encoding="utf-8")
 
 
 		self.nsize = len(b_name)
-		self.psize = heap.tell()
+		self.npos = heap.tell()
 		heap.write(b_name)
 
 		self.dsize = len(b_description)

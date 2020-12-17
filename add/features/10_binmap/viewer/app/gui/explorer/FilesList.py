@@ -124,7 +124,7 @@ class FilesList(QWidget):
 		parent_id = self.__history[-1]
 		
 		storage = get_storage()
-		records = storage.volume.get_vrecords(parent_id)
+		records = storage.volume.get_files(parent_id)
 		self.set_items(records)
 		
 
@@ -157,14 +157,14 @@ class FilesList(QWidget):
 			
 			tree_item = QTreeWidgetItem([name, "", ""])
 	# # 	# tree_item.setIcon(0, icon)
-			tree_item.setData(0, Qt.UserRole + 1, row.uid)
+			tree_item.setData(0, Qt.UserRole + 1, row.fid)
 			self.ilist.addTopLevelItem(tree_item)
 
 
 
 
 			
-			self.litems[row.uid] = row
+			self.litems[row.fid] = row
 			
 			# self.ilist.
 			
@@ -421,15 +421,16 @@ class FilesList(QWidget):
 	
 	
 	def __on_open(self, tree_item):
+		print("__on_open")
 		print(tree_item)
-		uuid = tree_item.data(Qt.UserRole + 1)
-		print(uuid)
+		fid = tree_item.data(Qt.UserRole + 1)
+		print(fid)
 		
 		
 		
 		
 		
-		fnode = self.litems[uuid]
+		fnode = self.litems[fid]
 
 		if fnode is None:
 			return False
@@ -439,13 +440,13 @@ class FilesList(QWidget):
 			return False
 
 		
-		print("get childrens for:", uuid)
+		print("get childrens for:", fid)
 		
 		
-		self.__history.append(uuid)
+		self.__history.append(fid)
 		
 		storage = get_storage()
-		records = storage.volume.get_vrecords(uuid)
+		records = storage.volume.get_files(fid)
 		self.set_items(records)
 		
 		# self.show_folder(fnode)  # отображаем папку

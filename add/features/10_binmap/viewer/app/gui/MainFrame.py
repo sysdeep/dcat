@@ -29,4 +29,4 @@ class MainFrame(QWidget):
 
 
 		self.__volume_info.set_info(storage.volume.volume_header)
-		# self.__explorer.show_root()
+		self.__explorer.show_root()

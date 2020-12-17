@@ -3,9 +3,10 @@
 import gzip
 from io import BytesIO
 
+from ..logger import log
 from .FileHeader import FileHeader
 from .VolumeHeader import VolumeHeader
-
+from .FileRecord import FileRecord
 
 
 class Volume:
@@ -19,6 +20,12 @@ class Volume:
 		
 		
 	#--- public ---------------------------------------------------------------
+	def get_root_files(self) -> list:
+		return [r for r in self.records if r.pid == 0]
+
+	def get_files(self, parent_id) -> list:
+		return [r for r in self.records if r.pid == parent_id]
+
 	def load(self, volume_path: str):
 		"""загрузить базу из файла"""
 		self.current_path = volume_path
@@ -32,17 +39,31 @@ class Volume:
 		
 		
 		#--- read volume header
+		log.debug("read volume header")
 		b_volume_header = fd.read(self.volume_header.BDATA_SIZE)
 		self.volume_header.unpack(b_volume_header)
 		
 		
 		
 		#--- read records
+		log.debug("read records")
 		b_records = fd.read(self.volume_header.table_len)
+
+
 		
 		#--- read heap
 		b_heap = fd.read(self.volume_header.heap_len)
 		__heap = BytesIO(b_heap)
+
+
+		# print(len(b_records) / FileRecord.BDATA_SIZE)
+		for i in range(self.volume_header.records):
+			record = FileRecord()
+			start = i * FileRecord.BDATA_SIZE
+			end = start + FileRecord.BDATA_SIZE
+			record.unpack(b_records[start:end])
+			record.read_heap(__heap)
+			self.records.append(record)
 		
 
 		self.volume_header.read_heap(__heap)
