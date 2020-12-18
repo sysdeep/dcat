@@ -9,10 +9,15 @@ from PyQt5.QtGui import QFontDatabase
 
 from .VolumesList import VolumesList
 from .FilesList import FilesList
+from ..NodeInfo import NodeInfo
 # from .VolumeInfo import VolumeInfo
 from ....shared import get_storage
 from app.lib.models.Volume import Volume
 from app.lib.logger import log
+
+
+
+
 Vnode = namedtuple("Vnode", "name uuid")
 
 
@@ -30,11 +35,15 @@ class Explorer(QWidget):
 		
 		self.main_layout = QHBoxLayout(self)
 
+		#--- files list
 		self.__files_list = FilesList()
 		self.__files_list.sopen.connect(self.open_item)
 		self.__files_list.sback.connect(self.__on_go_back)
+		self.__files_list.selected.connect(self.__on_item_selected)
 
-
+		#--- node info
+		self.__node_info = NodeInfo()
+		
 
 		#--- vars
 		self.__volume = None
@@ -43,6 +52,7 @@ class Explorer(QWidget):
 		# self.main_layout.addWidget(self.volume_info)
 		# self.main_layout.addWidget(self.volumes_list)
 		self.main_layout.addWidget(self.__files_list)
+		self.main_layout.addWidget(self.__node_info)
 
 
 		self.__volumes_map = {}
@@ -65,6 +75,9 @@ class Explorer(QWidget):
 		self.__files_list.set_items(records)
 		self.__path_stack.append(node_id)
 		
+	def __on_item_selected(self, fid: int):
+		node = self.__volume.get_file(fid)
+		self.__node_info.set_info(node)
 
 
 	def __on_go_back(self):

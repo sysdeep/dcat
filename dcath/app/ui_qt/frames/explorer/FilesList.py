@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QHBoxLayout, QGri
 from PyQt5.QtGui import QFontDatabase
 from PyQt5.QtCore import Qt, pyqtSignal
 
+from app.lib.models.FileRecord import FileRecord
 # from app.storage import get_storage
 # from app.lib.fsize import naturalsize
 # from app.utils import conv
@@ -56,8 +57,9 @@ class NodeInfo(QWidget):
 
 
 class FilesList(QWidget):
-	sopen = pyqtSignal(int)
+	sopen = pyqtSignal(int)					# node id
 	sback = pyqtSignal()
+	selected = pyqtSignal(int)				# node id
 	
 	def __init__(self, parent=None):
 		super(FilesList, self).__init__(parent)
@@ -418,14 +420,15 @@ class FilesList(QWidget):
 	# #--- tree events ----------------------------------------------------------
 	def __on_selected(self, tree_item):
 		uuid = tree_item.data(Qt.UserRole + 1)
-		if self.current_fnode_uuid == uuid:
-			return False
-		self.current_fnode_uuid = uuid
-		print("select node: ", self.current_fnode_uuid)
-
-		node = self.litems[uuid]
-
-		self.node_info.set_node(node)
+		self.selected.emit(uuid)
+		# if self.current_fnode_uuid == uuid:
+		# 	return False
+		# self.current_fnode_uuid = uuid
+		# print("select node: ", self.current_fnode_uuid)
+		#
+		# node = self.litems[uuid]
+		#
+		# self.node_info.set_node(node)
 	
 	
 	def __on_open(self, tree_item):
@@ -433,7 +436,7 @@ class FilesList(QWidget):
 		ftype = tree_item.data(Qt.UserRole + 2)
 		
 		#--- if catalog
-		if ftype == 0:							# TODO: constant
+		if ftype == FileRecord.FTYPE_CATALOG:
 			self.sopen.emit(fid)
 
 

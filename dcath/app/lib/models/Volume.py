@@ -3,6 +3,7 @@
 import gzip
 from io import BytesIO
 
+# from app.lib.file_workers.FileWorkerAbstract import FileWorkerAbstract
 from ..logger import log
 from .FileHeader import FileHeader
 from .VolumeHeader import VolumeHeader
@@ -18,6 +19,9 @@ class Volume:
 		
 		self.current_path = ""
 		
+		# self.__file_worker = None
+		
+		
 		
 	#--- public ---------------------------------------------------------------
 	def get_root_files(self) -> list:
@@ -25,7 +29,17 @@ class Volume:
 
 	def get_files(self, parent_id) -> list:
 		return [r for r in self.records if r.pid == parent_id]
+	
+	def get_file(self, fid: int) -> FileRecord:
+		r = [r for r in self.records if r.fid == fid]
+		return r[0]													# TODO: небезопасно
 
+	
+	
+	
+	
+	
+	
 	def load(self, volume_path: str):
 		"""загрузить базу из файла"""
 		self.current_path = volume_path
@@ -130,4 +144,9 @@ class Volume:
 		
 		fd.flush()
 		fd.close()
+		
+	
+	
+	# def set_file_worker(self, worker: FileWorkerAbstract):
+	# 	self.__file_worker = worker
 	#--- public ---------------------------------------------------------------

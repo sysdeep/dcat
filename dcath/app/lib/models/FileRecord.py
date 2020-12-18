@@ -17,6 +17,10 @@ from io import BytesIO
 
 class FileRecord:
 	BDATA_SIZE = 40
+	
+	FTYPE_CATALOG = 0				# каталог
+	FTYPE_FILE = 1					# файл
+	
 	def __init__(self):
 		self.ftype = 0				# тип записи
 		self.size = 0

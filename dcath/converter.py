@@ -4,7 +4,7 @@ import sqlite3
 import os.path
 from app.lib.models import Volume
 from app.lib.models.FileRecord import FileRecord
-from app.lib.db_worker.HmapWorker import HmapWorker
+# from app.lib.db_worker.HmapWorker import HmapWorker
 from app.lib.logger import log
 
 #--- lin
@@ -94,7 +94,7 @@ rows = cursor.fetchall()
 
 
 
-hmap_worker = HmapWorker()
+# hmap_worker = HmapWorker()
 
 for vol_data in rows:
 	
