@@ -23,10 +23,11 @@ class FileRecord:
 	
 	def __init__(self):
 		self.ftype = 0				# тип записи
-		self.size = 0
-		self.ctime = 0
-		self.rights = 0
-		self.fid = 0
+		self.size = 0				# размер
+		self.ctime = 0				# дата создания
+		self.rights = 0				# парва
+		
+		self.fid = 0				# id записи
 		self.pid = 0
 		self.npos = 0
 		self.nsize = 0

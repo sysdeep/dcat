@@ -21,7 +21,7 @@ from app.lib.models.FileRecord import FileRecord
 
 from ....shared import get_storage
 from ....rc import get_icon_path
-
+from ....ui_common.utils import convert_ctime
 
 class NodeInfo(QWidget):
 	def __init__(self, parent=None):
@@ -167,9 +167,10 @@ class FilesList(QWidget):
 			# wi = QTreeWidgetItem(name, self.ilist)
 			# wi.setData(Qt.UserRole + 1, row.uid)
 			
+			time_text = convert_ctime(row.ctime)
 			
-			
-			tree_item = QTreeWidgetItem([row.name, str(row.size), str(row.ctime)])
+			# TODO: назначить атрибуты другим колонкам
+			tree_item = QTreeWidgetItem([row.name, str(row.size), time_text])
 			tree_item.setIcon(0, QIcon(icon_file))
 			tree_item.setData(0, Qt.UserRole + 1, row.fid)
 			tree_item.setData(0, Qt.UserRole + 2, row.ftype)

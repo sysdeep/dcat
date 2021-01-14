@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QHBoxLayout, QVBo
 
 from app.lib.models.FileRecord import FileRecord
 
+from ...ui_common.utils import convert_ctime
 
 class NodeInfo(QGroupBox):
 	def __init__(self, parent=None):
@@ -51,17 +52,17 @@ class NodeInfo(QGroupBox):
 		grid.addWidget(QLabel("дата"), row, 0)
 		grid.addWidget(self.__ctime, row, 1)
 		
-		row += 1
-		grid.addWidget(QLabel("права"), row, 0)
-		grid.addWidget(self.__rights, row, 1)
-		
-		row += 1
-		grid.addWidget(QLabel("id"), row, 0)
-		grid.addWidget(self.__fid, row, 1)
-		
-		row += 1
-		grid.addWidget(QLabel("parent id"), row, 0)
-		grid.addWidget(self.__pid, row, 1)
+		# row += 1
+		# grid.addWidget(QLabel("права"), row, 0)
+		# grid.addWidget(self.__rights, row, 1)
+		#
+		# row += 1
+		# grid.addWidget(QLabel("id"), row, 0)
+		# grid.addWidget(self.__fid, row, 1)
+		#
+		# row += 1
+		# grid.addWidget(QLabel("parent id"), row, 0)
+		# grid.addWidget(self.__pid, row, 1)
 		
 		row += 1
 		grid.addWidget(QLabel("description"), row, 0)
@@ -82,10 +83,10 @@ class NodeInfo(QGroupBox):
 
 		self.__name.setText(data.name)
 		self.__ftype.setText(ftype_text)
-		self.__ctime.setText(str(data.ctime))
-		self.__rights.setText(str(data.right))
-		self.__fid.setText(str(data.fid))
-		self.__pid.setText(str(data.pid))
+		self.__ctime.setText(convert_ctime(data.ctime))
+		# self.__rights.setText(str(data.right))
+		# self.__fid.setText(str(data.fid))
+		# self.__pid.setText(str(data.pid))
 		self.__size.setText(str(data.size))
 		
 		# self.npos = 0

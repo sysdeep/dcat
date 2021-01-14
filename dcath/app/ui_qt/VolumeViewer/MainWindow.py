@@ -5,7 +5,7 @@
 import os.path
 
 
-from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QStyleFactory, QFileDialog
+from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QStyleFactory, QFileDialog, QAction
 from PyQt5.QtGui import QFontDatabase
 from PyQt5.QtCore import QTimer, pyqtSignal
 
@@ -34,16 +34,23 @@ class MainWindow(QMainWindow):
 		self.max_x = 800
 		self.max_y = 600
 
-		#--- стиль окна
-		# self.wstyle = ""
+		
 
-		#--- размер окна при старте
-		# self.startup_size = def_ui.STUPTUP_SIZE_NORMAL
+		#--- menu
+		menu_file = self.menuBar().addMenu("Файл")
+		menu_file.addAction("Открыть", self.__on_open_action)
+		menu_file.addAction("Сохранить", self.__on_save_action)
+		menu_file.addAction("Сохранить как", self.__on_saveas_action)
+		menu_file.addSeparator()
+		menu_file.addAction("Выход", self.__on_exit_action)
 
 
+		#--- toolbar
+		
 
 		#--- объекты
 		self.volume = Volume()
+
 		# self.main_menu	= MainMenu()			# меню
 		# self.main_menu.s_opendb.connect(self.__on_show_open_db)
 		# self.main_menu.s_createdb.connect(self.__on_show_create_db)
@@ -99,7 +106,7 @@ class MainWindow(QMainWindow):
 		#--- status bar
 		self.statusBar().showMessage('ready')
 
-		self.init_gui()
+		# self.init_gui()
 
 
 		# self.storage = get_storage()
@@ -125,12 +132,28 @@ class MainWindow(QMainWindow):
 
 		self.explorer.set_volume(self.volume)
 		
-
-
-	def init_gui(self):
-		"""построение интерфейса"""
-
 		
+		
+	def __on_open_action(self):
+		print("open")
+		
+	def __on_save_action(self):
+		print("save")
+		
+	def __on_saveas_action(self):
+		print("saveas")
+		
+	def __on_exit_action(self):
+		print("exit")
+		self.close()
+		
+		
+	#
+	#
+	# def init_gui(self):
+	# 	"""построение интерфейса"""
+	#
+	#
 
 		#--- window style
 		# styles = QStyleFactory.keys()
