@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import re
+from typing import List
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QHBoxLayout, QGridLayout, \
 	QVBoxLayout, QWidget, QTreeWidget, QTreeWidgetItem, QHeaderView, QListWidget, QListWidgetItem, QPushButton
 
-from PyQt5.QtGui import QFontDatabase
+from PyQt5.QtGui import QFontDatabase, QIcon
 from PyQt5.QtCore import Qt, pyqtSignal
 
 from app.lib.models.FileRecord import FileRecord
@@ -19,7 +20,7 @@ from app.lib.models.FileRecord import FileRecord
 
 
 from ....shared import get_storage
-
+from ....rc import get_icon_path
 
 
 class NodeInfo(QWidget):
@@ -149,23 +150,27 @@ class FilesList(QWidget):
 
 
 
-	def set_items(self, items_list: list):
+	def set_items(self, items_list: List[FileRecord]):
 		self.clear_list()
 		
 		for row in items_list:
 			
 			
-			if row.ftype == 0:
-				name = row.name + ">"
+			if row.ftype == 0:					# dir
+				
+				icon_file = get_icon_path("ftypes", "folder.png")
 			else:
-				name = row.name
+				
+				icon_file = get_icon_path("ftypes", "empty.png")
 			
 			# # QListWidgetItem(str(row.ftype), self.ilist)
 			# wi = QTreeWidgetItem(name, self.ilist)
 			# wi.setData(Qt.UserRole + 1, row.uid)
 			
-			tree_item = QTreeWidgetItem([name, "", ""])
-	# # 	# tree_item.setIcon(0, icon)
+			
+			
+			tree_item = QTreeWidgetItem([row.name, str(row.size), str(row.ctime)])
+			tree_item.setIcon(0, QIcon(icon_file))
 			tree_item.setData(0, Qt.UserRole + 1, row.fid)
 			tree_item.setData(0, Qt.UserRole + 2, row.ftype)
 			self.ilist.addTopLevelItem(tree_item)

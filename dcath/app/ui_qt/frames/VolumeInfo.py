@@ -2,10 +2,12 @@
 # -*- coding: utf-8 -*-
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QLabel, QHBoxLayout, QVBoxLayout, QWidget, QGroupBox, QGridLayout
-from PyQt5.QtGui import QFontDatabase
+from PyQt5.QtGui import QFontDatabase, QIcon, QPixmap
 
 from app.lib.models.VolumeHeader import VolumeHeader
 
+from ...rc import get_icon_path
+from ...ui_common.icons_map import VOLUME_ICONS_MAP
 
 class VolumeInfo(QGroupBox):
 	def __init__(self, parent=None):
@@ -69,12 +71,19 @@ class VolumeInfo(QGroupBox):
 		
 	def set_info(self, header_data: VolumeHeader):
 
+		
+
 		self.__name.setText(header_data.name)
 		self.__path.setText(header_data.scan_path)
-		self.__icon.setText(str(header_data.icon))
 		self.__records_len.setText(str(header_data.records))
 		self.__sdata_len.setText(str(header_data.table_len))
 		self.__tdata_len.setText(str(header_data.heap_len))
+		
+		#--- icon
+		icon_file = VOLUME_ICONS_MAP.get(header_data.icon, 14)		# other fallback
+		icon = QPixmap(get_icon_path("volumes", icon_file))
+		self.__icon.setText(str(header_data.icon))
+		self.__icon.setPixmap(icon)
 		
 
 

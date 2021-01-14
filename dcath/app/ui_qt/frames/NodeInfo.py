@@ -19,6 +19,7 @@ class NodeInfo(QGroupBox):
 		
 		self.__name = QLabel()
 		self.__ftype = QLabel()
+		self.__size = QLabel()
 		self.__ctime = QLabel()
 		self.__rights = QLabel()
 		self.__fid = QLabel()
@@ -41,6 +42,10 @@ class NodeInfo(QGroupBox):
 		row += 1
 		grid.addWidget(QLabel("тип"), row, 0)
 		grid.addWidget(self.__ftype, row, 1)
+		
+		row += 1
+		grid.addWidget(QLabel("размер"), row, 0)
+		grid.addWidget(self.__size, row, 1)
 		
 		row += 1
 		grid.addWidget(QLabel("дата"), row, 0)
@@ -81,6 +86,7 @@ class NodeInfo(QGroupBox):
 		self.__rights.setText(str(data.right))
 		self.__fid.setText(str(data.fid))
 		self.__pid.setText(str(data.pid))
+		self.__size.setText(str(data.size))
 		
 		# self.npos = 0
 		# self.nsize = 0
