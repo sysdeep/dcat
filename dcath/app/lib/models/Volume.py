@@ -42,6 +42,9 @@ class Volume:
 	
 	def load(self, volume_path: str):
 		"""загрузить базу из файла"""
+		log.info("загрузить базу из файла")
+		log.info(volume_path)
+		
 		self.current_path = volume_path
 		fd = gzip.open(self.current_path, "rb")
 		
@@ -92,9 +95,10 @@ class Volume:
 	
 	
 	
-	def save(self, volume_path: str):
+	def save(self, volume_path: str) -> bool:
 		"""выгрузить базу в файл"""
-		
+		log.info("выгрузка тома в файл")
+		log.info(volume_path)
 		
 		
 		__heap = BytesIO()
@@ -145,6 +149,7 @@ class Volume:
 		fd.flush()
 		fd.close()
 		
+		return True
 	
 	
 	# def set_file_worker(self, worker: FileWorkerAbstract):

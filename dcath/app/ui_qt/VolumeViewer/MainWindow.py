@@ -127,7 +127,7 @@ class MainWindow(QMainWindow):
 	def start(self, db_path=None):
 		
 		if db_path:
-			log.info("загрузаем том")
+			log.info("загружаем том")
 			self.volume.load(db_path)
 
 		self.explorer.set_volume(self.volume)
@@ -135,13 +135,21 @@ class MainWindow(QMainWindow):
 		
 		
 	def __on_open_action(self):
-		print("open")
+		file_path, _ = QFileDialog.getOpenFileName(self, "Open volume", "", "DCat volume archive (*.gz);;All Files (*)")
+		
+		self.volume.load(file_path)
+		self.explorer.set_volume(self.volume)
 		
 	def __on_save_action(self):
-		print("save")
+		self.volume.save(self.volume.current_path)
+		
 		
 	def __on_saveas_action(self):
-		print("saveas")
+		file_path, _ = QFileDialog.getSaveFileName(self, "Save volume as...", "", "DCat volume archive (*.gz);;All Files (*)")
+		if not file_path.endswith(".gz"):
+			file_path += ".gz"
+			
+		self.volume.save(file_path)
 		
 	def __on_exit_action(self):
 		print("exit")
