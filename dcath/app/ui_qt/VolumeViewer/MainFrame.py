@@ -40,7 +40,7 @@ class MainFrame(QWidget):
 		
 		self.__volume = volume
 
-		self.__volume_info.set_info(volume.volume_header)
+		self.__volume_info.set_info(volume.volume_header, volume.current_path)
 		self.__explorer.set_volume(volume)
 		
 		

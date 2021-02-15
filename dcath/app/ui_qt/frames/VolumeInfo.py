@@ -25,6 +25,8 @@ class VolumeInfo(QGroupBox):
 		self.__sdata_len = QLabel()
 		self.__tdata_len = QLabel()
 		
+		self.__db_file_path = QLabel()
+		
 		
 		row = 0
 		
@@ -51,6 +53,10 @@ class VolumeInfo(QGroupBox):
 		layout.addWidget(QLabel("длина текста"), row, 0)
 		layout.addWidget(self.__tdata_len, row, 1)
 		
+		row += 1
+		layout.addWidget(QLabel("путь до файла базы"), row, 0)
+		layout.addWidget(self.__db_file_path, row, 1)
+		
 		
 		
 		
@@ -69,7 +75,7 @@ class VolumeInfo(QGroupBox):
 		# self.section_text_len = 0
 		
 		
-	def set_info(self, header_data: VolumeHeader):
+	def set_info(self, header_data: VolumeHeader, db_file_path: str):
 
 		
 
@@ -86,6 +92,7 @@ class VolumeInfo(QGroupBox):
 		self.__icon.setPixmap(icon)
 		
 
+		self.__db_file_path.setText(db_file_path)
 
 
 if __name__ == "__main__":
