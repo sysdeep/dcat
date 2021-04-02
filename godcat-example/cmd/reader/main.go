@@ -48,6 +48,32 @@ func main() {
 	vh := NewVolumeHeader(volumeHeaderBytes)
 	vh.PrintInfo()
 
+	tableBytes := make([]byte, vh.TableLength)
+	_, err = gr.Read(tableBytes)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Println("records calculated: ", len(tableBytes)/40)
+
+	heapBytes := make([]byte, vh.HeapLength)
+	_, err = gr.Read(heapBytes)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	heap := NewHeap(heapBytes)
+
+	log.Println(heap.GetString(vh.NPos, vh.NSize)) // должно быть... b'6f787967656e5f3136783136' а есть: 10 0 9 53 0 0 0 0 1 0 57 2
+	log.Println(heap.GetString(vh.PPos, vh.PSize))
+
+	// должно быть в имени, а получаем...10 0 9 53 0 0 0 0 1 0 57 2
+	qqq := []byte{0x6f, 0x78, 0x79, 0x67, 0x65, 0x6e, 0x5f, 0x31, 0x36, 0x78, 0x31, 0x36}
+	fmt.Println(string(qqq))
+	fmt.Println(heapBytes[0:12])
+
+	// recordsBuf := bytes.NewBuffer()
+
 	// //--- magic
 	// magic, err := ushort2(gr)
 	// if err != nil {

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+
 """
 - created	(8)				- дата создания(unix timestamp)
 - icon		(2)				- icon_id
@@ -24,6 +25,7 @@ def ulong8(v: bytes) -> int:
 	return struct.unpack("<Q", v)[0]
 """
 import struct
+import binascii
 from io import BytesIO
 
 class VolumeHeader:
@@ -113,6 +115,7 @@ class VolumeHeader:
 		
 		heap.seek(self.npos)
 		b_name = heap.read(self.nsize)
+		print(binascii.hexlify(b_name))
 		self.name = b_name.decode(encoding="utf-8")
 		
 		heap.seek(self.ppos)
