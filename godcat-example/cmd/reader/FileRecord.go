@@ -1,5 +1,42 @@
 package main
 
+const FileRecordSize = 52
+
+type FileRecord struct {
+	Type   uint16
+	Size   uint64
+	Ctime  uint64
+	Rights uint16
+	FID    uint32
+	PID    uint32
+	NPos   uint32
+	NSize  uint16
+	DPos   uint32
+	DSize  uint16
+}
+
+func NewFileRecord(bdata []byte) *FileRecord {
+
+	sr := NewStreamReader(bdata)
+
+	vh := &FileRecord{
+		Type:   sr.ReadUShort2(),
+		Size:   sr.ReadULong8(),
+		Ctime:  sr.ReadULong8(),
+		Rights: sr.ReadUShort2(),
+		FID:    sr.ReadUInt4(),
+		PID:    sr.ReadUInt4(),
+		NPos:   sr.ReadUInt4(),
+		NSize:  sr.ReadUShort2(),
+		DPos:   sr.ReadUInt4(),
+		DSize:  sr.ReadUShort2(),
+	}
+
+	// row_tuple = struct.unpack("<QHQQQIHIHIH", bdata)
+
+	return vh
+}
+
 // #!/usr/bin/env python3
 // # -*- coding: utf-8 -*-
 // """

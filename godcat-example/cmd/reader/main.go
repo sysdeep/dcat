@@ -67,7 +67,8 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		tableBytes = append(tableBytes, buf[:readed]...)
+		copy(tableBytes[tableReaded:tableReaded+uint64(readed)], buf[:readed])
+		// tableBytes = append(tableBytes, buf[:readed]...)
 		// tableBytes[tableReaded : tableReaded+readed] = buf[:readed]...
 		tableReaded += uint64(readed)
 		// log.Println(tableReaded)
@@ -100,6 +101,14 @@ func main() {
 	log.Println("volume name:", heap.GetString(vh.NPos, vh.NSize)) // должно быть... b'6f787967656e5f3136783136' а есть: 10 0 9 53 0 0 0 0 1 0 57 2
 	log.Println("volume path:", heap.GetString(vh.PPos, vh.PSize))
 	log.Println("volume desc:", heap.GetString(vh.DPos, vh.DSize))
+
+	//--- print records
+	for i := 0; i < int(vh.Records); i++ {
+		brecord := tableBytes[i*40 : i*40+40]
+		r := NewFileRecord(brecord)
+		fmt.Println("file: ", GetFileRecordName(r, heap))
+
+	}
 
 	// должно быть в имени, а получаем...10 0 9 53 0 0 0 0 1 0 57 2
 	// qqq := []byte{0x6f, 0x78, 0x79, 0x67, 0x65, 0x6e, 0x5f, 0x31, 0x36, 0x78, 0x31, 0x36}

@@ -44,3 +44,8 @@ func (sr *StreamReader) ReadULong8() uint64 {
 	sr.n += 8
 	return data
 }
+
+func GetFileRecordName(r *FileRecord, h *Heap) string {
+	name := h.GetString(r.NPos, r.NSize)
+	return name
+}
