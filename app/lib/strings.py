@@ -1,10 +1,5 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-
-
 def cut_text(text, cut_len=80, dots="..."):
-	"""
+    """
 		обрезка текста до заданной длины
 		если указаны символы дополнения они включаются в результатирующий набор заданной длинны
 
@@ -17,13 +12,11 @@ def cut_text(text, cut_len=80, dots="..."):
 	    	cut_len	[int]		: 	длина обрезки
 	    	dots	[string]	: 	символы дополнения
 	"""
-	if len(text) + len(dots) > cut_len:
-		text = text[0:(cut_len - len(dots))] + dots
-	return text
+    if len(text) + len(dots) > cut_len:
+        text = text[0:(cut_len - len(dots))] + dots
+    return text
 
 
 if __name__ == "__main__":
 
-
-	print(cut_text("hello", 6, ""))
-
+    print(cut_text("hello", 6, ""))

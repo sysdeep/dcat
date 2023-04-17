@@ -1,17 +1,15 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
 import time
 
 
 def dtimeit(func):
-	"""декоратор для замера времени выполнения"""
-	def timed(*args, **kwargs):
-		ts = time.time()
-		result = func(*args, **kwargs)
-		te = time.time()
+    """декоратор для замера времени выполнения"""
 
-		print("timeit: ", te - ts)
-		return result
+    def timed(*args, **kwargs):
+        ts = time.time()
+        result = func(*args, **kwargs)
+        te = time.time()
 
-	return timed
+        print("timeit: ", te - ts)
+        return result
+
+    return timed
