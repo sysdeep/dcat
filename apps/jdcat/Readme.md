@@ -33,3 +33,12 @@ java -jar ./target/demo-1.0-SNAPSHOT.jar
 - https://www.geeksforgeeks.org/java-swing-jlist-with-examples/
 - https://www.codejava.net/java-core/the-java-language/java-8-lambda-listener-example
 - https://www.digitalocean.com/community/tutorials/observer-design-pattern-in-java
+
+## font antialiasing
+
+```java
+// enable anti-aliased text:
+System.setProperty("awt.useSystemAAFontSettings", "on");
+```
+
+https://stackoverflow.com/questions/179955/how-do-you-enable-anti-aliasing-in-arbitrary-java-apps

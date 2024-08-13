@@ -13,7 +13,7 @@ import javax.swing.JList;
 import javax.swing.JLabel;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.GridLayout;
+// import java.awt.GridLayout;
 
 // NOTE: JList - https://www.geeksforgeeks.org/java-swing-jlist-with-examples/
 public class FilesView extends JPanel implements ListSelectionListener, Observer {
@@ -36,16 +36,19 @@ public class FilesView extends JPanel implements ListSelectionListener, Observer
         this.add(new JLabel("files list"), BorderLayout.NORTH);
 
         // list
-        String debug_files[] = { "file1" };
-        this.list = new JList<String>(debug_files);
+        // String debug_files[] = { "file1" };
+        this.list = new JList<String>();
         this.list.addListSelectionListener(this);
         this.add(this.list, BorderLayout.CENTER);
     }
 
     private void _update_list() {
-        // TODO: clear
+        // clear
+        this.list.clearSelection();
+        this.list.removeAll();
 
-        String files_str[] = current_files.stream().map(file -> file.name).toArray(String[]::new);
+        // System.out.println(current_files.stream().map(file -> "🌎" + file.name));
+        String files_str[] = current_files.stream().map(file -> "🌎" + file.name).toArray(String[]::new);
         this.list.setListData(files_str);
 
         // TODO: check len

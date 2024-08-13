@@ -30,6 +30,8 @@ public class Controller implements IController {
     @Override
     public void open_db(String db_path) {
         _log.info("open db: " + db_path);
+        _storage.open(db_path);
+        volumes_ctrl.reload();
     }
 
     @Override

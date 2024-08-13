@@ -14,10 +14,13 @@ public class Main {
     public static void main(String[] args) {
 
         Storage storage = new LiteStorage();
-        storage.ping();
-        storage.open("/home/igor/1.gcat");
+        // storage.ping();
+        // storage.open("/home/igor/1.gcat");
 
         Controller ctrl = new Controller(storage);
+
+        // enable anti-aliased text:
+        System.setProperty("awt.useSystemAAFontSettings", "on");
 
         new MainWindow(ctrl);
     }

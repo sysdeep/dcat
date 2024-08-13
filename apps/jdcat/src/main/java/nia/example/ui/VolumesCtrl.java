@@ -30,6 +30,12 @@ public class VolumesCtrl implements VolumesInterface {
         this.files_ctrl.set_volume(volume);
     }
 
+    public void reload() {
+        for (Observer obs : this.observers) {
+            obs.update(VolumesInterface.event_open_storage);
+        }
+    }
+
     // --- oserver ------------------------------------------------------------
     @Override
     public void register(Observer obj) {

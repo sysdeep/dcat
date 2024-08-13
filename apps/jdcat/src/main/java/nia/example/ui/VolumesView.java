@@ -26,7 +26,7 @@ public class VolumesView extends JPanel implements ListSelectionListener, Observ
         this.setup_ui();
 
         // start
-        this._update_list();
+        // this._update_list();
 
     }
 
@@ -50,7 +50,7 @@ public class VolumesView extends JPanel implements ListSelectionListener, Observ
         current_volumes = controller.get_volumes();
         // NOTE:
         // https://copyprogramming.com/howto/how-to-convert-the-object-to-string-in-java
-        String volumes_str[] = current_volumes.stream().map(volume -> volume.name).toArray(String[]::new);
+        String volumes_str[] = current_volumes.stream().map(volume -> "🌎" + " " + volume.name).toArray(String[]::new);
         this.list.setListData(volumes_str);
 
         // TODO: check len
@@ -60,7 +60,9 @@ public class VolumesView extends JPanel implements ListSelectionListener, Observ
     @Override
     public void valueChanged(ListSelectionEvent arg0) {
 
+        // TODO: при щелчке мышью - 2 раза событие
         Volume volume = current_volumes.toArray(Volume[]::new)[this.list.getSelectedIndex()];
+        System.out.println("selected volume: " + volume.name);
         this.controller.select_volume(volume);
 
         // ArrayList<FileRecord> files = controller.get_volume_files(volume.id, false);
