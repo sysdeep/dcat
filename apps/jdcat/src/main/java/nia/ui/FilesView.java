@@ -1,13 +1,13 @@
-package nia.example.ui;
+package nia.ui;
 
 import javax.swing.JPanel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import java.util.ArrayList;
 
-import nia.example.lib.Observer;
-import nia.example.core.models.FileRecord;
-import nia.example.core.models.Volume;
+import nia.lib.Observer;
+import nia.core.models.FileRecord;
+import nia.core.models.Volume;
 
 import javax.swing.JList;
 import javax.swing.JLabel;

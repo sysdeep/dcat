@@ -1,4 +1,4 @@
-package nia.example.ui;
+package nia.ui;
 
 import java.util.ArrayList;
 import java.awt.Dimension;
@@ -7,8 +7,8 @@ import java.awt.Dimension;
 import javax.swing.JFrame;
 // import javax.swing.JLabel;
 
-import nia.example.core.models.Volume;
-import nia.example.lib.Observer;
+import nia.core.models.Volume;
+import nia.lib.Observer;
 
 public class VolumesViewExample {
 

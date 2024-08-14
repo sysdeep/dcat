@@ -1,4 +1,4 @@
-package nia.example.ui;
+package nia.ui;
 
 // пример оконного приложения
 import java.awt.BorderLayout;

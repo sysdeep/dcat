@@ -1,12 +1,12 @@
-package nia.example;
+package nia;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import nia.example.ui.Controller;
-import nia.example.ui.MainWindow;
-import nia.example.storage.LiteStorage;
-import nia.example.storage.Storage;
+import nia.ui.Controller;
+import nia.ui.MainWindow;
+import nia.storage.LiteStorage;
+import nia.storage.Storage;
 
 public class Main {
     static Logger logger = LogManager.getRootLogger();

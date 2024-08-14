@@ -1,4 +1,4 @@
-package nia.example.ui;
+package nia.ui;
 
 import java.util.ArrayList;
 
@@ -10,8 +10,8 @@ import javax.swing.JLabel;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 
-import nia.example.core.models.Volume;
-import nia.example.lib.Observer;
+import nia.core.models.Volume;
+import nia.lib.Observer;
 
 // NOTE: JList - https://www.geeksforgeeks.org/java-swing-jlist-with-examples/
 public class VolumesView extends JPanel implements ListSelectionListener, Observer {

@@ -1,4 +1,4 @@
-package nia.example.lib;
+package nia.lib;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

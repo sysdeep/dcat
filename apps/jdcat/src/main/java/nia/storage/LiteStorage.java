@@ -1,4 +1,4 @@
-package nia.example.storage;
+package nia.storage;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -10,9 +10,9 @@ import java.util.ArrayList;
 
 import org.apache.logging.log4j.Logger;
 
-import nia.example.core.models.FileRecord;
-import nia.example.core.models.Volume;
-import nia.example.lib.Log;
+import nia.core.models.FileRecord;
+import nia.core.models.Volume;
+import nia.lib.Log;
 
 public class LiteStorage implements Storage {
     private String _db_file_path;

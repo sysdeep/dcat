@@ -1,9 +1,9 @@
-package nia.example.ui;
+package nia.ui;
 
 import java.util.ArrayList;
 
-import nia.example.core.models.FileRecord;
-import nia.example.core.models.Volume;
+import nia.core.models.FileRecord;
+import nia.core.models.Volume;
 
 public interface IController {
     public ArrayList<Volume> get_volumes();

@@ -1,12 +1,12 @@
-package nia.example.ui;
+package nia.ui;
 
 import java.util.List;
 import java.util.ArrayList;
 
-import nia.example.core.models.FileRecord;
-import nia.example.core.models.Volume;
-import nia.example.lib.Observer;
-import nia.example.storage.Storage;
+import nia.core.models.FileRecord;
+import nia.core.models.Volume;
+import nia.lib.Observer;
+import nia.storage.Storage;
 
 public class FilesCtrl implements FilesInterface {
     Storage storage;

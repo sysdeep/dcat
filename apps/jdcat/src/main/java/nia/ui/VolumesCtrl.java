@@ -1,11 +1,11 @@
-package nia.example.ui;
+package nia.ui;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import nia.example.core.models.Volume;
-import nia.example.lib.Observer;
-import nia.example.storage.Storage;
+import nia.core.models.Volume;
+import nia.lib.Observer;
+import nia.storage.Storage;
 
 public class VolumesCtrl implements VolumesInterface {
     Storage storage;

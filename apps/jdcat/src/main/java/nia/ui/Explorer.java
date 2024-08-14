@@ -1,4 +1,4 @@
-package nia.example.ui;
+package nia.ui;
 
 import javax.swing.JPanel;
 import java.awt.BorderLayout;

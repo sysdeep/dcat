@@ -1,4 +1,4 @@
-package nia.example.core.models;
+package nia.core.models;
 
 public class Volume {
     public String id;

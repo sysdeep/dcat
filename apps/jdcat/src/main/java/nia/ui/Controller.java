@@ -1,13 +1,13 @@
-package nia.example.ui;
+package nia.ui;
 
 import java.util.ArrayList;
 
 import org.apache.logging.log4j.Logger;
 
-import nia.example.core.models.FileRecord;
-import nia.example.core.models.Volume;
-import nia.example.lib.Log;
-import nia.example.storage.Storage;
+import nia.core.models.FileRecord;
+import nia.core.models.Volume;
+import nia.lib.Log;
+import nia.storage.Storage;
 
 public class Controller implements IController {
     Storage _storage;

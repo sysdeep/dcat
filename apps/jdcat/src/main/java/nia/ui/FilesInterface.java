@@ -1,10 +1,10 @@
-package nia.example.ui;
+package nia.ui;
 
 import java.util.ArrayList;
 
-import nia.example.core.models.FileRecord;
-import nia.example.core.models.Volume;
-import nia.example.lib.Subject;
+import nia.core.models.FileRecord;
+import nia.core.models.Volume;
+import nia.lib.Subject;
 
 public interface FilesInterface extends Subject {
     static String event_volume_selected = "event_volume_selected";

@@ -1,9 +1,9 @@
-package nia.example.storage;
+package nia.storage;
 
 import java.util.ArrayList;
 
-import nia.example.core.models.FileRecord;
-import nia.example.core.models.Volume;
+import nia.core.models.FileRecord;
+import nia.core.models.Volume;
 
 public interface Storage {
 
