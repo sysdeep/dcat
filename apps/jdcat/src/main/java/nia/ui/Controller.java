@@ -1,13 +1,17 @@
 package nia.ui;
 
-import java.util.ArrayList;
+// import java.util.ArrayList;
 
 import org.apache.logging.log4j.Logger;
 
-import nia.core.models.FileRecord;
-import nia.core.models.Volume;
+// import nia.core.models.FileRecord;
+// import nia.core.models.Volume;
 import nia.lib.Log;
 import nia.storage.Storage;
+import nia.ui.explorer.files.FilesCtrl;
+import nia.ui.explorer.files.FilesInterface;
+import nia.ui.explorer.volumes.VolumesCtrl;
+import nia.ui.explorer.volumes.VolumesInterface;
 
 public class Controller implements IController {
     Storage _storage;
@@ -23,9 +27,9 @@ public class Controller implements IController {
         this.volumes_ctrl = new VolumesCtrl(storage, this.files_ctrl);
     }
 
-    public ArrayList<Volume> get_volumes() {
-        return this._storage.get_volumes();
-    }
+    // public ArrayList<Volume> get_volumes() {
+    // return this._storage.get_volumes();
+    // }
 
     @Override
     public void open_db(String db_path) {
@@ -34,10 +38,11 @@ public class Controller implements IController {
         volumes_ctrl.reload();
     }
 
-    @Override
-    public ArrayList<FileRecord> get_volume_files(String volume_id, Boolean is_root) {
-        return _storage.get_volume_files(volume_id, is_root);
-    }
+    // @Override
+    // public ArrayList<FileRecord> get_volume_files(String volume_id, Boolean
+    // is_root) {
+    // return _storage.get_volume_files(volume_id, is_root);
+    // }
 
     public VolumesInterface get_volumes_ctrl() {
         return this.volumes_ctrl;

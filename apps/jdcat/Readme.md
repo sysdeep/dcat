@@ -42,3 +42,9 @@ System.setProperty("awt.useSystemAAFontSettings", "on");
 ```
 
 https://stackoverflow.com/questions/179955/how-do-you-enable-anti-aliasing-in-arbitrary-java-apps
+
+## resources
+
+- https://javaswing.wordpress.com/2009/10/10/jlist_using/
+- https://www.geeksforgeeks.org/java-swing-jlist-with-examples/
+- https://www.digitalocean.com/community/tutorials/observer-design-pattern-in-java

@@ -1,4 +1,4 @@
-package nia.ui;
+package nia.ui.explorer.volumes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,34 +6,33 @@ import java.util.List;
 import nia.core.models.Volume;
 import nia.lib.Observer;
 import nia.storage.Storage;
+import nia.ui.explorer.files.FilesInterface;
 
 public class VolumesCtrl implements VolumesInterface {
-    Storage storage;
-    FilesInterface files_ctrl;
-
-    // https://www.digitalocean.com/community/tutorials/observer-design-pattern-in-java
-    private List<Observer> observers;
+    Storage _storage;
+    FilesInterface _files_ctrl;
+    List<Observer> _observers;
 
     public VolumesCtrl(Storage storage, FilesInterface files_ctrl) {
-        this.storage = storage;
-        this.observers = new ArrayList<>();
-        this.files_ctrl = files_ctrl;
+        this._storage = storage;
+        this._files_ctrl = files_ctrl;
+        this._observers = new ArrayList<>();
     }
 
+    // interface --------------------------------------------------------------
     @Override
     public ArrayList<Volume> get_volumes() {
-        return this.storage.get_volumes();
+        return this._storage.get_volumes();
     }
 
     public void select_volume(Volume volume) {
         System.out.println("ctrl - select volume: " + volume.name);
-        this.files_ctrl.set_volume(volume);
+        _files_ctrl.set_volume(volume);
     }
 
+    // self -------------------------------------------------------------------
     public void reload() {
-        for (Observer obs : this.observers) {
-            obs.update(VolumesInterface.event_open_storage);
-        }
+        notifyObservers(volumes_changed);
     }
 
     // --- oserver ------------------------------------------------------------
@@ -42,19 +41,20 @@ public class VolumesCtrl implements VolumesInterface {
         if (obj == null)
             throw new NullPointerException("Null Observer");
 
-        if (!observers.contains(obj))
-            observers.add(obj);
+        if (!_observers.contains(obj))
+            _observers.add(obj);
     }
 
     @Override
     public void unregister(Observer obj) {
-        observers.remove(obj);
+        _observers.remove(obj);
     }
 
     @Override
-    public void notifyObservers() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'notifyObservers'");
+    public void notifyObservers(String event) {
+        for (Observer obs : _observers) {
+            obs.update(event);
+        }
     }
 
 }

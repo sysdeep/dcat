@@ -1,4 +1,4 @@
-package nia.ui;
+package nia.ui.explorer.volumes;
 
 import java.util.ArrayList;
 
@@ -6,7 +6,7 @@ import nia.core.models.Volume;
 import nia.lib.Subject;
 
 public interface VolumesInterface extends Subject {
-    static String event_open_storage = "Open storage";
+    static final String volumes_changed = "volumes_changed";
 
     public ArrayList<Volume> get_volumes();
 

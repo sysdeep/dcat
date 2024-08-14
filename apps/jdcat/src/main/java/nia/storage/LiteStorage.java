@@ -24,6 +24,11 @@ public class LiteStorage implements Storage {
 
     }
 
+    @Override
+    public boolean is_opened() {
+        return conn != null;
+    }
+
     public void open(String db_path) {
         this._db_file_path = db_path;
         this._open();
@@ -153,7 +158,9 @@ public class LiteStorage implements Storage {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                FileRecord record = new FileRecord(rs.getString("uuid"), rs.getString("name"));
+                Integer file_type = _db_file_type_2_record(rs.getInt("type"));
+                FileRecord record = new FileRecord(rs.getString("uuid"), rs.getString("name"), file_type);
+                System.out.println(record.name + Integer.toString(record.type));
                 result.add(record);
             }
 
@@ -181,7 +188,8 @@ public class LiteStorage implements Storage {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                FileRecord record = new FileRecord(rs.getString("uuid"), rs.getString("name"));
+                Integer file_type = _db_file_type_2_record(rs.getInt("type"));
+                FileRecord record = new FileRecord(rs.getString("uuid"), rs.getString("name"), file_type);
                 result.add(record);
             }
 
@@ -194,6 +202,24 @@ public class LiteStorage implements Storage {
             return result;
         }
 
+    }
+
+    Integer _db_file_type_2_record(Integer db_value) {
+        Integer result = 0;
+        switch (db_value) {
+            case 0:
+                result = FileRecord.TYPE_DIR;
+                break;
+
+            case 1:
+                result = FileRecord.TYPE_FILE;
+                break;
+
+            default:
+                break;
+        }
+
+        return result;
     }
 
 }

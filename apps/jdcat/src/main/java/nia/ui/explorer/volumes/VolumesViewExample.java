@@ -1,10 +1,11 @@
-package nia.ui;
+package nia.ui.explorer.volumes;
 
 import java.util.ArrayList;
 import java.awt.Dimension;
 // import java.awt.Font;
 
 import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
 // import javax.swing.JLabel;
 
 import nia.core.models.Volume;
@@ -17,22 +18,29 @@ public class VolumesViewExample {
         // enable anti-aliased text:
         System.setProperty("awt.useSystemAAFontSettings", "on");
 
-        JFrame frame = new JFrame();
-
         VolumesControllerMock volumes_ctrl = new VolumesControllerMock();
-        VolumesView view = new VolumesView(volumes_ctrl);
-        // view.setFont(new Font("ubuntu", Font.PLAIN, 18));
 
-        // JLabel label = new JLabel("Example");
-        // label.setFont(new Font("ubuntu", Font.PLAIN, 18));
+        SwingUtilities.invokeLater(() -> {
+            JFrame frame = new JFrame();
 
-        // frame.add(label);
-        frame.add(view);
+            VolumesView view = new VolumesView(volumes_ctrl);
+            // view.setFont(new Font("ubuntu", Font.PLAIN, 18));
 
-        frame.setPreferredSize(new Dimension(800, 400));
-        frame.pack();
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
+            // JLabel label = new JLabel("Example");
+            // label.setFont(new Font("ubuntu", Font.PLAIN, 18));
+
+            // frame.add(label);
+            frame.add(view);
+
+            frame.setPreferredSize(new Dimension(800, 400));
+            frame.pack();
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setVisible(true);
+
+            // start
+            volumes_ctrl.start();
+        });
+
     }
 
 }
@@ -55,6 +63,10 @@ class VolumesControllerMock implements VolumesInterface {
         _observers = new ArrayList<>();
     }
 
+    public void start() {
+        notifyObservers(volumes_changed);
+    }
+
     @Override
     public void register(Observer obj) {
         _observers.add(obj);
@@ -67,9 +79,10 @@ class VolumesControllerMock implements VolumesInterface {
     }
 
     @Override
-    public void notifyObservers() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'notifyObservers'");
+    public void notifyObservers(String event) {
+        for (Observer obs : _observers) {
+            obs.update(event);
+        }
     }
 
     @Override

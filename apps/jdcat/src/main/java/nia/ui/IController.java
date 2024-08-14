@@ -1,14 +1,17 @@
 package nia.ui;
 
-import java.util.ArrayList;
+// import java.util.ArrayList;
 
-import nia.core.models.FileRecord;
-import nia.core.models.Volume;
+// import nia.core.models.FileRecord;
+// import nia.core.models.Volume;
+import nia.ui.explorer.files.FilesInterface;
+import nia.ui.explorer.volumes.VolumesInterface;
 
 public interface IController {
-    public ArrayList<Volume> get_volumes();
+    // public ArrayList<Volume> get_volumes();
 
-    public ArrayList<FileRecord> get_volume_files(String volume_id, Boolean is_root);
+    // public ArrayList<FileRecord> get_volume_files(String volume_id, Boolean
+    // is_root);
 
     public VolumesInterface get_volumes_ctrl();
 

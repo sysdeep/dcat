@@ -22,4 +22,6 @@ public interface Storage {
     public ArrayList<FileRecord> get_volume_files(String volume_id, Boolean is_root);
 
     public ArrayList<FileRecord> get_files(String parent_id);
+
+    public boolean is_opened();
 }
