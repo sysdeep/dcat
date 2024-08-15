@@ -5,17 +5,17 @@ import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import nia.ui.actions_bar.ActionsBarView;
 import nia.ui.explorer.Explorer;
+import nia.ui.toolbar.ToolbarView;
 
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -26,23 +26,18 @@ import javax.swing.AbstractAction;
  * @author DarkRaha
  * 
  */
-public class MainWindow extends JFrame implements ActionListener {
+public class MainWindow extends JFrame {
     private String title_prefix = "JDCat";
-    IController controller;
-    JButton _exit_button;
+    IController _controller;
 
-    // версия класса
-    // private static final long serialVersionUID = 1L;
-    // некоторые элементы окна
-    // private JTextArea jta = new JTextArea(
-    // "Scroll bar will appear, when much text");
-
-    private JPanel explorer;
+    ToolbarView _toolbar;
+    JPanel _explorer;
+    ActionsBarView _actions_bar;
 
     public MainWindow(IController controller) {
 
         // controller
-        this.controller = controller;
+        this._controller = controller;
 
         // menu
         JMenuBar main_menu = new JMenuBar();
@@ -50,59 +45,29 @@ public class MainWindow extends JFrame implements ActionListener {
 
         main_menu.add(create_file_menu());
 
-        // ------------------------------------------
-        // добавление и настройка компонент
+        // добавление и настройка компонент -----------------------------------
         Container container = getContentPane(); // клиентская область окна
         container.setLayout(new BorderLayout()); // выбираем компоновщик
 
-        // метку наверх
-        container.add(new JLabel("my first label :)"), BorderLayout.NORTH);
+        // tool bar -----------------------------------------------------------
+        _toolbar = new ToolbarView();
+        container.add(_toolbar, BorderLayout.NORTH);
 
-        // две кнопки в дополнительную панель
-        JPanel actions_panel = new JPanel();
+        // explorer -----------------------------------------------------------
+        this._explorer = new Explorer(this._controller);
+        container.add(this._explorer, BorderLayout.CENTER);
 
-        _exit_button = new JButton("Exit");
-        _exit_button.addActionListener(this); // назначаем обработчик события
-        actions_panel.add(_exit_button);
+        // actions bar --------------------------------------------------------
+        _actions_bar = new ActionsBarView();
+        container.add(_actions_bar, BorderLayout.SOUTH);
 
-        // добавляем панель вниз
-        container.add(actions_panel, BorderLayout.SOUTH);
-        // помещаем текст. поле в область прокрутки
-        // а область прокрутки в центр окна,
-        // BorderLayout.CENTER значение по умолчанию
-        // container.add(new JScrollPane(jta));
-        // jta.setLineWrap(true); // автоматический перенос строк
-        // // всплывающая подсказка
-        // jta.setToolTipText("this is simple text editor");
-        // -------------------------------------------
-
-        // explorer
-        this.explorer = new Explorer(this.controller);
-        container.add(this.explorer, BorderLayout.NORTH);
-
-        // настройка окна
+        // настройка окна -----------------------------------------------------
         setTitle(this.title_prefix);
-        setPreferredSize(new Dimension(800, 400));
+        setPreferredSize(new Dimension(1024, 600));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         pack();
         setVisible(true);
-    }
-
-    // обработчик события, метод интерфейса ActionListener
-    public void actionPerformed(ActionEvent arg0) {
-        // if (arg0.getActionCommand().equals("Add text"))
-        // jta.append(" Add text\\n");
-        // if (arg0.getActionCommand().equals("Clear text"))
-        // jta.setText("");
-
-        // если ссылки на объекты сохранены можно сравнивать
-        // по объектам, например для JButton jbOK= new JBUtton("Ok");
-        // то сравнение будет таким
-
-        if (arg0.getSource().equals(_exit_button)) {
-            System.exit(0);
-        }
     }
 
     // запуск оконного приложения
@@ -133,10 +98,10 @@ public class MainWindow extends JFrame implements ActionListener {
 
             JFileChooser fileChooser = new JFileChooser();
             fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
-            int result = fileChooser.showOpenDialog(this.explorer);
+            int result = fileChooser.showOpenDialog(this._explorer);
             if (result == JFileChooser.APPROVE_OPTION) {
                 File selectedFile = fileChooser.getSelectedFile();
-                this.controller.open_db(selectedFile.getAbsolutePath());
+                this._controller.open_db(selectedFile.getAbsolutePath());
             }
 
         });

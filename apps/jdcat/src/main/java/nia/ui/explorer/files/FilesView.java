@@ -12,10 +12,10 @@ import javax.swing.JList;
 import javax.swing.JLabel;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
-public class FilesView extends JPanel implements ListSelectionListener, Observer {
+public class FilesView extends JPanel implements ListSelectionListener, Observer, IActions {
     FilesInterface _controller;
     JList<String> _list;
     ArrayList<FileRecord> _current_files;
@@ -38,27 +38,10 @@ public class FilesView extends JPanel implements ListSelectionListener, Observer
         this.add(new JLabel("files list"), BorderLayout.NORTH);
 
         // list
-
-        // TODO: keyboard enter
         this._list = new JList<String>();
         this._list.addListSelectionListener(this);
-        _list.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
+        new ListActionsHandler(_list, this);
 
-                if (e.getClickCount() == 2 && !e.isConsumed()) {
-                    e.consume();
-                    System.out.println("Double Click");
-
-                    int index = _list.getSelectedIndex();
-
-                    if (index < 0 || _current_files.size() == 0)
-                        return;
-
-                    FileRecord selected_file = _current_files.get(index);
-                    _controller.set_file(selected_file);
-                }
-            }
-        });
         this.add(this._list, BorderLayout.CENTER);
     }
 
@@ -93,6 +76,7 @@ public class FilesView extends JPanel implements ListSelectionListener, Observer
 
     }
 
+    // observer interface -----------------------------------------------------
     @Override
     public void update(String event) {
         System.out.println("FilesView on update: " + event);
@@ -108,6 +92,19 @@ public class FilesView extends JPanel implements ListSelectionListener, Observer
         }
     }
 
+    // IActions interface -----------------------------------------------------
+    @Override
+    public void do_open() {
+        int index = _list.getSelectedIndex();
+
+        if (index < 0 || _current_files.size() == 0)
+            return;
+
+        FileRecord selected_file = _current_files.get(index);
+        _controller.set_file(selected_file);
+    }
+
+    // private ----------------------------------------------------------------
     String _make_list_item(FileRecord record) {
 
         String type_str = "🌎";
@@ -120,4 +117,19 @@ public class FilesView extends JPanel implements ListSelectionListener, Observer
         return type_str + " " + record.name;
     }
 
+}
+
+abstract class KeyAdapter implements KeyListener {
+    // public KeyAdapter(Consumer func) {
+
+    // }
+
+    public void keyTyped(KeyEvent e) {
+    }
+
+    public void keyPressed(KeyEvent e) {
+    }
+
+    public void keyReleased(KeyEvent e) {
+    }
 }

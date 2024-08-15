@@ -11,3 +11,6 @@ volumes_view:
 
 files_view:
 	mvn compile exec:java -Dexec.mainClass="nia.ui.explorer.files.FilesViewExample"
+
+explorer_view:
+	mvn compile exec:java -Dexec.mainClass="nia.ui.explorer.ExplorerExample"
