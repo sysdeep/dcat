@@ -51,6 +51,6 @@ class Settings(tkinter.Toplevel):
         model = UpdateUserSettingsModel()
 
         self.frame_history.apply_changes(model)
-        self.frame_style.apply()
+        self.frame_style.apply_changes(model)
 
         self._us.set_settings(model)

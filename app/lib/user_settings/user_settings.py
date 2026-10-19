@@ -22,6 +22,9 @@ class UserSettings:
         if payload.open_last is not None:
             self._settings.open_last = payload.open_last
 
+        if payload.ttk_theme is not None:
+            self._settings.ttk_theme = payload.ttk_theme
+
         if write:
             self._write()
 

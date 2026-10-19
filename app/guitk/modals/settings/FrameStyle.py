@@ -1,5 +1,7 @@
 from tkinter import ttk, font
 
+from app.lib.user_settings import UpdateUserSettingsModel
+
 
 class FrameStyle(ttk.Frame):
     def __init__(self, master, *args, **kwargs):
@@ -16,40 +18,20 @@ class FrameStyle(ttk.Frame):
         # style.configure('TButton', foreground='green')
 
         styles = style.theme_names()
-        current_style = style.theme_use()
+        self._initial_style = style.theme_use()
         self.style_box = ttk.Combobox(self, values=styles, state="readonly")
         self.style_box.pack(side="left")
         self.style_box.bind("<<ComboboxSelected>>", self.__update_style)
-        self.style_box.set(current_style)
-
-        # self.font_box = ttk.Combobox(self, state='readonly')
-        # self.font_box.bind('<<ComboboxSelected>>', self.__update_font)
-        # self.font_box.pack(side="left")
-
-        self.__load()
-
-    def __load(self):
-        pass
-        # fonts = font.families()
-        # # print(fonts)
-        # self.font_box.config(values = fonts)
-
-    # def __update_font(self, e):
-    # 	font_name = self.font_box.get()
-    #
-    # 	print(font_name)
-    #
-    # 	style = ttk.Style()
-    # 	style.configure(".", font=(font_name, 10))
-    #
-    # 	# tkinter.Tk.option_add("*Font", (font_name, 12))
-    # 	# tkinter.Tk.config("*Font", (font_name, 12))
+        self.style_box.set(self._initial_style)
 
     def __update_style(self, e):
         new_style = self.style_box.get()
-
         style = ttk.Style()
         style.theme_use(new_style)
 
-    def apply(self):
-        pass
+    def apply_changes(self, model: UpdateUserSettingsModel):
+        style = ttk.Style()
+        used_style = style.theme_use()
+
+        if used_style != self._initial_style:
+            model.ttk_theme = used_style

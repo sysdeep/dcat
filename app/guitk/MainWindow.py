@@ -62,11 +62,12 @@ class MainWindow(tkinter.Tk, ToolbarHandler, MainMenuHandler):
 
         self.modals_ctrl = ModalsCtrl(main_win=self, us=self._us)
 
-        # TODO: use user settings for theme
+        # ttk theme ---------------------------------------
         style = ttk.Style()
-        # print(style.theme_names())
-        # print(style.theme_use())
-        style.theme_use("clam")
+        allow_themes = list(style.theme_names())
+        settings = self._us.get_settings()
+        if settings.ttk_theme in allow_themes:
+            style.theme_use(settings.ttk_theme)
 
         # self.tk.eval("source themes/pkgIndex.tcl")
         # self.tk.call("package", "require", "ttkthemes")
