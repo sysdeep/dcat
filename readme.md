@@ -5,15 +5,9 @@
 
 ### Требования
 
-- python 3.5
+- python 3.12
 - tkinter
 - sqlite3
-
-
-
-
-
-
 
 ### Dev
 

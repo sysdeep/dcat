@@ -6,7 +6,6 @@ import logging
 import tkinter
 from tkinter import ttk
 from tkinter.filedialog import *
-from tkinter import messagebox
 
 from app.storage import get_storage
 from app.lib import dbus

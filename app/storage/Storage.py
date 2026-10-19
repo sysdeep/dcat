@@ -1,9 +1,8 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
+from enum import Enum
 import os.path
 import shutil
 import time
+from typing import Callable
 
 from app import log
 from app.lib import dbus, tools
@@ -18,500 +17,446 @@ from .importer import ivolume
 from .models.VNode import VNode
 
 
+class StorageEvent(Enum):
+    opened = "opened"
+
+
 class Storage(object):
-	def __init__(self):
+    Event = StorageEvent
+
+    def __init__(self):
+        self.storage_path = None
+        self.db = DB()
+        self.is_open = False
+
+        self._events_map: dict[StorageEvent, list[Callable[[], None]]] = {}
+
+        # --- прослушка событий
+        sbus.eon(sbus.DB_COMMITTED, self.__on_db_committed)
+        sbus.eon(sbus.DB_MIGRATED, self.__on_db_migrated)
+
+    # events subsystem --------------------------------------------------------
+    def connect(self, event: StorageEvent, handler: Callable[[], None]):
+        if event not in self._events_map:
+            self._events_map[event] = []
+
+        self._events_map[event].append(handler)
+
+    def emit(self, event: StorageEvent):
+        if event not in self._events_map:
+            log.warning(f"event {event} - not in map")
+            return
+
+        for h in self._events_map[event]:
+            h()
+
+    # --- db file actions ------------------------------------------------------
+    def open_storage(self, file_path):
+        """открытие базы"""
+        log.info("open storage: " + file_path)
+        self.storage_path = file_path
+        self.db.open_db(self.storage_path)
+        self.is_open = True
+
+        self.load_system()
+        sbus.emit(sbus.STORAGE_OPENED)
+        self.emit(StorageEvent.opened)
+
+    def close_storage(self):
+        """закрытие базы"""
+        self.db.close_db()
+        cache.clear_volumes()
+        self.is_open = False
+
+        sbus.emit(sbus.STORAGE_CLOSED)
+
+    def create_storage(self, file_path):
+        """создание базы"""
+        log.info("создание базы: " + file_path)
+        if self.is_open:
+            self.close_storage()
+
+        self.storage_path = file_path
+        self.db.create_db(self.storage_path)
+        self.is_open = True
+
+        self.load_system()
+        sbus.emit(sbus.STORAGE_CREATED)
 
-		self.storage_path = None
-		self.db = DB()
-		self.is_open = False
+    def commit(self):
+        """принудительная запись базы"""
+        self.db.commit()
 
+    # --- db file actions ------------------------------------------------------
 
-		#--- прослушка событий
-		sbus.eon(sbus.DB_COMMITTED, self.__on_db_committed)
-		sbus.eon(sbus.DB_MIGRATED, self.__on_db_migrated)
+    # --- получение элементов --------------------------------------------------
+    # def fetch_system(self):
+    # 	"""получить системную информацию из базы"""
+    # 	return self.db.get_system()
 
+    def load_system(self):
+        """загрузить данные по базе в кэш"""
+        system_info = self.db.get_system()
+        system_data = {}
+        for row in system_info:
+            system_data[row["key"]] = row["value"]
 
+        cache.set_system(system_data)
 
-	#--- db file actions ------------------------------------------------------
-	def open_storage(self, file_path):
-		"""открытие базы"""
-		log.info("open storage: " + file_path)
-		self.storage_path = file_path
-		self.db.open_db(self.storage_path)
-		self.is_open = True
+    def get_system_value(self, key):
+        """получить тек. значение системной информации"""
+        system_data = cache.get_system()
+        return system_data.get(key, "not found")
 
-		self.load_system()
-		sbus.emit(sbus.STORAGE_OPENED)
+    def get_system_info(self):
+        """получить все данные по системной информации"""
+        return cache.get_system()
 
+    def fetch_volumes(self, iscache=False):
+        """получить список томов
+        :param	iscache	[bool]		- флаг выбора томов из текущего кэша, а не из базы
+        :returns	[vnode]
+        """
 
+        # --- если флаг из кэша - возвращаем данные из кэша
+        if iscache:
+            log.debug("fetch volumes - cache")
+            return cache.get_volumes()
 
+        log.debug("fetch volumes")
+        if not self.is_open:
+            return []
 
-	def close_storage(self):
-		"""закрытие базы"""
-		self.db.close_db()
-		cache.clear_volumes()
-		self.is_open = False
+        volumes = self.db.get_volumes()
+        cache.set_volumes(volumes)
 
-		sbus.emit(sbus.STORAGE_CLOSED)
+        return volumes
 
+    def fetch_volume_files(self, volime_id):
+        log.debug("fetch volume files")
+        if not self.is_open:
+            return []
 
-	def create_storage(self, file_path):
-		"""создание базы"""
-		log.info("создание базы: " + file_path)
-		if self.is_open:
-			self.close_storage()
+        files = self.db.get_volume_root_files(volime_id)
+        return files
 
-		self.storage_path = file_path
-		self.db.create_db(self.storage_path)
-		self.is_open = True
+    def fetch_parent_files(self, parent_id):
+        """получить список вложенных файлов 1 уровня для заданного родителя"""
+        if not self.is_open:
+            return []
 
-		self.load_system()
-		sbus.emit(sbus.STORAGE_CREATED)
+        files = self.db.get_parent_files(parent_id)
+        return files
 
+    def fetch_parent_files_all(self, parent_id):
+        """
+        получить список вложенных файлов всех уровней для заданного родителя
+        :arg
+                parent_id [uuid]
+        :return
+                iterator[fnode]
+        """
 
-	def commit(self):
-		"""принудительная запись базы"""
-		self.db.commit()
-	#--- db file actions ------------------------------------------------------
-	
-	
+        childrens = self.fetch_parent_files(parent_id)
 
+        for c in childrens:
+            yield c
 
+        for c in childrens:
+            yield from self.fetch_parent_files_all(c.uuid)
 
+    def find_items(self, term, is_file=True, is_folder=False, volume_id=None):
+        """поиск элементов по заданным пареметрам, дополнительно рекурсивно строится полный путь"""
 
-	#--- получение элементов --------------------------------------------------
-	# def fetch_system(self):
-	# 	"""получить системную информацию из базы"""
-	# 	return self.db.get_system()
+        pre_fnodes = self.db.find_by_name(term, volume_id)
 
+        fnodes = []
+        for fnode in pre_fnodes:
+            if is_file and fnode.is_file():
+                fnodes.append(fnode)
 
-	def load_system(self):
-		"""загрузить данные по базе в кэш"""
-		system_info = self.db.get_system()
-		system_data = {}
-		for row in system_info:
-			system_data[row["key"]] = row["value"]
+            if is_folder and fnode.is_dir():
+                fnodes.append(fnode)
 
-		cache.set_system(system_data)
+        pre_fnodes = None
 
-	def get_system_value(self, key):
-		"""получить тек. значение системной информации"""
-		system_data = cache.get_system()
-		return system_data.get(key, "not found")
+        result = finder.find_top_items(self.db, fnodes)
 
-	def get_system_info(self):
-		"""получить все данные по системной информации"""
-		return cache.get_system()
+        return result
 
+    def get_volume_elements_count(self, vnode: VNode) -> int:
+        """получить общее кол-во элементов тома"""
+        return self.db.get_volume_elements_count(vnode.uuid)
 
+    # --- получение элементов --------------------------------------------------
 
+    # --- удаление элементов ---------------------------------------------------
+    def remove_volume(self, volume_uuid):
+        """удаление тома"""
+        if not self.is_open:
+            return False
 
+        self.db.remove_volume_files(volume_uuid)
+        self.db.remove_volume(volume_uuid)
 
+        return True
 
+    def remove_file(self, file_uuid, commit=False):
+        """удаление заданной записи файла"""
+        if not self.is_open:
+            return False
 
-	def fetch_volumes(self, iscache=False):
-		"""получить список томов
-			:param	iscache	[bool]		- флаг выбора томов из текущего кэша, а не из базы
-			:returns	[vnode]
-		"""
+        self.db.remove_file(file_uuid, commit)
+        return True
 
-		#--- если флаг из кэша - возвращаем данные из кэша
-		if iscache:
-			log.debug("fetch volumes - cache")
-			return cache.get_volumes()
+    # def remove_files(self, files_uuid_list):
+    # 	if not self.is_open:
+    # 		return False
+    #
+    # 	self.db.remove_files(files_uuid_list)
+    # 	return True
 
-		log.debug("fetch volumes")
-		if not self.is_open:
-			return []
+    # --- удаление элементов ---------------------------------------------------
 
-		volumes = self.db.get_volumes()
-		cache.set_volumes(volumes)
+    # --- создание элементов ---------------------------------------------------
+    def create_volume_row(self, vdata, commit=False):
+        volume_id = self.db.create_volume_row(vdata, commit)
+        return volume_id
 
-		return volumes
-		
+    def create_file_row(self, fdata, commit=False):
+        file_id = self.db.create_file_row(fdata, commit)
+        return file_id
 
-	def fetch_volume_files(self, volime_id):
-		log.debug("fetch volume files")
-		if not self.is_open:
-			return []
+    # --- создание элементов ---------------------------------------------------
 
-		files = self.db.get_volume_root_files(volime_id)
-		return files
+    # --- обновление элементов -------------------------------------------------
+    def update_volume_row(self, vdata, commit=False):
+        self.db.update_volume_row(vdata, commit)
 
+        sbus.emit(sbus.STORAGE_VOLUME_UPDATED, vdata["uuid"])
 
-	def fetch_parent_files(self, parent_id):
-		"""получить список вложенных файлов 1 уровня для заданного родителя"""
-		if not self.is_open:
-			return []
+    def update_system(self, key, value):
+        """обновление заданной системной переменной(вместе с кэшем)"""
+        self.db.update_system(key, value)
+        system_data = cache.get_system()
+        system_data[key] = value
+        cache.set_system(system_data)
 
-		files = self.db.get_parent_files(parent_id)
-		return files
+    def update_file_description(self, file_uuid, description, commit=False):
+        self.db.update_file_description(file_uuid, description, commit)
 
-	def fetch_parent_files_all(self, parent_id):
-		"""
-			получить список вложенных файлов всех уровней для заданного родителя
-			:arg
-				parent_id [uuid]
-			:return
-				iterator[fnode]
-		"""
+    # --- обновление элементов -------------------------------------------------
 
-		childrens = self.fetch_parent_files(parent_id)
+    # --- aliaces --------------------------------------------------------------
+    def get_db_version(self):
+        """получить версию открытой базы"""
+        return self.get_system_value(defs.SYS_KEY_VERSION)
 
-		for c in childrens:
-			yield c
+    # --- aliaces --------------------------------------------------------------
 
-		for c in childrens:
-			yield from self.fetch_parent_files_all(c.uuid)
+    # --- сервис ---------------------------------------------------------------
+    def create_current_backup(self):
+        # print("create_current_backup")
 
+        if self.is_open is False:
+            return False
 
+        # print(self.storage_path)
 
-	def find_items(self, term, is_file=True, is_folder=False, volume_id=None):
-		"""поиск элементов по заданным пареметрам, дополнительно рекурсивно строится полный путь"""
+        base_name = os.path.splitext(self.storage_path)
+        # print(base_name)
 
-		pre_fnodes = self.db.find_by_name(term, volume_id)
-
-		fnodes = []
-		for fnode in pre_fnodes:
-			if is_file and fnode.is_file():
-				fnodes.append(fnode)
-
-			if is_folder and fnode.is_dir():
-				fnodes.append(fnode)
-
-		pre_fnodes = None
-
-		result = finder.find_top_items(self.db, fnodes)
-
-		return result
-	
-	def get_volume_elements_count(self, vnode: VNode) -> int:
-		"""получить общее кол-во элементов тома"""
-		return self.db.get_volume_elements_count(vnode.uuid)
-	#--- получение элементов --------------------------------------------------
-
-
-
-
-
-
-
-
-	#--- удаление элементов ---------------------------------------------------
-	def remove_volume(self, volume_uuid):
-		"""удаление тома"""
-		if not self.is_open:
-			return False
-
-		self.db.remove_volume_files(volume_uuid)
-		self.db.remove_volume(volume_uuid)
-
-		return True
-
-
-	def remove_file(self, file_uuid, commit=False):
-		"""удаление заданной записи файла"""
-		if not self.is_open:
-			return False
-
-		self.db.remove_file(file_uuid, commit)
-		return True
-
-
-	# def remove_files(self, files_uuid_list):
-	# 	if not self.is_open:
-	# 		return False
-	#
-	# 	self.db.remove_files(files_uuid_list)
-	# 	return True
-
-	#--- удаление элементов ---------------------------------------------------
-
-
-
-
-
-
-
-	#--- создание элементов ---------------------------------------------------
-	def create_volume_row(self, vdata, commit=False):
-		volume_id = self.db.create_volume_row(vdata, commit)
-		return volume_id
-
-
-	def create_file_row(self, fdata, commit=False):
-		file_id = self.db.create_file_row(fdata, commit)
-		return file_id
-	#--- создание элементов ---------------------------------------------------
-
-
-
-
-
-
-
-
-
-	#--- обновление элементов -------------------------------------------------
-	def update_volume_row(self, vdata, commit=False):
-		self.db.update_volume_row(vdata, commit)
-
-		sbus.emit(sbus.STORAGE_VOLUME_UPDATED, vdata["uuid"])
-
-
-	def update_system(self, key, value):
-		"""обновление заданной системной переменной(вместе с кэшем)"""
-		self.db.update_system(key, value)
-		system_data = cache.get_system()
-		system_data[key] = value
-		cache.set_system(system_data)
-
-	def update_file_description(self, file_uuid, description, commit=False):
-		self.db.update_file_description(file_uuid, description, commit)
-
-	#--- обновление элементов -------------------------------------------------
-
-
-
-
-	#--- aliaces --------------------------------------------------------------
-	def get_db_version(self):
-		"""получить версию открытой базы"""
-		return self.get_system_value(defs.SYS_KEY_VERSION)
-	#--- aliaces --------------------------------------------------------------
-
-
-
-	#--- сервис ---------------------------------------------------------------
-	def create_current_backup(self):
-		# print("create_current_backup")
-
-		if self.is_open is False:
-			return False
-
-
-		# print(self.storage_path)
-
-		base_name = os.path.splitext(self.storage_path)
-		# print(base_name)
-
-		new_backup_name = base_name[0] + "_" + str(int(time.time())) + base_name[1]
-		# print(new_backup_name)
-
-
-		try:
-			shutil.copyfile(self.storage_path, new_backup_name)
-		except:
-			log.exception("unable copy file for backup...")
-
-
-
-
-	def import_volume(self, file_path):
-		err, result = ivolume.import_volume(file_path)
-
-		if err:
-			print(result)
-		else:
-			print("import ok")
-
-
-	def export_volume(self, volume_id, export_file_path):
-		log.debug("export volume - " + volume_id)
-		log.debug("export path - " + export_file_path)
-
-		#--- sysinfo
-		sys_info = self.get_system_info()
-		sys_info["sorage_path"] = self.storage_path
-
-		#--- volume info
-		vnode = self.db.get_volume(volume_id)
-		volume_info = vnode.make_data_dict()
-
-
-		#--- files
-		files = []
-		fnodes = self.db.get_volume_all_files(volume_id)
-		for fnode in fnodes:
-			result = fnode.make_data_dict()
-			files.append(result)
-
-
-		result = evolume.export(sys_info, volume_info, files, export_file_path)
-		if result:
-			dbus.emit(dbus.SHOW_EXPORT_VOLUME_OK)
-		else:
-			dbus.emit(dbus.SHOW_EXPORT_VOLUME_ERR)
-
-	def export_volume_a(self, volume_id, export_file_path):
-		"""new experiment"""
-		log.debug("export volume - " + volume_id)
-		log.debug("export path - " + export_file_path)
-
-		#--- sysinfo
-		sys_info = self.get_system_info()
-		sys_info["sorage_path"] = self.storage_path
-
-		#--- volume info
-		vnode = self.db.get_volume(volume_id)
-		volume_info = vnode.make_data_dict()
-
-
-		#--- files
-		files = []
-		fnodes = self.db.get_volume_all_files(volume_id)
-		for fnode in fnodes:
-			result = fnode.make_data_dict()
-			files.append(result)
-
-
-		print("-"*20)
-		print(sys_info)
-		print("-"*20)
-		print(volume_info)
-		print("-"*20)
-		# print(files)
-		print("-"*20)
-		# print(export_file_path)
-		print("-"*20)
-		# result = evolume.export(sys_info, volume_info, files, export_file_path)
-		# if result:
-		# 	dbus.emit(dbus.SHOW_EXPORT_VOLUME_OK)
-		# else:
-		# 	dbus.emit(dbus.SHOW_EXPORT_VOLUME_ERR)
-	
-		
-		Mcsv.start_export(volume_info, files_list=files, file_path=export_file_path)
-		dbus.emit(dbus.SHOW_EXPORT_VOLUME_OK)
-
-	
-	def export_volume_b(self, volume_id, export_file_path):
-		"""new experiment"""
-		log.debug("export volume - " + volume_id)
-		log.debug("export path - " + export_file_path)
-
-		#--- sysinfo
-		sys_info = self.get_system_info()
-		sys_info["sorage_path"] = self.storage_path
-
-		#--- volume info
-		vnode = self.db.get_volume(volume_id)
-		volume_info = vnode.make_data_dict()
-
-
-		#--- files
-		files = []
-		fnodes = self.db.get_volume_all_files(volume_id)
-		for fnode in fnodes:
-			result = fnode.make_data_dict()
-			files.append(result)
-
-
-		print("-"*20)
-		print(sys_info)
-		print("-"*20)
-		print(volume_info)
-		print("-"*20)
-		# print(files)
-		print("-"*20)
-		# print(export_file_path)
-		print("-"*20)
-		# result = evolume.export(sys_info, volume_info, files, export_file_path)
-		# if result:
-		# 	dbus.emit(dbus.SHOW_EXPORT_VOLUME_OK)
-		# else:
-		# 	dbus.emit(dbus.SHOW_EXPORT_VOLUME_ERR)
-	
-		Bss.start_export(volume_info, files_list=files, file_path=export_file_path)
-		dbus.emit(dbus.SHOW_EXPORT_VOLUME_OK)
-		
-		
-		
-		
-		
-	def export_volume_10(self, volume_id, export_file_path):
-		"""new experiment"""
-		log.debug("export volume - " + volume_id)
-		log.debug("export path - " + export_file_path)
-
-		#--- sysinfo
-		sys_info = self.get_system_info()
-		sys_info["sorage_path"] = self.storage_path
-
-		#--- volume info
-		vnode = self.db.get_volume(volume_id)
-		volume_info = vnode.make_data_dict()
-
-
-		#--- files
-		files = []
-		fnodes = self.db.get_volume_all_files(volume_id)
-		for fnode in fnodes:
-			result = fnode.make_data_dict()
-			files.append(result)
-
-
-		print("-"*20)
-		print(sys_info)
-		print("-"*20)
-		print(volume_info)
-		print("-"*20)
-		# print(files)
-		print("-"*20)
-		# print(export_file_path)
-		print("-"*20)
-		# result = evolume.export(sys_info, volume_info, files, export_file_path)
-		# if result:
-		# 	dbus.emit(dbus.SHOW_EXPORT_VOLUME_OK)
-		# else:
-		# 	dbus.emit(dbus.SHOW_EXPORT_VOLUME_ERR)
-	
-		e_10.start_export(volume_info, files_list=files, file_path=export_file_path)
-		dbus.emit(dbus.SHOW_EXPORT_VOLUME_OK)
-
-
-	def export_db(self, file_name_path, format="json"):
-		ejson.add_db_info("qqq")
-
-
-		volumes = self.fetch_volumes()
-
-
-		for vnode in volumes:
-			files = self.db.get_volume_all_files(vnode.uuid)
-			vnode.files = files
-
-			ejson.add_volume(vnode, files)
-
-
-		ejson.make(file_name_path)
-
-
-	def vacuum(self):
-		"""уплотнение базы"""
-		self.db.vacuum()
-	#--- сервис ---------------------------------------------------------------
-
-
-
-	#--- events ---------------------------------------------------------------
-	def __on_db_committed(self):
-		"""событие от базы - запись изменений в файл"""
-
-		#--- обновляем данные в кэше - время изменения базы
-		updated_timestamp = self.db.get_system_value(defs.SYS_KEY_UPDATED)
-		system_cache = cache.get_system()
-		system_cache[defs.SYS_KEY_UPDATED] = updated_timestamp
-		cache.set_system(system_cache)
-
-
-	def __on_db_migrated(self):
-		"""событие от базы - произошла миграция"""
-
-		#--- обновляем данные в кэше - версия базы
-		version = self.db.get_system_value(defs.SYS_KEY_VERSION)
-		system_cache = cache.get_system()
-		system_cache[defs.SYS_KEY_VERSION] = version
-		cache.set_system(system_cache)
-
-	#--- events ---------------------------------------------------------------
+        new_backup_name = base_name[0] + "_" + str(int(time.time())) + base_name[1]
+        # print(new_backup_name)
+
+        try:
+            shutil.copyfile(self.storage_path, new_backup_name)
+        except:
+            log.exception("unable copy file for backup...")
+
+    def import_volume(self, file_path):
+        err, result = ivolume.import_volume(file_path)
+
+        if err:
+            print(result)
+        else:
+            print("import ok")
+
+    def export_volume(self, volume_id, export_file_path):
+        log.debug("export volume - " + volume_id)
+        log.debug("export path - " + export_file_path)
+
+        # --- sysinfo
+        sys_info = self.get_system_info()
+        sys_info["sorage_path"] = self.storage_path
+
+        # --- volume info
+        vnode = self.db.get_volume(volume_id)
+        volume_info = vnode.make_data_dict()
+
+        # --- files
+        files = []
+        fnodes = self.db.get_volume_all_files(volume_id)
+        for fnode in fnodes:
+            result = fnode.make_data_dict()
+            files.append(result)
+
+        result = evolume.export(sys_info, volume_info, files, export_file_path)
+        if result:
+            dbus.emit(dbus.SHOW_EXPORT_VOLUME_OK)
+        else:
+            dbus.emit(dbus.SHOW_EXPORT_VOLUME_ERR)
+
+    def export_volume_a(self, volume_id, export_file_path):
+        """new experiment"""
+        log.debug("export volume - " + volume_id)
+        log.debug("export path - " + export_file_path)
+
+        # --- sysinfo
+        sys_info = self.get_system_info()
+        sys_info["sorage_path"] = self.storage_path
+
+        # --- volume info
+        vnode = self.db.get_volume(volume_id)
+        volume_info = vnode.make_data_dict()
+
+        # --- files
+        files = []
+        fnodes = self.db.get_volume_all_files(volume_id)
+        for fnode in fnodes:
+            result = fnode.make_data_dict()
+            files.append(result)
+
+        print("-" * 20)
+        print(sys_info)
+        print("-" * 20)
+        print(volume_info)
+        print("-" * 20)
+        # print(files)
+        print("-" * 20)
+        # print(export_file_path)
+        print("-" * 20)
+        # result = evolume.export(sys_info, volume_info, files, export_file_path)
+        # if result:
+        # 	dbus.emit(dbus.SHOW_EXPORT_VOLUME_OK)
+        # else:
+        # 	dbus.emit(dbus.SHOW_EXPORT_VOLUME_ERR)
+
+        Mcsv.start_export(volume_info, files_list=files, file_path=export_file_path)
+        dbus.emit(dbus.SHOW_EXPORT_VOLUME_OK)
+
+    def export_volume_b(self, volume_id, export_file_path):
+        """new experiment"""
+        log.debug("export volume - " + volume_id)
+        log.debug("export path - " + export_file_path)
+
+        # --- sysinfo
+        sys_info = self.get_system_info()
+        sys_info["sorage_path"] = self.storage_path
+
+        # --- volume info
+        vnode = self.db.get_volume(volume_id)
+        volume_info = vnode.make_data_dict()
+
+        # --- files
+        files = []
+        fnodes = self.db.get_volume_all_files(volume_id)
+        for fnode in fnodes:
+            result = fnode.make_data_dict()
+            files.append(result)
+
+        print("-" * 20)
+        print(sys_info)
+        print("-" * 20)
+        print(volume_info)
+        print("-" * 20)
+        # print(files)
+        print("-" * 20)
+        # print(export_file_path)
+        print("-" * 20)
+        # result = evolume.export(sys_info, volume_info, files, export_file_path)
+        # if result:
+        # 	dbus.emit(dbus.SHOW_EXPORT_VOLUME_OK)
+        # else:
+        # 	dbus.emit(dbus.SHOW_EXPORT_VOLUME_ERR)
+
+        Bss.start_export(volume_info, files_list=files, file_path=export_file_path)
+        dbus.emit(dbus.SHOW_EXPORT_VOLUME_OK)
+
+    def export_volume_10(self, volume_id, export_file_path):
+        """new experiment"""
+        log.debug("export volume - " + volume_id)
+        log.debug("export path - " + export_file_path)
+
+        # --- sysinfo
+        sys_info = self.get_system_info()
+        sys_info["sorage_path"] = self.storage_path
+
+        # --- volume info
+        vnode = self.db.get_volume(volume_id)
+        volume_info = vnode.make_data_dict()
+
+        # --- files
+        files = []
+        fnodes = self.db.get_volume_all_files(volume_id)
+        for fnode in fnodes:
+            result = fnode.make_data_dict()
+            files.append(result)
+
+        print("-" * 20)
+        print(sys_info)
+        print("-" * 20)
+        print(volume_info)
+        print("-" * 20)
+        # print(files)
+        print("-" * 20)
+        # print(export_file_path)
+        print("-" * 20)
+        # result = evolume.export(sys_info, volume_info, files, export_file_path)
+        # if result:
+        # 	dbus.emit(dbus.SHOW_EXPORT_VOLUME_OK)
+        # else:
+        # 	dbus.emit(dbus.SHOW_EXPORT_VOLUME_ERR)
+
+        e_10.start_export(volume_info, files_list=files, file_path=export_file_path)
+        dbus.emit(dbus.SHOW_EXPORT_VOLUME_OK)
+
+    def export_db(self, file_name_path, format="json"):
+        ejson.add_db_info("qqq")
+
+        volumes = self.fetch_volumes()
+
+        for vnode in volumes:
+            files = self.db.get_volume_all_files(vnode.uuid)
+            vnode.files = files
+
+            ejson.add_volume(vnode, files)
+
+        ejson.make(file_name_path)
+
+    def vacuum(self):
+        """уплотнение базы"""
+        self.db.vacuum()
+
+    # --- сервис ---------------------------------------------------------------
+
+    # --- events ---------------------------------------------------------------
+    def __on_db_committed(self):
+        """событие от базы - запись изменений в файл"""
+
+        # --- обновляем данные в кэше - время изменения базы
+        updated_timestamp = self.db.get_system_value(defs.SYS_KEY_UPDATED)
+        system_cache = cache.get_system()
+        system_cache[defs.SYS_KEY_UPDATED] = updated_timestamp
+        cache.set_system(system_cache)
+
+    def __on_db_migrated(self):
+        """событие от базы - произошла миграция"""
+
+        # --- обновляем данные в кэше - версия базы
+        version = self.db.get_system_value(defs.SYS_KEY_VERSION)
+        system_cache = cache.get_system()
+        system_cache[defs.SYS_KEY_VERSION] = version
+        cache.set_system(system_cache)
+
+    # --- events ---------------------------------------------------------------
