@@ -7,7 +7,7 @@ from app.storage import get_storage
 from app.lib import dbus
 
 
-from .VList import VList
+from .volumes_list import VolumesList
 from .DBList import DBList
 from .FList import FList
 from .info_frame import InfoFrame
@@ -24,7 +24,7 @@ class Explorer(tkinter.Frame):
         __right_side.pack(side="left", expand=False, fill="y")
 
         # --- volumes
-        self.v_list = VList(__right_side)
+        self.v_list = VolumesList(__right_side)
         self.v_list.pack(side="top", expand=True, fill="y")
         self.v_list.set_select_cb(self.__on_volume_selected)
         self.v_list.set_remove_cb(self.__on_volume_do_remove)
