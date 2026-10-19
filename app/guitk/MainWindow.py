@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+import logging
 import tkinter
 from tkinter import ttk
 from tkinter.filedialog import *
@@ -14,210 +15,173 @@ from app import shared
 from app.rc import VERSION
 
 from .modals.ModalsCtrl import ModalsCtrl
-from .Menu import BarMenu
+from .main_menu import MainMenu, MainMenuHandler
 from .explorer import Explorer
 from .DBInfo import DBInfo
-from .ToolBar import ToolBar
+from .toolbar import ToolBar, ToolbarHandler
 from .utils import ticons
-
 
 
 from .Ctrl import Ctrl
 
 
+class MainWindow(tkinter.Tk, ToolbarHandler, MainMenuHandler):
+    def __init__(self):
+        super(MainWindow, self).__init__()
 
+        self.name = "DCat"
+        self.title(self.name)
+        self.minsize(800, 400)
 
+        self.app_icon = ticons.real_icon("app.png")
+        # self.option_add("*Font", ("Play", 12))				# до создания виджетов
+        self.iconphoto(self, self.app_icon)
 
+        # self.usettings = USettings()
+        # self.usettings.open_settings()
 
+        self.usettings = shared.get_usettings()
 
-class MainWindow(tkinter.Tk):
-	def __init__(self):
-		super(MainWindow, self).__init__()
+        self.storage = get_storage()
+        self.ctrl = Ctrl()
 
-		self.name = "DCat"
-		self.title(self.name)
-		self.minsize(800, 400)
+        self._logger = logging.getLogger("app")
 
-		self.app_icon = ticons.real_icon("app.png")
-		# self.option_add("*Font", ("Play", 12))				# до создания виджетов
-		self.iconphoto(self, self.app_icon)
+        # --- menu
+        self.menu_bar = MainMenu(parent=self, actions_controller=self)
 
-		# self.usettings = USettings()
-		# self.usettings.open_settings()
+        # --- toolbar
+        self.tool_bar = ToolBar(parent=self, actions_controller=self)
+        self.tool_bar.pack(side="top", expand=False, fill="x")
 
-		self.usettings = shared.get_usettings()
+        # --- explorer
+        self.explorer_frame = Explorer(self)
+        self.explorer_frame.pack(side="top", fill="both", expand=True)
+        # self.explorer_frame.v_list.set_cb_open_modal_add_volume(self.__on_show_modal_add_volume)
 
-		
-		self.storage = get_storage()
-		self.ctrl = Ctrl()
+        # --- db info
+        self.db_info = DBInfo(self)
+        self.db_info.pack(side="bottom", fill="x", expand=False)
 
-		
+        self.modal_add_volume = None
 
-		#--- menu
-		self.menu_bar = BarMenu(self)
-		# self.menu_bar.add_last_files(self.usettings.data["lastbases"])
-		self.menu_bar.cb_show_open			= self.__on_show_open_db
-		self.menu_bar.cb_show_create 		= self.__on_create_db
-		self.menu_bar.cb_open_last 			= self.__on_open_db
-		self.menu_bar.cb_show_add_volume 	= self.__on_show_modal_add_volume
-		self.menu_bar.cb_create_db_backup	= self.act_db_backup
+        self.modals_ctrl = ModalsCtrl(self)
 
+        style = ttk.Style()
+        # print(style.theme_names())
+        # print(style.theme_use())
+        style.theme_use("clam")
 
-		#--- toolbar
-		self.tool_bar = ToolBar(self)
-		self.tool_bar.pack(side="top", expand=False, fill="x")
-		self.tool_bar.cb_open_db 			= self.__on_show_open_db
-		self.tool_bar.cb_create_db 			= self.__on_create_db
-		self.tool_bar.cb_create_db_backup	= self.act_db_backup
-		self.tool_bar.cb_show_find_modal	= self.act_show_find_modal
+        # self.tk.eval("source themes/pkgIndex.tcl")
+        # self.tk.call("package", "require", "ttkthemes")
+        # self.tk.call("ttk::setTheme", "plastik")
+        # self.tk.call("ttk::setTheme", "aquativo")
+        # self.tk.call("ttk::setTheme", "arc")
+        # self.tk.call("ttk::setTheme", "elegance")
+        # self.tk.call("ttk::setTheme", "blue")
+        # self.tk.call("ttk::setTheme", "clearlooks")
+        # self.tk.call("ttk::setTheme", "radiance")
+        # self.tk.call("ttk::setTheme", "winxpblue")
 
+        # style.configure("TButton", font=("Play", 12))
+        # style.configure(".", font=("Play", 10))
+        # style.configure(".", font=("Ubuntu", 10))
 
-		#--- explorer
-		self.explorer_frame = Explorer(self)
-		self.explorer_frame.pack(side="top", fill="both", expand=True)
-		# self.explorer_frame.v_list.set_cb_open_modal_add_volume(self.__on_show_modal_add_volume)
+        # --- проверяем и обновляем список открывавшихся баз
+        self.usettings.check_bases_exists()
 
+        # --- открываем последний
+        self.__check_open_last()
 
-		#--- db info
-		self.db_info = DBInfo(self)
-		self.db_info.pack(side="bottom", fill="x", expand=False)
+        # --- events
+        dbus.eon(dbus.REQUEST_OPEN_DB, self.__on_open_db)  # открытие заданной базы
 
-		self.modal_add_volume = None
+    # interfaces --------------------------------------------------------------
+    def backup_db(self):
+        self._logger.debug("action backup")
+        self.storage.create_current_backup()
 
+    def show_find_modal(self):
+        # TODO: избавится от шины
+        dbus.emit(dbus.SHOW_FIND)
 
-		self.modals_ctrl = ModalsCtrl(self)
+    def show_open_db(self):
+        self.__on_show_open_db()
 
-		style = ttk.Style()
-		# print(style.theme_names())
-		# print(style.theme_use())
-		style.theme_use("clam")
+    def show_create_db(self):
+        self.__on_create_db()
 
-		# self.tk.eval("source themes/pkgIndex.tcl")
-		# self.tk.call("package", "require", "ttkthemes")
-		# self.tk.call("ttk::setTheme", "plastik")
-		# self.tk.call("ttk::setTheme", "aquativo")
-		# self.tk.call("ttk::setTheme", "arc")
-		# self.tk.call("ttk::setTheme", "elegance")
-		# self.tk.call("ttk::setTheme", "blue")
-		# self.tk.call("ttk::setTheme", "clearlooks")
-		# self.tk.call("ttk::setTheme", "radiance")
-		# self.tk.call("ttk::setTheme", "winxpblue")
+    def show_add_volume(self):
+        dbus.emit(dbus.SHOW_ADD_VOLUME)
 
+    # private -----------------------------------------------------------------
+    def __check_open_last(self):
+        # --- если в настройках флаг открывать последний
+        is_open_last = self.usettings.data["open_last"]
+        if is_open_last == 0:
+            return False
 
-		# style.configure("TButton", font=("Play", 12))
-		# style.configure(".", font=("Play", 10))
-		# style.configure(".", font=("Ubuntu", 10))
+        last = self.usettings.get_last_base()
 
+        if last:
+            self.__on_open_db(last)
 
-		#--- проверяем и обновляем список открывавшихся баз
-		self.usettings.check_bases_exists()
+    def __update_db_info(self):
+        """обновление информации по базе"""
+        self.db_info.set_path(self.storage.storage_path)
+        # self.db_info.set_sysinfo(self.storage.fetch_system())
 
+    def __on_create_db(self):
+        """запрос создания базы"""
 
-		#--- открываем последний
-		self.__check_open_last()
+        title = "Расположение новой базы"
+        db_path = asksaveasfilename(defaultextension=".dcat", title=title)
+        if db_path:
+            self.storage.close_storage()
+            self.storage.create_storage(db_path)
 
+            self.explorer_frame.refresh()
+            self.__update_db_info()
+            self.usettings.update_last_base(db_path)
+            self.__update_title(db_path)
 
-		#--- events
-		dbus.eon(dbus.REQUEST_OPEN_DB, self.__on_open_db)				# открытие заданной базы
+    def __on_open_db(self, db_path):
+        """запрос на открытие базы по заданному пути"""
 
+        # --- проверка существования базы
+        if not os.path.exists(db_path):
+            self.usettings.remove_last(db_path)
+            return False
 
-	def __check_open_last(self):
-		#--- если в настройках флаг открывать последний
-		is_open_last = self.usettings.data["open_last"]
-		if is_open_last == 0:
-			return False
+        self.storage.close_storage()
+        self.storage.open_storage(db_path)
 
-		last = self.usettings.get_last_base()
+        self.explorer_frame.refresh()
+        self.__update_db_info()
 
-		if last:
-			self.__on_open_db(last)
+        self.usettings.update_last_base(db_path)
+        self.__update_title(db_path)
 
+    def __on_show_modal_add_volume(self):
+        """вызов события для отоьражения модала добавления тома"""
+        dbus.emit(dbus.SHOW_ADD_VOLUME)
 
+    def __on_show_open_db(self):
+        """отобразить модал выбора базы для открытия"""
+        inpath = askopenfilename(title="Выбор базы", defaultextension=".dcat", filetypes=[("DCat files", ".dcat")])
 
+        if inpath:
+            inpath = os.path.normpath(inpath)
+            self.__on_open_db(inpath)
 
-	def __update_db_info(self):
-		"""обновление информации по базе"""
-		self.db_info.set_path(self.storage.storage_path)
-		# self.db_info.set_sysinfo(self.storage.fetch_system())
+    def __update_title(self, db_path):
+        text = "{} v{} - {}".format(self.name, VERSION, db_path)
+        self.title(text)
 
-
-
-	def __on_create_db(self):
-		"""запрос создания базы"""
-
-		title = 'Расположение новой базы'
-		db_path = asksaveasfilename(defaultextension=".dcat", title=title)
-		if db_path:
-
-			self.storage.close_storage()
-			self.storage.create_storage(db_path)
-
-			self.explorer_frame.refresh()
-			self.__update_db_info()
-			self.usettings.update_last_base(db_path)
-			self.__update_title(db_path)
-
-
-
-	def __on_open_db(self, db_path):
-		"""запрос на открытие базы по заданному пути"""
-
-		#--- проверка существования базы
-		if not os.path.exists(db_path):
-			self.usettings.remove_last(db_path)
-			return False
-
-		self.storage.close_storage()
-		self.storage.open_storage(db_path)
-
-		self.explorer_frame.refresh()
-		self.__update_db_info()
-
-		self.usettings.update_last_base(db_path)
-		self.__update_title(db_path)
-		
-
-
-
-	def __on_show_modal_add_volume(self):
-		"""вызов события для отоьражения модала добавления тома"""
-		dbus.emit(dbus.SHOW_ADD_VOLUME)
-
-
-
-	def __on_show_open_db(self):
-		"""отобразить модал выбора базы для открытия"""
-		inpath = askopenfilename(
-				title=u"Выбор базы",
-				defaultextension=u".dcat", filetypes=[('DCat files', '.dcat')])
-
-		if inpath:
-			inpath = os.path.normpath(inpath)
-			self.__on_open_db(inpath)
-
-
-
-
-	def __update_title(self, db_path):
-		text = "{} v{} - {}".format(self.name, VERSION, db_path)
-		self.title(text)
-
-
-
-	def act_show_find_modal(self):
-		dbus.emit(dbus.SHOW_FIND)
-
-
-	def act_db_backup(self):
-		self.storage.create_current_backup()
-
-
-	def act_exit(self):
-		self.quit()
-
+    def act_exit(self):
+        self.quit()
 
 
 if __name__ == "__main__":
-
-	app = MainWindow()
-	app.mainloop()
+    app = MainWindow()
+    app.mainloop()
