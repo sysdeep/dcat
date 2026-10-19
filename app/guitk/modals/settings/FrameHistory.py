@@ -17,62 +17,42 @@
 import tkinter
 from tkinter import ttk
 
+from app.lib.user_settings import UserSettings, UpdateUserSettingsModel
 
 
 class FrameHistory(ttk.Frame):
-	def __init__(self, master, usettings, *args, **kwargs):
-		super(FrameHistory, self).__init__(master, *args, **kwargs)
+    def __init__(self, master, us: UserSettings, *args, **kwargs):
+        super().__init__(master, *args, **kwargs)
+        self._us = us
 
-		self.config(padding=10)
+        self.config(padding=10)
 
-		self.usettings = usettings
+        self._autoload_flag = False
+        self._var_autoloading = tkinter.BooleanVar()
 
+        settings_frame = ttk.Frame(self)
+        settings_frame.pack(side="top", fill="x")
 
-		self.autoload_flag = 0
+        ttk.Checkbutton(settings_frame, text="Автозагрузка базы:", variable=self._var_autoloading).pack(side="left")
 
+        controls_frame = ttk.Frame(self)
+        controls_frame.pack(side="bottom", fill="x")
 
-		self.var_autoloading = tkinter.IntVar()
-		# self.var_autoloading.set(1)
+        # TODO
+        # ttk.Button(controls_frame, text="Очистить историю", command=self.__clear_history).pack(side="right")
 
+        self.__load()
 
-		settings_frame = ttk.Frame(self)
-		settings_frame.pack(side="top", fill="x")
+    def __load(self):
+        self._autoload_flag = self._us.get_settings().open_last
+        self._var_autoloading.set(self._autoload_flag)
 
-		# row = 0
-		# ttk.Label(settings_frame, text="Автозагрузка базы:").grid(row=row, column=0, sticky="e", pady=5, padx=5)
-		# ttk.Checkbutton(settings_frame).grid(row=row, column=1)
-		# ttk.Checkbutton(settings_frame, text="File", variable=self.var_autoloading).grid(row=0, column=0)
+    # TODO
+    # def __clear_history(self):
+    #     # self.usettings.clear_lastbases()
+    #     pass
 
-		ttk.Checkbutton(settings_frame, text="Автозагрузка базы:", variable=self.var_autoloading).pack(side="left")
-
-
-
-
-		controls_frame = ttk.Frame(self)
-		controls_frame.pack(side="bottom", fill="x")
-
-
-		ttk.Button(controls_frame, text="Очистить историю", command=self.__clear_history).pack(side="right")
-
-
-
-		self.__load()
-
-
-	def __load(self):
-		self.autoload_flag = self.usettings.is_open_last
-		self.var_autoloading.set(self.autoload_flag)
-
-
-
-	def __clear_history(self):
-		self.usettings.clear_lastbases()
-
-
-
-	def apply(self):
-		autoload_flag = self.var_autoloading.get()
-
-
-		if autoload_flag != self.autoload_flag:
-			self.usettings.is_open_last = autoload_flag
+    def apply_changes(self, model: UpdateUserSettingsModel):
+        autoload_flag = self._var_autoloading.get()
+        if autoload_flag != self._autoload_flag:
+            model.open_last = autoload_flag

@@ -9,8 +9,7 @@ from tkinter.filedialog import *
 
 from app.storage import get_storage
 from app.lib import dbus
-from app.lib.USettings import USettings
-from app import shared
+from app.lib.user_settings import UserSettings, UpdateUserSettingsModel
 from app.rc import VERSION
 
 from .modals.ModalsCtrl import ModalsCtrl
@@ -25,8 +24,10 @@ from .Ctrl import Ctrl
 
 
 class MainWindow(tkinter.Tk, ToolbarHandler, MainMenuHandler):
-    def __init__(self):
-        super(MainWindow, self).__init__()
+    def __init__(self, us: UserSettings):
+        super().__init__()
+
+        self._us = us
 
         self.name = "DCat"
         self.title(self.name)
@@ -35,11 +36,6 @@ class MainWindow(tkinter.Tk, ToolbarHandler, MainMenuHandler):
         self.app_icon = ticons.real_icon("app.png")
         # self.option_add("*Font", ("Play", 12))				# до создания виджетов
         self.iconphoto(self, self.app_icon)
-
-        # self.usettings = USettings()
-        # self.usettings.open_settings()
-
-        self.usettings = shared.get_usettings()
 
         self.storage = get_storage()
         self.ctrl = Ctrl()
@@ -54,7 +50,7 @@ class MainWindow(tkinter.Tk, ToolbarHandler, MainMenuHandler):
         self.tool_bar.pack(side="top", expand=False, fill="x")
 
         # --- explorer
-        self.explorer_frame = Explorer(self)
+        self.explorer_frame = Explorer(parent=self, us=self._us)
         self.explorer_frame.pack(side="top", fill="both", expand=True)
         # self.explorer_frame.v_list.set_cb_open_modal_add_volume(self.__on_show_modal_add_volume)
 
@@ -64,8 +60,9 @@ class MainWindow(tkinter.Tk, ToolbarHandler, MainMenuHandler):
 
         self.modal_add_volume = None
 
-        self.modals_ctrl = ModalsCtrl(self)
+        self.modals_ctrl = ModalsCtrl(main_win=self, us=self._us)
 
+        # TODO: use user settings for theme
         style = ttk.Style()
         # print(style.theme_names())
         # print(style.theme_use())
@@ -86,11 +83,8 @@ class MainWindow(tkinter.Tk, ToolbarHandler, MainMenuHandler):
         # style.configure(".", font=("Play", 10))
         # style.configure(".", font=("Ubuntu", 10))
 
-        # --- проверяем и обновляем список открывавшихся баз
-        self.usettings.check_bases_exists()
-
         # --- открываем последний
-        self.__check_open_last()
+        self._check_open_last()
 
         # --- events
         dbus.eon(dbus.REQUEST_OPEN_DB, self.__on_open_db)  # открытие заданной базы
@@ -114,16 +108,17 @@ class MainWindow(tkinter.Tk, ToolbarHandler, MainMenuHandler):
         dbus.emit(dbus.SHOW_ADD_VOLUME)
 
     # private -----------------------------------------------------------------
-    def __check_open_last(self):
-        # --- если в настройках флаг открывать последний
-        is_open_last = self.usettings.data["open_last"]
-        if is_open_last == 0:
-            return False
+    def _check_open_last(self):
+        # если в настройках флаг открывать последний
+        settings = self._us.get_settings()
+        if not settings.open_last:
+            return
 
-        last = self.usettings.get_last_base()
+        if len(settings.lastbases) == 0:
+            return
 
-        if last:
-            self.__on_open_db(last)
+        last = settings.lastbases[-1]
+        self.__on_open_db(last)
 
     def __update_db_info(self):
         """обновление информации по базе"""
@@ -141,16 +136,11 @@ class MainWindow(tkinter.Tk, ToolbarHandler, MainMenuHandler):
 
             self.explorer_frame.refresh()
             self.__update_db_info()
-            self.usettings.update_last_base(db_path)
+            self._update_last_base(db_path)
             self.__update_title(db_path)
 
     def __on_open_db(self, db_path):
         """запрос на открытие базы по заданному пути"""
-
-        # --- проверка существования базы
-        if not os.path.exists(db_path):
-            self.usettings.remove_last(db_path)
-            return False
 
         self.storage.close_storage()
         self.storage.open_storage(db_path)
@@ -158,7 +148,7 @@ class MainWindow(tkinter.Tk, ToolbarHandler, MainMenuHandler):
         self.explorer_frame.refresh()
         self.__update_db_info()
 
-        self.usettings.update_last_base(db_path)
+        self._update_last_base(db_path)
         self.__update_title(db_path)
 
     def __on_show_modal_add_volume(self):
@@ -180,7 +170,26 @@ class MainWindow(tkinter.Tk, ToolbarHandler, MainMenuHandler):
     def act_exit(self):
         self.quit()
 
+    def _update_last_base(self, db_path: str):
+        """
+        обновление списка последних баз.
+                если база есть в списке - удалем её и добавляем в конец
+                если кол-во записей больше максимального - очищаем старые
+        Args:
+                value 	[string] - путь до базы
+        """
 
-if __name__ == "__main__":
-    app = MainWindow()
-    app.mainloop()
+        settings = self._us.get_settings()
+
+        # удаляем если есть
+        new_bases = [b for b in settings.lastbases if b != db_path]
+
+        # урезаем если привысили лимит
+        if len(new_bases) > 15:
+            new_bases = new_bases[1:]
+
+        # добавляем
+        new_bases.append(db_path)
+
+        save_settings = UpdateUserSettingsModel(lastbases=new_bases)
+        self._us.set_settings(save_settings)
