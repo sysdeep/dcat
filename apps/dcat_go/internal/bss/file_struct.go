@@ -107,6 +107,7 @@ func writeFileRecord(buf *bytes.Buffer, record FileRecord) error {
 	binary.Write(buf, binary.LittleEndian, uint64(record.ID))
 	binary.Write(buf, binary.LittleEndian, uint64(record.Parent))
 	binary.Write(buf, binary.LittleEndian, uint64(record.Size))
+	binary.Write(buf, binary.LittleEndian, record.IsDir)
 	appendString(buf, record.Name)
 
 	return nil
@@ -117,7 +118,7 @@ func readFileRecord(r *bytes.Reader) (FileRecord, error) {
 	id, _ := readUInt64(r)
 	parent, _ := readUInt64(r)
 	size, _ := readUInt64(r)
-
+	isDir, _ := readBool(r)
 	name, _ := readString(r)
 
 	return FileRecord{
@@ -125,6 +126,7 @@ func readFileRecord(r *bytes.Reader) (FileRecord, error) {
 		Parent: parent,
 		Size:   size,
 		Name:   name,
+		IsDir:  isDir,
 	}, nil
 
 }
@@ -159,6 +161,12 @@ func readString(r *bytes.Reader) (string, error) {
 
 	// 4. Конвертируем байты в строку
 	return string(buf), nil
+}
+
+func readBool(r *bytes.Reader) (bool, error) {
+	var res bool
+	err := binary.Read(r, binary.LittleEndian, &res)
+	return res, err
 }
 
 func readUInt16(r *bytes.Reader) (uint16, error) {

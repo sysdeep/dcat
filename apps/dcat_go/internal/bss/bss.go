@@ -25,4 +25,5 @@ type FileRecord struct {
 	Parent uint64
 	Name   string
 	Size   uint64
+	IsDir  bool
 }

@@ -69,6 +69,7 @@ func ToBSS(val Volume) bss.Volume {
 			Parent: r.ParentID,
 			Name:   r.Name,
 			Size:   r.Size,
+			IsDir:  r.IsDir,
 		})
 	}
 
@@ -94,6 +95,7 @@ func ToStorVolume(val bss.Volume) Volume {
 			ParentID: r.Parent,
 			Name:     r.Name,
 			Size:     r.Size,
+			IsDir:    r.IsDir,
 		})
 	}
 

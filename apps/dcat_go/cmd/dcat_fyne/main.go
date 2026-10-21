@@ -1,6 +1,8 @@
 package main
 
 import (
+	"dcat/internal/stor"
+	"dcat/internal/ui/fyneui"
 	"image/color"
 	"log"
 
@@ -24,6 +26,14 @@ func (f forcedLightTheme) Color(name fyne.ThemeColorName, variant fyne.ThemeVari
 }
 
 func main() {
+
+	vv, err := stor.Read("/tmp/db1")
+	if err != nil {
+		panic(err)
+	}
+
+	vp := fyneui.NewVolumeProvider(vv)
+
 	a := app.New()
 	// a.Settings().SetTheme(theme.DefaultTheme())
 	// a.Settings().SetTheme()
@@ -93,7 +103,7 @@ func main() {
 
 	leftBar := container.NewGridWithRows(2, vl.Widget(), dl.Widget()) //  widget.NewLabel("left 1"), widget.NewLabel("left 2"), tree,
 
-	filesList := NewFilesList()
+	filesList := fyneui.NewFilesList(vp)
 	// 3. ОБЕРТКА ДЛЯ ШИРИНЫ: задаем желаемую ширину (например, 200px)
 	// Высоту ставим 0 или 1 — Border всё равно её переопределит и растянет по вертикали.
 	// leftBarResized := container.NewGridWrap(fyne.NewSize(200, 1), leftBar)
