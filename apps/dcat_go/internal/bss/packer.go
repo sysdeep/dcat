@@ -6,7 +6,6 @@ import (
 )
 
 func Pack(volume Volume) (*bytes.Buffer, error) {
-	fmt.Println(volume)
 	buf := new(bytes.Buffer)
 
 	err := makeFileHeader(buf)

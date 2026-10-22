@@ -22,7 +22,7 @@ import (
 func main() {
 
 	// dataset
-	vv, err := stor.Read("/tmp/db1")
+	vv, err := stor.Read("/tmp/example-db")
 	if err != nil {
 		panic(err)
 	}
@@ -36,7 +36,8 @@ func main() {
 		w := new(app.Window)
 		w.Option(
 			app.Title("Counter"),
-			app.Size(unit.Dp(240), unit.Dp(70)),
+			app.Size(unit.Dp(1024), unit.Dp(768)),
+			app.MinSize(unit.Dp(800), unit.Dp(600)),
 		)
 		if err := ui.Run(w); err != nil {
 			log.Println(err)

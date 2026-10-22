@@ -1,5 +1,11 @@
 package bss
 
+const (
+	FTYPE_UNKNOWN = 0
+	FTYPE_DIR     = 1
+	FTYPE_FILE    = 2
+)
+
 // TODO: по факту это bss
 // const MAGIC uint8 = 0xfafb
 // const VERSION = 1
@@ -21,9 +27,10 @@ type VolumeDescription struct {
 }
 
 type FileRecord struct {
-	ID     uint64
-	Parent uint64
-	Name   string
-	Size   uint64
-	IsDir  bool
+	ID      uint64
+	Parent  uint64
+	Name    string
+	Size    uint64
+	FType   uint16
+	ModTime uint64
 }

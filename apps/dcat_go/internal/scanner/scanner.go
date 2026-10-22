@@ -4,14 +4,20 @@ import (
 	"dcat/internal/stor"
 	"fmt"
 	"io/fs"
+	"os"
 	"path/filepath"
 )
 
 func Scan(root string) ([]stor.FileRecord, error) {
 
+	var items []stor.FileRecord
 	root = filepath.Clean(root)
 
-	var items []stor.FileRecord
+	rootInfo, err := os.Stat(root)
+	if err != nil {
+		return items, fmt.Errorf("Error reading directory metadata: %v", err)
+	}
+
 	var idCounter uint64 = 1
 
 	// Мапа для связи "Путь к папке -> Числовой ID папки"
@@ -22,18 +28,20 @@ func Scan(root string) ([]stor.FileRecord, error) {
 		ID:       idCounter,
 		ParentID: 0, // У корня нет родителя
 		Name:     filepath.Base(root),
-		Path:     root,
-		IsDir:    true,
+		FType:    stor.FTYPE_DIR,
 		Size:     0,
+		ModTime:  rootInfo.ModTime(),
 	}
 	items = append(items, rootItem)
 	pathToID[root] = idCounter
 	idCounter++
 
-	err := filepath.WalkDir(root, func(path string, d fs.DirEntry, err error) error {
+	err = filepath.WalkDir(root, func(path string, d fs.DirEntry, err error) error {
+
+		// Ошибка доступа к файлу/папке (например, нет прав)
 		if err != nil {
 			// TODO
-			// // Ошибка доступа к файлу/папке (например, нет прав)
+			//
 			// fmt.Printf("Ошибка доступа к %s: %v\n", path, err)
 			// return err // Возврат ошибки прервет весь обход
 			return nil
@@ -51,14 +59,24 @@ func Scan(root string) ([]stor.FileRecord, error) {
 			return fmt.Errorf("родительский ID не найден для: %s", path)
 		}
 
+		ftype := stor.FTYPE_FILE
+		if d.IsDir() {
+			ftype = stor.FTYPE_DIR
+		}
+
+		fileInfo, err := d.Info()
+		if err != nil {
+			return err
+		}
+
 		// Создаем плоский элемент
 		item := stor.FileRecord{
 			ID:       idCounter,
 			ParentID: parentID,
 			Name:     d.Name(),
-			Path:     path,
-			IsDir:    d.IsDir(),
-			Size:     0, // TODO
+			FType:    uint16(ftype),
+			Size:     uint64(fileInfo.Size()),
+			ModTime:  fileInfo.ModTime(),
 		}
 
 		items = append(items, item)
@@ -83,8 +101,7 @@ func Scan(root string) ([]stor.FileRecord, error) {
 	})
 
 	if err != nil {
-		fmt.Printf("Обход завершился с ошибкой: %v\n", err)
-		return nil, err
+		return items, err
 	}
 
 	return items, nil

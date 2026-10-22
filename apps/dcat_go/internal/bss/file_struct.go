@@ -107,7 +107,8 @@ func writeFileRecord(buf *bytes.Buffer, record FileRecord) error {
 	binary.Write(buf, binary.LittleEndian, uint64(record.ID))
 	binary.Write(buf, binary.LittleEndian, uint64(record.Parent))
 	binary.Write(buf, binary.LittleEndian, uint64(record.Size))
-	binary.Write(buf, binary.LittleEndian, record.IsDir)
+	binary.Write(buf, binary.LittleEndian, uint16(record.FType))
+	binary.Write(buf, binary.LittleEndian, uint64(record.ModTime))
 	appendString(buf, record.Name)
 
 	return nil
@@ -118,15 +119,17 @@ func readFileRecord(r *bytes.Reader) (FileRecord, error) {
 	id, _ := readUInt64(r)
 	parent, _ := readUInt64(r)
 	size, _ := readUInt64(r)
-	isDir, _ := readBool(r)
+	ftype, _ := readUInt16(r)
+	modTime, _ := readUInt64(r)
 	name, _ := readString(r)
 
 	return FileRecord{
-		ID:     id,
-		Parent: parent,
-		Size:   size,
-		Name:   name,
-		IsDir:  isDir,
+		ID:      id,
+		Parent:  parent,
+		Size:    size,
+		Name:    name,
+		FType:   ftype,
+		ModTime: modTime,
 	}, nil
 
 }

@@ -52,7 +52,7 @@ func NewFilesList(vp *VolumeProvider) *FilesList {
 			label.SetText(fl.viewList[i].Name)
 
 			usedIcon := theme.FileIcon()
-			if fl.viewList[i].IsDir {
+			if fl.viewList[i].FType == stor.FTYPE_DIR {
 				usedIcon = theme.FolderIcon()
 			}
 			icon := box.Objects[0].(*widget.Icon)
