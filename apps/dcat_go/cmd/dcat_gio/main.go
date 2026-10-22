@@ -2,6 +2,8 @@ package main
 
 import (
 	"dcat/internal/stor"
+	"flag"
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -21,8 +23,18 @@ import (
 
 func main() {
 
+	var volPath string
+
+	flag.StringVar(&volPath, "volume", "", "path for volume")
+
+	flag.Parse()
+
+	if volPath == "" {
+		panic(fmt.Errorf("volume - required"))
+	}
+
 	// dataset
-	vv, err := stor.Read("/tmp/example-db")
+	vv, err := stor.Read(volPath)
 	if err != nil {
 		panic(err)
 	}

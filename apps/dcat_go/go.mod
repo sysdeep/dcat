@@ -6,6 +6,7 @@ require (
 	fyne.io/fyne/v2 v2.8.2
 	gioui.org v0.10.3
 	github.com/lmittmann/tint v1.2.1
+	github.com/samber/lo v1.53.0
 	golang.org/x/exp/shiny v0.0.0-20250408133849-7e4ce0ab07d0
 )
 

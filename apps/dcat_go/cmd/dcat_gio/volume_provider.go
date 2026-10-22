@@ -5,8 +5,12 @@ import (
 	"fmt"
 )
 
+type ProviderHandler = func() error
+
 type VolumeProvider struct {
-	vol stor.Volume
+	vol      stor.Volume
+	current  int // тек. родительский объект
+	handlers []ProviderHandler
 }
 
 func NewVolumeProvider(vol stor.Volume) *VolumeProvider {
@@ -16,7 +20,8 @@ func NewVolumeProvider(vol stor.Volume) *VolumeProvider {
 	}
 
 	return &VolumeProvider{
-		vol: vol,
+		vol:     vol,
+		current: 1,
 	}
 }
 
@@ -28,4 +33,24 @@ func (v *VolumeProvider) GetRecords(parentID int) ([]stor.FileRecord, error) {
 		}
 	}
 	return res, nil
+}
+
+func (v *VolumeProvider) GetActualRecords() ([]stor.FileRecord, error) {
+	return v.GetRecords(v.current)
+}
+
+func (v *VolumeProvider) SetCurrent(parentID int) error {
+	v.current = parentID
+	for _, h := range v.handlers {
+		err := h()
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (v *VolumeProvider) ConnectHandler(handler ProviderHandler) {
+	v.handlers = append(v.handlers, handler)
 }
