@@ -8,14 +8,14 @@ import (
 type ProviderHandler = func() error
 
 type VolumeProvider struct {
-	vol       stor.Volume
+	vol       *stor.Volume
 	pathItems []int // тек. родительский объект
 	handlers  []ProviderHandler
 }
 
 const homeID = 1
 
-func NewVolumeProvider(vol stor.Volume) *VolumeProvider {
+func NewVolumeProvider(vol *stor.Volume) *VolumeProvider {
 
 	for _, r := range vol.Records {
 		fmt.Printf("ID: %d, parent: %d - %s\n", r.ID, r.ParentID, r.Name)
@@ -73,6 +73,10 @@ func (v *VolumeProvider) DropPath() error {
 
 func (v *VolumeProvider) PathIsEmpty() bool {
 	return len(v.pathItems) < 2
+}
+
+func (v *VolumeProvider) Volume() *stor.Volume {
+	return v.vol
 }
 
 func (v *VolumeProvider) ConnectHandler(handler ProviderHandler) {

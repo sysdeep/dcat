@@ -18,20 +18,23 @@ type VolumeInfo struct {
 func NewVolumeInfo(vp *VolumeProvider) *VolumeInfo {
 
 	units := []KValue{
-		NewKV("Name", func(vd stor.VolumeDescription) string {
-			return vd.Name
+		NewKV("Name", func(vol *stor.Volume) string {
+			return vol.Description.Name
 		}),
-		NewKV("ScanPath", func(vd stor.VolumeDescription) string {
-			return vd.ScanPath
+		NewKV("ScanPath", func(vol *stor.Volume) string {
+			return vol.Description.ScanPath
 		}),
-		NewKV("Created", func(vd stor.VolumeDescription) string {
-			return vd.Created.Format(time.DateTime)
+		NewKV("Created", func(vol *stor.Volume) string {
+			return vol.Description.Created.Format(time.DateTime)
 		}),
-		NewKV("Icon", func(vd stor.VolumeDescription) string {
-			return fmt.Sprintf("%d", vd.Icon)
+		NewKV("Icon", func(vol *stor.Volume) string {
+			return fmt.Sprintf("%d", vol.Description.Icon)
 		}),
-		NewKV("Description", func(vd stor.VolumeDescription) string {
-			return vd.Description
+		NewKV("Description", func(vol *stor.Volume) string {
+			return vol.Description.Description
+		}),
+		NewKV("Records", func(vol *stor.Volume) string {
+			return fmt.Sprintf("%d", len(vol.Records))
 		}),
 	}
 
@@ -72,7 +75,7 @@ func (vi *VolumeInfo) Layout(th *material.Theme, gtx layout.Context) layout.Dime
 			}.Layout(gtx, func(gtx layout.Context) layout.Dimensions {
 
 				return list.Layout(gtx, len(units), func(gtx layout.Context, i int) layout.Dimensions {
-					return units[i].Layout(th, gtx, vi.vp.vol.Description)
+					return units[i].Layout(th, gtx, vi.vp.Volume())
 				})
 			})
 		}),
@@ -100,21 +103,20 @@ func (vi *VolumeInfo) Layout(th *material.Theme, gtx layout.Context) layout.Dime
 // =====================================================================
 type KValue struct {
 	Key       string
-	Value     string
-	extractor func(stor.VolumeDescription) string
+	extractor func(*stor.Volume) string
 }
 
-func NewKV(label string, extractor func(stor.VolumeDescription) string) KValue {
+func NewKV(label string, extractor func(*stor.Volume) string) KValue {
 	return KValue{
 		Key:       label,
 		extractor: extractor,
 	}
 }
 
-func (kv *KValue) Layout(th *material.Theme, gtx layout.Context, volDesc stor.VolumeDescription) layout.Dimensions {
+func (kv *KValue) Layout(th *material.Theme, gtx layout.Context, vol *stor.Volume) layout.Dimensions {
 	mainLayout := layout.Flex{}
 
-	value := kv.extractor(volDesc)
+	value := kv.extractor(vol)
 	return mainLayout.Layout(gtx,
 		layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
 			return material.Body1(th, kv.Key).Layout(gtx)

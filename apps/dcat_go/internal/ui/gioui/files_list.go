@@ -6,6 +6,7 @@ import (
 	"image"
 	"slices"
 	"strings"
+	"time"
 
 	"gioui.org/layout"
 	"gioui.org/widget"
@@ -149,7 +150,7 @@ func (kv *FileRecord) Layout(th *material.Theme, gtx layout.Context, onClicked f
 
 		return mainLayout.Layout(gtx,
 			// icon
-			layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+			layout.Rigid(func(gtx layout.Context) layout.Dimensions {
 				size := 16
 				gtx.Constraints = layout.Exact(image.Pt(size, size))
 				ic, _ := widget.NewIcon(icon)
@@ -157,7 +158,7 @@ func (kv *FileRecord) Layout(th *material.Theme, gtx layout.Context, onClicked f
 			}),
 			layout.Rigid(layout.Spacer{Width: defaultMargin}.Layout),
 			// name
-			layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+			layout.Flexed(2, func(gtx layout.Context) layout.Dimensions {
 				// return material.Label(th, unit.Sp(14.0), kv.Name).Layout(gtx)
 				return material.Body1(th, kv.Data.Name).Layout(gtx)
 			}),
@@ -165,6 +166,11 @@ func (kv *FileRecord) Layout(th *material.Theme, gtx layout.Context, onClicked f
 			// size
 			layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
 				return material.Body2(th, fmt.Sprintf("%d", kv.Data.Size)).Layout(gtx)
+			}),
+
+			// created
+			layout.Rigid(func(gtx layout.Context) layout.Dimensions {
+				return material.Body1(th, kv.Data.ModTime.Format(time.DateTime)).Layout(gtx)
 			}),
 		)
 

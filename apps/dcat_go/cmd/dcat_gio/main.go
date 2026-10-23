@@ -30,7 +30,7 @@ func main() {
 		panic(err)
 	}
 
-	vp := gioui.NewVolumeProvider(vv)
+	vp := gioui.NewVolumeProvider(&vv)
 
 	ui := gioui.NewUI(vp)
 

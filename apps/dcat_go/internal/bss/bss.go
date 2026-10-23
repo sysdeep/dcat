@@ -6,21 +6,15 @@ const (
 	FTYPE_FILE    = 2
 )
 
-// TODO: по факту это bss
-// const MAGIC uint8 = 0xfafb
-// const VERSION = 1
-
 type Volume struct {
 	Description VolumeDescription
 	Records     []FileRecord
 }
 
 type VolumeDescription struct {
-	Created uint64 // дата создания(unix timestamp)
-	Icon    uint16 // icon_id
-	Records uint64 // кол//во записей в базе
-	// TableLen    uint32 // длина секции табличных данных
-	// HeapLen     uint64 // длина секции кучи
+	Created     uint64 // дата создания(unix timestamp)
+	Icon        uint16 // icon_id
+	Records     uint64 // кол//во записей в базе
 	Name        string // название тома
 	ScanPath    string // путь сканирования
 	Description string // произвольное описание

@@ -28,32 +28,41 @@ func readFileHeader(buf *bytes.Reader) (fileHeader, error) {
 }
 
 // volume header --------------------------------------------------------------
-// type volumeHeader struct {
-// 	Created     uint32 // дата создания(unix timestamp)
-// 	Icon        uint16 // icon_id
-// 	Records     uint64 // кол//во записей в базе
-// 	TableLen    uint32 // длина секции табличных данных
-// 	HeapLen     uint64 // длина секции кучи
-// 	Name        string // название тома
-// 	ScanPath    string // путь сканирования
-// 	Description string // произвольное описание
-// }
-
 func makeVolumeHeader(buf *bytes.Buffer, payload VolumeDescription, fileRecordsCount int) error {
 
+	var err error
+
 	var created uint64 = payload.Created
-	binary.Write(buf, binary.LittleEndian, created)
+	err = binary.Write(buf, binary.LittleEndian, created)
+	if err != nil {
+		return err
+	}
 
 	var icon uint16 = payload.Icon
-	binary.Write(buf, binary.LittleEndian, icon)
+	err = binary.Write(buf, binary.LittleEndian, icon)
+	if err != nil {
+		return err
+	}
 
 	// NOTE: нужно чтобы понять сколько итерироваться
 	var records uint64 = uint64(fileRecordsCount)
-	binary.Write(buf, binary.LittleEndian, records)
+	err = binary.Write(buf, binary.LittleEndian, records)
+	if err != nil {
+		return err
+	}
 
-	appendString(buf, payload.Name)
-	appendString(buf, payload.ScanPath)
-	appendString(buf, payload.Description)
+	err = appendString(buf, payload.Name)
+	if err != nil {
+		return err
+	}
+	err = appendString(buf, payload.ScanPath)
+	if err != nil {
+		return err
+	}
+	err = appendString(buf, payload.Description)
+	if err != nil {
+		return err
+	}
 
 	return nil
 
@@ -104,24 +113,60 @@ func readVolumeHeader(buf *bytes.Reader) (VolumeDescription, int, error) {
 // file record ----------------------------------------------------------------
 func writeFileRecord(buf *bytes.Buffer, record FileRecord) error {
 
-	binary.Write(buf, binary.LittleEndian, uint64(record.ID))
-	binary.Write(buf, binary.LittleEndian, uint64(record.Parent))
-	binary.Write(buf, binary.LittleEndian, uint64(record.Size))
-	binary.Write(buf, binary.LittleEndian, uint16(record.FType))
-	binary.Write(buf, binary.LittleEndian, uint64(record.ModTime))
-	appendString(buf, record.Name)
+	if err := binary.Write(buf, binary.LittleEndian, uint64(record.ID)); err != nil {
+		return err
+	}
+	if err := binary.Write(buf, binary.LittleEndian, uint64(record.Parent)); err != nil {
+		return err
+	}
+	if err := binary.Write(buf, binary.LittleEndian, uint64(record.Size)); err != nil {
+		return err
+	}
+	if err := binary.Write(buf, binary.LittleEndian, uint16(record.FType)); err != nil {
+		return err
+	}
+	if err := binary.Write(buf, binary.LittleEndian, uint64(record.ModTime)); err != nil {
+		return err
+	}
+	if err := appendString(buf, record.Name); err != nil {
+		return err
+	}
 
 	return nil
 }
 
 func readFileRecord(r *bytes.Reader) (FileRecord, error) {
+	var err error
 
-	id, _ := readUInt64(r)
-	parent, _ := readUInt64(r)
-	size, _ := readUInt64(r)
-	ftype, _ := readUInt16(r)
-	modTime, _ := readUInt64(r)
-	name, _ := readString(r)
+	id, err := readUInt64(r)
+	if err != nil {
+		return FileRecord{}, err
+	}
+
+	parent, err := readUInt64(r)
+	if err != nil {
+		return FileRecord{}, err
+	}
+
+	size, err := readUInt64(r)
+	if err != nil {
+		return FileRecord{}, err
+	}
+
+	ftype, err := readUInt16(r)
+	if err != nil {
+		return FileRecord{}, err
+	}
+
+	modTime, err := readUInt64(r)
+	if err != nil {
+		return FileRecord{}, err
+	}
+
+	name, err := readString(r)
+	if err != nil {
+		return FileRecord{}, err
+	}
 
 	return FileRecord{
 		ID:      id,
@@ -135,10 +180,14 @@ func readFileRecord(r *bytes.Reader) (FileRecord, error) {
 }
 
 // helpers --------------------------------------------------------------------
-func appendString(buf *bytes.Buffer, data string) {
+func appendString(buf *bytes.Buffer, data string) error {
 	length := uint16(len(data))
-	binary.Write(buf, binary.LittleEndian, length)
-	buf.Write([]byte(data))
+	err := binary.Write(buf, binary.LittleEndian, length)
+	if err != nil {
+		return err
+	}
+	_, err = buf.Write([]byte(data))
+	return err
 }
 
 func readString(r *bytes.Reader) (string, error) {
@@ -189,8 +238,3 @@ func readUInt64(r *bytes.Reader) (uint64, error) {
 	err := binary.Read(r, binary.LittleEndian, &res)
 	return res, err
 }
-
-// func writeUInt16(buf *bytes.Buffer, v uint16) error {
-// 	var records uint32 = 0
-// 	binary.Write(buf, binary.LittleEndian, records)
-// }
