@@ -1,4 +1,4 @@
-package main
+package gioui
 
 import (
 	"dcat/internal/stor"
@@ -115,7 +115,7 @@ func (fl *FilesList) onUpdate() error {
 }
 
 func (fl *FilesList) onClicked(record stor.FileRecord) {
-	fl.vp.SetCurrent(int(record.ID))
+	fl.vp.PushPath(int(record.ID))
 }
 
 // FileRecord -----------------------------------------------------------------
@@ -130,14 +130,16 @@ func (kv *FileRecord) Layout(th *material.Theme, gtx layout.Context, onClicked f
 
 	// Проверяем, кликнул ли пользователь на этот элемент в текущем кадре
 	if kv.click.Clicked(gtx) && onClicked != nil {
-		onClicked(kv.Data)
+		if kv.Data.FType == stor.FTYPE_DIR {
+			onClicked(kv.Data)
+		}
 	}
 
 	mainLayout := layout.Flex{
 		Alignment: layout.Middle,
 	}
 
-	icon := icons.FileCloudDone
+	icon := icons.FileAttachment
 	if kv.Data.FType == stor.FTYPE_DIR {
 		icon = icons.FileFolder
 	}
