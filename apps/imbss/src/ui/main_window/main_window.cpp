@@ -12,7 +12,6 @@ MainWindow::MainWindow(MainWindowGeometry geo)
 {
 
     factory = new ImGuiFactory(geo);
-    calendar = new CalendarWindow();
 
     _navigator = new FilesNavigator();
 }
@@ -97,7 +96,6 @@ void MainWindow::draw()
         ImGui::EndMainMenuBar();
     }
 
-    calendar->draw();
     _navigator->draw();
 }
 

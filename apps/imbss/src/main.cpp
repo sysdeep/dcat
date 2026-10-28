@@ -32,10 +32,10 @@ int main(int argc, const char *const *argv)
     }
 
     UI::MainWindowGeometry mwGeo{
-        800, // width
-        600, // height
-        0,   // padx
-        0,   // pady
+        1024, // width
+        768,  // height
+        0,    // padx
+        0,    // pady
     };
 
     // if (program.is_used("--padx"))

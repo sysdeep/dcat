@@ -64,15 +64,12 @@ set(SOURCES
     src/calendar/calendar.cpp
     src/calendar/core.cpp
     
+    # bss
+    src/bss/bss.cpp
     
     # UI
     src/ui/main_window/imgui_factory.cpp
     src/ui/main_window/main_window.cpp
-    src/ui/calendar_window/calendar_window.cpp
-    src/ui/calendar_window/calendar_model.cpp
-    src/ui/calendar_window/board.cpp
-    src/ui/calendar_window/selector.cpp
-    src/ui/calendar_window/today_bar.cpp
     src/ui/utils/utils.cpp
     src/ui/about/about.cpp
     src/ui/files_navigator/files_navigator.cpp
@@ -103,6 +100,9 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(argparse)
 # argparse ============================================
 
+
+
+
 include_directories(${PROJECT_SOURCE_DIR})
 # include_directories(vendors/imgui)
 # include_directories(vendors/argparse/include)
@@ -123,6 +123,9 @@ target_include_directories(${APP_TARGET} PRIVATE src)
 find_package(glfw3 REQUIRED)
 find_package(OpenGL REQUIRED)
 
+# zlib
+find_package(ZLIB REQUIRED)
+
 
 # glfw
 # find_package(glfw3 REQUIRED)
@@ -139,6 +142,7 @@ target_link_libraries(${APP_TARGET} PRIVATE
     imgui_lib
     glfw
     OpenGL::GL
+    ZLIB::ZLIB
     argparse
 )
 # target_link_libraries(${APP_TARGET} PRIVATE

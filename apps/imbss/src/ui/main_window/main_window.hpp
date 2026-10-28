@@ -4,9 +4,7 @@
 
 #include "imgui.h"
 #include "imgui_factory.hpp"
-// #include "./main_menu.hpp"
 #include "./main_window_geometry.hpp"
-#include "ui/calendar_window/calendar_window.hpp"
 #include "ui/files_navigator/files_navigator.hpp"
 
 namespace UI
@@ -28,7 +26,6 @@ namespace UI
         void draw();
 
         // components
-        CalendarWindow *calendar;
         FilesNavigator *_navigator;
     };
 

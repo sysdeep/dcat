@@ -18,7 +18,7 @@ const homeID = 1
 func NewVolumeProvider(vol *stor.Volume) *VolumeProvider {
 
 	for _, r := range vol.Records {
-		fmt.Printf("ID: %d, parent: %d - %s\n", r.ID, r.ParentID, r.Name)
+		fmt.Printf("ID: %d, parent: %d - %s(type: %d)\n", r.ID, r.ParentID, r.Name, r.FType)
 	}
 
 	return &VolumeProvider{
