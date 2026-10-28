@@ -8,12 +8,12 @@
 
 using namespace UI;
 
-MainWindow::MainWindow(MainWindowGeometry geo)
+MainWindow::MainWindow(MainWindowGeometry geo, APP::VolumeProvider *volume_provider)
 {
 
     factory = new ImGuiFactory(geo);
 
-    _navigator = new FilesNavigator();
+    _navigator = new FilesNavigator(volume_provider);
 }
 
 void MainWindow::loop()

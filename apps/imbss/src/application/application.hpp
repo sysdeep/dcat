@@ -1,6 +1,7 @@
 #pragma once
 #include "ui/main_window/main_window.hpp"
 #include "ui/main_window/main_window_geometry.hpp"
+#include "app/volume_provider.hpp"
 
 class Application
 {
@@ -10,4 +11,5 @@ public:
 
 private:
     UI::MainWindow *_main_window;
+    APP::VolumeProvider *_volume_provider;
 };

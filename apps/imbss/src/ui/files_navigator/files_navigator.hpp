@@ -1,29 +1,28 @@
 #pragma once
 #include "imgui.h"
-#include "bss/bss.hpp"
-
-// #define ICON_FOLDER "\uf07b"
-// #define ICON_FILE "\uea7b"
+#include "app/volume_provider.hpp"
+#include "app/volume_state.hpp"
 
 namespace UI
 {
 
-    // const char *file = "\uea7b";
-    // const char *folder = "\uf07b";
-
     class FilesNavigator
     {
     public:
-        FilesNavigator(/* args */);
+        FilesNavigator(APP::VolumeProvider *volume_provider);
         ~FilesNavigator();
         void draw();
 
     private:
+        // data
         ImGuiWindowFlags _window_flags;
-        void _draw_table();
+        APP::VolumeProvider *_volume_provider;
+        APP::VolumeState *_volume_state;
 
-        Volume _volume;
+        void
+        _draw_table();
 
         bool _open_volume();
+        std::vector<domain::FileRecord> _get_files();
     };
 }

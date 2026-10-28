@@ -60,12 +60,14 @@ set(SOURCES
     src/main.cpp
     src/application/application.cpp
 
-    # calendar
-    src/calendar/calendar.cpp
-    src/calendar/core.cpp
     
     # bss
-    src/bss/bss.cpp
+    src/app/bss/bss.cpp
+
+    # app
+    src/app/gzip_reader.cpp
+    src/app/volume_provider.cpp
+    src/app/volume_state.cpp
     
     # UI
     src/ui/main_window/imgui_factory.cpp

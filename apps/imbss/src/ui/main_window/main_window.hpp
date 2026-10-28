@@ -6,6 +6,7 @@
 #include "imgui_factory.hpp"
 #include "./main_window_geometry.hpp"
 #include "ui/files_navigator/files_navigator.hpp"
+#include "app/volume_provider.hpp"
 
 namespace UI
 {
@@ -13,7 +14,7 @@ namespace UI
     class MainWindow
     {
     public:
-        MainWindow(MainWindowGeometry geo);
+        MainWindow(MainWindowGeometry geo, APP::VolumeProvider *volume_provider);
         void loop();
 
     private:
