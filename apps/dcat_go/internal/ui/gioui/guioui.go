@@ -1,6 +1,7 @@
 package gioui
 
 import (
+	"dcat/internal/ui/materialfactory"
 	"image"
 	"image/color"
 
@@ -25,6 +26,7 @@ type D = layout.Dimensions
 
 type UI struct {
 	theme *material.Theme
+	mf    *materialfactory.MaterialFactory
 
 	// components
 	mainLayout *layout.Flex
@@ -42,9 +44,13 @@ type UI struct {
 
 // NewUI creates a new UI using the Go Fonts.
 func NewUI(vp *VolumeProvider) *UI {
+	th := material.NewTheme()
+	mf := materialfactory.NewMaterialFactory(th)
+
 	ui := UI{
-		theme:      material.NewTheme(),
-		ff:         NewFilesFrame(vp),
+		theme:      th,
+		mf:         mf,
+		ff:         NewFilesFrame(vp, mf),
 		vp:         vp,
 		ip:         NewInfoPanel(vp),
 		mainLayout: &layout.Flex{},
@@ -130,12 +136,12 @@ func (ui *UI) Layout(gtx layout.Context) layout.Dimensions {
 					layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
 						return ui.ip.Layout(ui.theme, gtx)
 					}),
-					layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
-						return material.Button(ui.theme, &ui.openBtn, "open").Layout(gtx)
-					}),
-					layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
-						return ui.modal.Layout(ui.theme, gtx)
-					}),
+					// layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+					// 	return material.Button(ui.theme, &ui.openBtn, "open").Layout(gtx)
+					// }),
+					// layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+					// 	return ui.modal.Layout(ui.theme, gtx)
+					// }),
 				)
 
 			})

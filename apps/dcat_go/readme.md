@@ -17,6 +17,11 @@
 - gzip
 - UI
 
+TODO
+
+- https://github.com/qianniancn/flowui - тут полно готовых компонентов!!!!!
+- https://github.com/xmhrnx/giode.git - тоже есть
+
 ### Использование gzip
 
 ```go

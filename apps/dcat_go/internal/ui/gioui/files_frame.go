@@ -1,12 +1,12 @@
 package gioui
 
 import (
+	"dcat/internal/ui/materialfactory"
 	"image"
 
 	"gioui.org/layout"
 	"gioui.org/op/clip"
 	"gioui.org/unit"
-	"gioui.org/widget"
 	"gioui.org/widget/material"
 )
 
@@ -27,16 +27,20 @@ const (
 )
 
 type FilesFrame struct {
-	fl *FilesList
-	fn *FilesNav
-	vp *VolumeProvider
+	fl        *FilesList
+	mf        *materialfactory.MaterialFactory
+	fn        *FilesNav
+	openPanel *OpenPanel
+	vp        *VolumeProvider
 }
 
-func NewFilesFrame(vp *VolumeProvider) *FilesFrame {
+func NewFilesFrame(vp *VolumeProvider, mf *materialfactory.MaterialFactory) *FilesFrame {
 	return &FilesFrame{
-		fl: NewFileList(vp),
-		fn: NewFilesNav(vp),
-		vp: vp,
+		fl:        NewFileList(vp),
+		mf:        mf,
+		fn:        NewFilesNav(vp, mf),
+		vp:        vp,
+		openPanel: NewOpenPanel(mf.Theme()),
 	}
 }
 
@@ -47,6 +51,7 @@ func (ff *FilesFrame) Layout(th *material.Theme, gtx layout.Context) layout.Dime
 	}
 
 	return ll.Layout(gtx,
+		layout.Rigid(ff.openPanel.Layout),
 		layout.Rigid(func(gtx layout.Context) layout.Dimensions {
 			return ff.fn.Layout2(th, gtx, ff.onGo)
 		}),
@@ -69,58 +74,82 @@ func (ff *FilesFrame) onGo(actionID int) {
 
 // ----------------------------------------------------------------------------
 type FilesNav struct {
-	vp     *VolumeProvider
-	goHome widget.Clickable
-	goBack widget.Clickable
+	vp        *VolumeProvider
+	mf        *materialfactory.MaterialFactory
+	goHomeBtn material.ButtonStyle
+	goBackBtn material.ButtonStyle
+
+	// goHomeNew  widget.Clickable
+	// goHomeIcon *widget.Icon
 }
 
-func NewFilesNav(vp *VolumeProvider) *FilesNav {
+func NewFilesNav(vp *VolumeProvider, mf *materialfactory.MaterialFactory) *FilesNav {
+
+	// ic, _ := widget.NewIcon(icons.ActionHome)
+
 	return &FilesNav{
-		vp: vp,
+		vp:        vp,
+		mf:        mf,
+		goHomeBtn: mf.Button("Home"),
+		goBackBtn: mf.Button("Back"),
+
+		// goHomeIcon: ic,
 	}
 }
 
-func (fn *FilesNav) Layout(th *material.Theme, gtx layout.Context, onGo func(parentID int)) layout.Dimensions {
+// func (fn *FilesNav) Layout(th *material.Theme, gtx layout.Context, onGo func(parentID int)) layout.Dimensions {
 
-	// Проверяем, кликнул ли пользователь на этот элемент в текущем кадре
-	if fn.goHome.Clicked(gtx) && onGo != nil {
-		onGo(1)
-	}
+// 	// Проверяем, кликнул ли пользователь на этот элемент в текущем кадре
+// 	if fn.goHome.Clicked(gtx) && onGo != nil {
+// 		onGo(1)
+// 	}
 
-	ll := layout.Flex{
-		Axis: layout.Horizontal,
-	}
+// 	ll := layout.Flex{
+// 		Axis: layout.Horizontal,
+// 	}
 
-	return ll.Layout(gtx,
-		layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+// 	return ll.Layout(gtx,
+// 		layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
 
-			// list := layout.List{
-			// 	Axis: layout.Horizontal,
-			// }
+// 			// list := layout.List{
+// 			// 	Axis: layout.Horizontal,
+// 			// }
 
-			// return list.Layout(gtx, 2, func(gtx layout.Context, i int) layout.Dimensions {
-			// 	return material.Button(th, &fn.goHome, "Home").Layout(gtx)
-			// })
+// 			// return list.Layout(gtx, 2, func(gtx layout.Context, i int) layout.Dimensions {
+// 			// 	return material.Button(th, &fn.goHome, "Home").Layout(gtx)
+// 			// })
 
-			return material.Button(th, &fn.goHome, "Home").Layout(gtx)
-		}),
-		// layout.Rigid(layout.Spacer{Height: defaultMargin, Width: 100}.Layout),
-		// layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
-		// 	return ff.fl.Layout(th, gtx)
-		// }),
-	)
-}
+// 			return material.Button(th, &fn.goHome, "Home").Layout(gtx)
+// 		}),
+// 		// layout.Rigid(layout.Spacer{Height: defaultMargin, Width: 100}.Layout),
+// 		// layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+// 		// 	return ff.fl.Layout(th, gtx)
+// 		// }),
+// 	)
+// }
 
 func (fn *FilesNav) Layout2(th *material.Theme, gtx layout.Context, onGo func(parentID int)) layout.Dimensions {
 
 	// Проверяем, кликнул ли пользователь на этот элемент в текущем кадре
-	if fn.goHome.Clicked(gtx) && onGo != nil {
+	if fn.goHomeBtn.Button.Clicked(gtx) && onGo != nil {
 		onGo(goHomeID)
 	}
 
-	if fn.goBack.Clicked(gtx) && onGo != nil && !fn.vp.PathIsEmpty() {
+	if fn.goBackBtn.Button.Clicked(gtx) && onGo != nil && !fn.vp.PathIsEmpty() {
 		onGo(goBackID)
 	}
+
+	// TODO
+	// if fn.vp.PathIsEmpty() {
+	// 						btn.Background = th.Palette.Bg
+	// 						btn.Color = th.Palette.Fg
+	// 					}
+
+	// NOTE: в виде fullstate - надо делать метод переключения
+	// if fn.vp.PathIsEmpty() {
+	// 	fn.goBackBtn.Background = th.Palette.Bg
+	// 	fn.goBackBtn.Color = th.Palette.Fg
+	// }
 
 	// Задаем цвет фона для панели (светло-серый)
 	// backgroundColor := color.NRGBA{R: 240, G: 240, B: 240, A: 255}
@@ -144,19 +173,12 @@ func (fn *FilesNav) Layout2(th *material.Theme, gtx layout.Context, onGo func(pa
 					Axis:    layout.Horizontal,
 					Spacing: layout.SpaceEnd, // Кнопки прижаты к левому краю
 				}.Layout(gtx,
-					layout.Rigid(func(gtx layout.Context) layout.Dimensions {
-						btn := material.Button(th, &fn.goHome, "Home")
-						return btn.Layout(gtx)
-					}),
+					layout.Rigid(fn.goHomeBtn.Layout),
 					layout.Rigid(layout.Spacer{Width: unit.Dp(8)}.Layout), // Отступ между кнопками
-					layout.Rigid(func(gtx layout.Context) layout.Dimensions {
-						btn := material.Button(th, &fn.goBack, "Back")
-						if fn.vp.PathIsEmpty() {
-							btn.Background = th.Palette.Bg
-							btn.Color = th.Palette.Fg
-						}
-						return btn.Layout(gtx)
-					}),
+					layout.Rigid(fn.goBackBtn.Layout),
+
+					// NOTE: рисует круглую иконку...
+					// layout.Rigid(material.IconButton(th, &fn.goHomeNew, fn.goHomeIcon, "Home").Layout),
 				)
 			})
 		}),
