@@ -6,6 +6,7 @@
 ## Другие проекты и ответвления
 
 - [JDCat](https://github.com/sysdeep/jdcat) - проект на Qt с базой в виде json
+- [QDCat](https://gitlab.com/sysdeep/qdcat) - проект на Qt с поддержкой оригинального хранилища dcat
 
 ## Требования
 
