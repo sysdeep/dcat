@@ -18,3 +18,14 @@
 
 - 8 - python3 -m add.AppBss.main
 - 10 - python3 -m add.features.10_binmap.viewer.main
+
+## Perf
+
+| Application | mem   | cpu |
+| ----------- | ----- | --- |
+| Dcat        | 139mb |     |
+| QDcat       | 100mb | 0%  |
+| dcat_go     | 44mb  | 0%  |
+| imcat       | 100mb | 8%  |
+
+
