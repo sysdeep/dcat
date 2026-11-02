@@ -15,7 +15,7 @@ from app.rc import VERSION
 from .modals.ModalsCtrl import ModalsCtrl
 from .main_menu import MainMenu, MainMenuHandler
 from .explorer import Explorer
-from .DBInfo import DBInfo
+from .bottom_panel import BottomPanel
 from .toolbar import ToolBar, ToolbarHandler
 from .utils import ticons
 
@@ -50,17 +50,17 @@ class MainWindow(tkinter.Tk, ToolbarHandler, MainMenuHandler):
         self.tool_bar.pack(side="top", expand=False, fill="x")
 
         # --- explorer
-        self.explorer_frame = Explorer(parent=self, us=self._us)
+        self.explorer_frame = Explorer(parent=self, storage=self.storage, us=self._us)
         self.explorer_frame.pack(side="top", fill="both", expand=True)
         # self.explorer_frame.v_list.set_cb_open_modal_add_volume(self.__on_show_modal_add_volume)
 
-        # --- db info
-        self.db_info = DBInfo(self)
-        self.db_info.pack(side="bottom", fill="x", expand=False)
+        # bottom panel ------------------------------------
+        self._db_info = BottomPanel(master=self, storage=self.storage, app_version=VERSION)
+        self._db_info.pack(side="bottom", fill="x", expand=False)
 
         self.modal_add_volume = None
 
-        self.modals_ctrl = ModalsCtrl(main_win=self, us=self._us)
+        self.modals_ctrl = ModalsCtrl(main_win=self, us=self._us, storage=self.storage)
 
         # ttk theme ---------------------------------------
         style = ttk.Style()
@@ -121,11 +121,6 @@ class MainWindow(tkinter.Tk, ToolbarHandler, MainMenuHandler):
         last = settings.lastbases[-1]
         self.__on_open_db(last)
 
-    def __update_db_info(self):
-        """обновление информации по базе"""
-        self.db_info.set_path(self.storage.storage_path)
-        # self.db_info.set_sysinfo(self.storage.fetch_system())
-
     def __on_create_db(self):
         """запрос создания базы"""
 
@@ -136,7 +131,6 @@ class MainWindow(tkinter.Tk, ToolbarHandler, MainMenuHandler):
             self.storage.create_storage(db_path)
 
             self.explorer_frame.refresh()
-            self.__update_db_info()
             self._update_last_base(db_path)
             self.__update_title(db_path)
 
@@ -147,7 +141,6 @@ class MainWindow(tkinter.Tk, ToolbarHandler, MainMenuHandler):
         self.storage.open_storage(db_path)
 
         self.explorer_frame.refresh()
-        self.__update_db_info()
 
         self._update_last_base(db_path)
         self.__update_title(db_path)

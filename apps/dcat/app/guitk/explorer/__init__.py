@@ -1,6 +1,5 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+from .explorer import Explorer
 
-
-
-from .Explorer import Explorer
+__all__ = [
+    "Explorer",
+]

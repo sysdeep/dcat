@@ -5,7 +5,7 @@ import time
 from typing import Callable
 
 from app import log
-from app.lib import dbus, tools
+from app.lib import dbus
 
 from .DB import DB
 from . import sbus
@@ -19,6 +19,7 @@ from .models.VNode import VNode
 
 class StorageEvent(Enum):
     opened = "opened"
+    created = "created"
 
 
 class Storage(object):
@@ -82,6 +83,7 @@ class Storage(object):
 
         self.load_system()
         sbus.emit(sbus.STORAGE_CREATED)
+        self.emit(StorageEvent.created)
 
     def commit(self):
         """принудительная запись базы"""
@@ -187,6 +189,10 @@ class Storage(object):
     def get_volume_elements_count(self, vnode: VNode) -> int:
         """получить общее кол-во элементов тома"""
         return self.db.get_volume_elements_count(vnode.uuid)
+
+    def get_volume_elements_size(self, vnode: VNode) -> int:
+        """get_volume_elements_size"""
+        return self.db.get_volume_elements_size(vnode.uuid)
 
     # --- получение элементов --------------------------------------------------
 

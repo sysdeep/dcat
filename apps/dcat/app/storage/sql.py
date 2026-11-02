@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 
 
-
-
 CREATE_TABLE_FILES = """
     CREATE TABLE "files" (
         "id"            INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -75,7 +73,6 @@ CREATE_FILES_INDEX_UUID = """CREATE INDEX `uuid_index` ON `files` (`uuid` ASC);"
 CREATE_FILES_INDEX_PARENT_ID = """CREATE INDEX `parent_id_index` ON `files` (`parent_id` ASC);"""
 
 
-
 GET_VOLUMES = """
     SELECT * FROM volumes;
 """
@@ -97,13 +94,16 @@ GET_VOLUME_ELEMENTS_COUNT = """
         FROM files WHERE volume_id=?;
 """
 
+GET_VOLUME_ELEMENTS_SIZE = """
+    SELECT sum(size) as total_size
+        FROM files WHERE volume_id=?;
+"""
 
 
 GET_PARENT_FILES = """
     SELECT uuid, parent_id, volume_id, name, type, rights, sowner, sgroup, size, ctime, atime, mtime, category, description 
         FROM files WHERE parent_id=?;
 """
-
 
 
 REMOVE_VOLUME_FILES = """

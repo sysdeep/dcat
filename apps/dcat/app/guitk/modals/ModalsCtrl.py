@@ -1,3 +1,4 @@
+from app.storage import Storage
 from app.lib import dbus
 from app.lib.user_settings import UserSettings
 
@@ -7,9 +8,10 @@ from .DataBases import DataBases
 
 
 class ModalsCtrl:
-    def __init__(self, main_win, us: UserSettings):
+    def __init__(self, main_win, us: UserSettings, storage: Storage):
         self.main_win = main_win
         self._us = us
+        self._storage = storage
 
         dbus.eon(dbus.SHOW_ABOUT_VOLUME, self.show_about_volume)
         # dbus.eon(dbus.SHOW_ABOUT_FILE, self.show_about_file)
@@ -20,7 +22,7 @@ class ModalsCtrl:
         dbus.eon(dbus.SHOW_DATABASES, self.show_databases)
 
     def show_about_volume(self, vnode):
-        AboutVolume(vnode, master=self.main_win)
+        AboutVolume(vnode, storage=self._storage, master=self.main_win)
 
     # def show_about_file(self, fnode):
     # 	AboutFile(fnode, master=self.main_win)

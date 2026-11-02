@@ -1,11 +1,7 @@
 import tkinter
 from tkinter import ttk
 
-# from vendor.natsort import natsorted
-from app.storage import get_storage, sbus
-from app.lib import dbus, sorting
-from ..utils import ticons
-
+from app.lib import dbus
 from app.lib.user_settings import UserSettings
 
 
@@ -16,7 +12,6 @@ class DBList(tkinter.Frame):
 
         self._us = us
 
-        self.storage = get_storage()
         self.current_volume_id = None
 
         self.select_cb = None
