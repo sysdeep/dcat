@@ -1,6 +1,7 @@
 package gioui
 
 import (
+	"dcat/internal/app/state"
 	"dcat/internal/ui/materialfactory"
 	"image"
 
@@ -31,10 +32,10 @@ type FilesFrame struct {
 	mf        *materialfactory.MaterialFactory
 	fn        *FilesNav
 	openPanel *OpenPanel
-	vp        *VolumeProvider
+	vp        *state.VolumeProvider
 }
 
-func NewFilesFrame(vp *VolumeProvider, mf *materialfactory.MaterialFactory) *FilesFrame {
+func NewFilesFrame(vp *state.VolumeProvider, mf *materialfactory.MaterialFactory) *FilesFrame {
 	return &FilesFrame{
 		fl:        NewFileList(vp),
 		mf:        mf,
@@ -74,7 +75,7 @@ func (ff *FilesFrame) onGo(actionID int) {
 
 // ----------------------------------------------------------------------------
 type FilesNav struct {
-	vp        *VolumeProvider
+	vp        *state.VolumeProvider
 	mf        *materialfactory.MaterialFactory
 	goHomeBtn material.ButtonStyle
 	goBackBtn material.ButtonStyle
@@ -83,7 +84,7 @@ type FilesNav struct {
 	// goHomeIcon *widget.Icon
 }
 
-func NewFilesNav(vp *VolumeProvider, mf *materialfactory.MaterialFactory) *FilesNav {
+func NewFilesNav(vp *state.VolumeProvider, mf *materialfactory.MaterialFactory) *FilesNav {
 
 	// ic, _ := widget.NewIcon(icons.ActionHome)
 

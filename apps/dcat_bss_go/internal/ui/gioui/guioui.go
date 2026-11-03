@@ -1,6 +1,7 @@
 package gioui
 
 import (
+	"dcat/internal/app/state"
 	"dcat/internal/ui/materialfactory"
 	"image"
 	"image/color"
@@ -31,7 +32,7 @@ type UI struct {
 	// components
 	mainLayout *layout.Flex
 	ff         *FilesFrame
-	vp         *VolumeProvider
+	vp         *state.VolumeProvider
 	ip         *InfoPanel
 
 	// example
@@ -43,7 +44,7 @@ type UI struct {
 }
 
 // NewUI creates a new UI using the Go Fonts.
-func NewUI(vp *VolumeProvider) *UI {
+func NewUI(vp *state.VolumeProvider) *UI {
 	th := material.NewTheme()
 	mf := materialfactory.NewMaterialFactory(th)
 

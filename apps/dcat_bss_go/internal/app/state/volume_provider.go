@@ -1,4 +1,4 @@
-package gioui
+package state
 
 import (
 	"dcat/internal/stor"

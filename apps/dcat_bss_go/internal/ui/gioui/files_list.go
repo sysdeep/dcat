@@ -1,6 +1,7 @@
 package gioui
 
 import (
+	"dcat/internal/app/state"
 	"dcat/internal/stor"
 	"fmt"
 	"image"
@@ -17,12 +18,12 @@ import (
 
 type FilesList struct {
 	files     []FileRecord
-	vp        *VolumeProvider
+	vp        *state.VolumeProvider
 	listState widget.List
 	scrollbar widget.Scrollbar
 }
 
-func NewFileList(vp *VolumeProvider) *FilesList {
+func NewFileList(vp *state.VolumeProvider) *FilesList {
 	files := []FileRecord{
 		// &FileRecord{Name: "File 1", Size: 1024, IsDir: true},
 		// &FileRecord{Name: "File 2", Size: 1024},

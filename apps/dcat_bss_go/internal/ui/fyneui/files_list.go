@@ -1,94 +1,127 @@
 package fyneui
 
-// import (
-// 	"dcat/internal/stor"
-// 	"fmt"
+import (
+	"dcat/internal/app/state"
+	"dcat/internal/stor"
+	"slices"
+	"strings"
 
-// 	"fyne.io/fyne/v2"
-// 	"fyne.io/fyne/v2/container"
-// 	"fyne.io/fyne/v2/theme"
-// 	"fyne.io/fyne/v2/widget"
-// )
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/theme"
+	"fyne.io/fyne/v2/widget"
+	"github.com/samber/lo"
+)
 
-// type FilesList struct {
-// 	list     *widget.List
-// 	vp       *VolumeProvider
-// 	viewList []stor.FileRecord
-// }
+type FilesList struct {
+	list     *widget.List
+	vp       *state.VolumeProvider
+	viewList []stor.FileRecord
+}
 
-// func NewFilesList(vp *VolumeProvider) *FilesList {
-// 	// data := binding.BindStringList(
-// 	// 	&[]string{"Item 1 foo bar zoo", "Item 2", "Item 3"},
-// 	// )
+func NewFilesList(vp *state.VolumeProvider) *FilesList {
 
-// 	records, _ := vp.GetRecords(1) // TODO: error
+	fl := FilesList{
+		vp: vp,
+	}
 
-// 	fl := FilesList{
-// 		// list:     list,
-// 		vp:       vp,
-// 		viewList: records,
-// 	}
+	list := widget.NewList(
+		func() int {
+			return len(fl.viewList)
+		},
+		func() fyne.CanvasObject {
+			i := widget.NewIcon(theme.FolderIcon())
+			l := widget.NewLabel("template")
+			return container.NewHBox(i, l)
+		},
+		func(i widget.ListItemID, o fyne.CanvasObject) {
 
-// 	// data := []string{"Item 1 foo bar zoo", "Item 2", "Item 3"}
+			// 1. Приводим o к типу контейнера
+			box := o.(*fyne.Container)
 
-// 	list := widget.NewList(
-// 		func() int {
-// 			return len(fl.viewList)
-// 		},
-// 		func() fyne.CanvasObject {
-// 			i := widget.NewIcon(theme.FolderIcon())
-// 			l := widget.NewLabel("template")
-// 			return container.NewHBox(i, l)
-// 		},
-// 		func(i widget.ListItemID, o fyne.CanvasObject) {
+			// 2. Достаем Label (он на позиции 1 в HBox) и приводим к типу *widget.Label
+			label := box.Objects[1].(*widget.Label)
 
-// 			// 1. Приводим o к типу контейнера
-// 			box := o.(*fyne.Container)
+			// 3. Обновляем текст
+			label.SetText(fl.viewList[i].Name)
 
-// 			// 2. Достаем Label (он на позиции 1 в HBox) и приводим к типу *widget.Label
-// 			label := box.Objects[1].(*widget.Label)
+			usedIcon := theme.FileIcon()
+			if fl.viewList[i].FType == stor.FTYPE_DIR {
+				usedIcon = theme.FolderIcon()
+			}
+			icon := box.Objects[0].(*widget.Icon)
+			icon.SetResource(usedIcon)
 
-// 			// 3. Обновляем текст
-// 			label.SetText(fl.viewList[i].Name)
+		})
 
-// 			usedIcon := theme.FileIcon()
-// 			if fl.viewList[i].FType == stor.FTYPE_DIR {
-// 				usedIcon = theme.FolderIcon()
-// 			}
-// 			icon := box.Objects[0].(*widget.Icon)
-// 			icon.SetResource(usedIcon)
+	list.OnSelected = func(id widget.ListItemID) {
+		r := fl.viewList[id]
+		if r.FType == stor.FTYPE_DIR {
+			vp.PushPath(int(r.ID))
+		}
+	}
 
-// 		})
+	fl.list = list
 
-// 	list.OnSelected = func(id widget.ListItemID) {
-// 		fmt.Println("selected index: ", id)
-// 		r := fl.viewList[id]
-// 		fmt.Println("selected id: ", r.ID)
-// 		records, _ := vp.GetRecords(int(r.ID)) // TODO: error
-// 		fmt.Println(records)
-// 		fl.viewList = records
-// 		list.Refresh()
-// 		list.UnselectAll()
-// 	}
+	vp.ConnectHandler(fl.onUpdated)
+	fl.onUpdated()
 
-// 	fl.list = list
+	return &fl
+}
 
-// 	return &fl
-// }
+func (vl *FilesList) Widget() *fyne.Container {
 
-// func (vl *FilesList) Widget() *fyne.Container {
+	content := container.NewStack(vl.list)
+	return content
+}
 
-// 	btnHome := widget.NewButton("Home", func() {
-// 		records, _ := vl.vp.GetRecords(0) // TODO: error
-// 		vl.viewList = records
-// 		vl.list.Refresh()
-// 		vl.list.UnselectAll()
-// 	})
+func (fl *FilesList) onUpdated() error {
+	records, _ := fl.vp.GetActualRecords()
 
-// 	topBarContainer := container.NewHBox(btnHome)
+	files := []stor.FileRecord{}
 
-// 	content := container.NewGridWithRows(2, topBarContainer, vl.list)
+	// filter
+	rDirs := lo.Filter(records, func(f stor.FileRecord, i int) bool {
+		return f.FType == stor.FTYPE_DIR
+	})
 
-// 	// content := container.NewStack(topBarContainer, vl.list)
-// 	return content
-// }
+	rFiles := lo.Filter(records, func(f stor.FileRecord, i int) bool {
+		return f.FType == stor.FTYPE_FILE
+	})
+
+	oFiles := lo.Filter(records, func(f stor.FileRecord, i int) bool {
+		return f.FType != stor.FTYPE_FILE && f.FType != stor.FTYPE_DIR
+	})
+
+	// sort
+	slices.SortFunc(rDirs, func(a stor.FileRecord, b stor.FileRecord) int {
+		return strings.Compare(a.Name, b.Name)
+	})
+
+	slices.SortFunc(rFiles, func(a stor.FileRecord, b stor.FileRecord) int {
+		return strings.Compare(a.Name, b.Name)
+	})
+
+	slices.SortFunc(oFiles, func(a stor.FileRecord, b stor.FileRecord) int {
+		return strings.Compare(a.Name, b.Name)
+	})
+
+	// concat
+	for _, rr := range rDirs {
+		files = append(files, rr)
+	}
+
+	for _, rr := range rFiles {
+		files = append(files, rr)
+	}
+
+	for _, rr := range oFiles {
+		files = append(files, rr)
+	}
+
+	fl.viewList = files
+	fl.list.Refresh()
+	fl.list.UnselectAll()
+
+	return nil
+}

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"dcat/internal/app/state"
 	"dcat/internal/stor"
 	"dcat/internal/ui/gioui"
 	"flag"
@@ -30,7 +31,7 @@ func main() {
 		panic(err)
 	}
 
-	vp := gioui.NewVolumeProvider(&vv)
+	vp := state.NewVolumeProvider(&vv)
 
 	ui := gioui.NewUI(vp)
 

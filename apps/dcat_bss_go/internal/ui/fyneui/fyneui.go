@@ -1,0 +1,69 @@
+package fyneui
+
+import (
+	"dcat/internal/app/state"
+	"image/color"
+	"log"
+
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/dialog"
+	"fyne.io/fyne/v2/theme"
+)
+
+// type FyneUI struct{}
+
+func NewFyneUI(vp *state.VolumeProvider) {
+	a := app.New()
+
+	// Оборачиваем дефолтную тему и устанавливаем её в настройки приложения
+	myTheme := forcedLightTheme{Theme: theme.DefaultTheme()}
+	a.Settings().SetTheme(myTheme)
+
+	// window
+	w := a.NewWindow("DCat fyne example")
+	w.Resize(fyne.NewSize(1024, 768))
+
+	// components
+	navBar := newNavigation(vp)
+	filesList := NewFilesList(vp)
+	bottomBar := newButtomBar()
+
+	// layout
+	content := container.NewBorder(navBar.Widget(), bottomBar.Widget(), nil, nil, filesList.Widget())
+	w.SetContent(content) // output,
+
+	// main menu
+	m := fyne.NewMainMenu(
+		fyne.NewMenu("File", fyne.NewMenuItem("Show", func() {
+			log.Println("Tapped show")
+		})),
+		fyne.NewMenu("About", fyne.NewMenuItem("Show", func() {
+			log.Println("Tapped show")
+
+			// NOTE: возможно его надо создавать единожды?
+			d := dialog.NewCustom("Title about", "dimiss", makeAbout(), w)
+			d.Show()
+
+		})),
+	)
+	w.SetMainMenu(m)
+
+	w.Show()
+
+	a.Run()
+}
+
+//----------------
+
+// Создаем свою структуру для принудительной светлой темы
+type forcedLightTheme struct {
+	fyne.Theme
+}
+
+// Переопределяем метод Color
+func (f forcedLightTheme) Color(name fyne.ThemeColorName, variant fyne.ThemeVariant) color.Color {
+	// Игнорируем переданный системой 'variant' и всегда запрашиваем VariantLight
+	return f.Theme.Color(name, theme.VariantLight)
+}

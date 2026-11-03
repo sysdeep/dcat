@@ -1,6 +1,7 @@
 package gioui
 
 import (
+	"dcat/internal/app/state"
 	"image/color"
 
 	"gioui.org/layout"
@@ -13,7 +14,7 @@ type InfoPanel struct {
 	vi *VolumeInfo
 }
 
-func NewInfoPanel(vp *VolumeProvider) *InfoPanel {
+func NewInfoPanel(vp *state.VolumeProvider) *InfoPanel {
 	return &InfoPanel{
 		vi: NewVolumeInfo(vp),
 	}

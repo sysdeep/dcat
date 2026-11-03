@@ -1,6 +1,7 @@
 package gioui
 
 import (
+	"dcat/internal/app/state"
 	"dcat/internal/stor"
 	"fmt"
 	"time"
@@ -11,11 +12,11 @@ import (
 )
 
 type VolumeInfo struct {
-	vp    *VolumeProvider
+	vp    *state.VolumeProvider
 	units []KValue
 }
 
-func NewVolumeInfo(vp *VolumeProvider) *VolumeInfo {
+func NewVolumeInfo(vp *state.VolumeProvider) *VolumeInfo {
 
 	units := []KValue{
 		NewKV("Name", func(vol *stor.Volume) string {
