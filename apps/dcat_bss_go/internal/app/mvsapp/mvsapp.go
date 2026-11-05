@@ -47,6 +47,23 @@ func (m *MvsApp) GetVolumes() ([]AppVolume, error) {
 	return result, nil
 }
 
+func (m *MvsApp) GetVolumeFiles(volumeID string) ([]AppFile, error) {
+
+	result := []AppFile{}
+
+	// TODO: filter
+	dbfiles, err := m.storage.GetFiles()
+	if err != nil {
+		return result, err
+	}
+
+	for _, dbFile := range dbfiles {
+		result = append(result, fromDBFile(dbFile))
+	}
+
+	return result, nil
+}
+
 // events ---------------------------------------------------------------------
 func (m *MvsApp) Connect(ev AppEvent, h AppEventHandler) {
 	_, ok := m.handlersMap[ev]

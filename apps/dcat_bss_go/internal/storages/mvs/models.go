@@ -12,3 +12,21 @@ type DBVolume struct {
 	VType       string    //
 	Description string    // произвольное описание
 }
+
+type DBFile struct {
+	ID          int
+	VolumeID    string // NOTE: в реальности там uuid
+	UUID        string
+	ParentID    string
+	Name        string
+	FType       int
+	Rights      int
+	SOwner      string
+	SGroup      string
+	CTime       int
+	ATime       int
+	MTime       int
+	Category    int
+	Description string
+	Size        int
+}

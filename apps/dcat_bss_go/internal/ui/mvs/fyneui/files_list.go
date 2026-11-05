@@ -74,6 +74,7 @@ func NewFilesList(vp *state.VolumeProvider, mvsApp *mvsapp.MvsApp, appState *App
 
 	// connect
 	mvsApp.Connect(mvsapp.EvOpened, fl.onStorageOpened)
+	appState.Files.Connect(fl.onFilesUpdated)
 
 	return &fl
 }
@@ -140,4 +141,25 @@ func (fl *FilesList) onStorageOpened() error {
 		fmt.Println(fl.appState.Volumes[0])
 	}
 	return nil
+}
+
+func (fl *FilesList) onFilesUpdated() {
+	fmt.Println("===========================")
+	fmt.Println("files list - updated files")
+	fmt.Println("===========================")
+
+	files := fl.appState.Files.Get()
+
+	ffrs := []stor.FileRecord{}
+	for _, ff := range files {
+		xx := stor.FileRecord{
+			Name: ff.Name,
+		}
+		ffrs = append(ffrs, xx)
+	}
+
+	fl.viewList = ffrs
+	fl.list.Refresh()
+	fl.list.UnselectAll()
+
 }

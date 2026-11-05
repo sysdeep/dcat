@@ -2,6 +2,7 @@ package fyneui
 
 import (
 	"dcat/internal/app/mvsapp"
+	"fmt"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/container"
@@ -54,6 +55,15 @@ func newVolumesList(mvsApp *mvsapp.MvsApp, appState *AppState) *VolumesList {
 			icon.SetResource(usedIcon)
 
 		})
+
+	list.OnSelected = func(id widget.ListItemID) {
+		// fmt.Println("selected volume id: ", id)
+		r := vl.appState.Volumes[id]
+		err := vl.appState.OpenVolume(r.UUID)
+		if err != nil {
+			fmt.Println("ERROR: ", err)
+		}
+	}
 
 	vl.wList = list
 

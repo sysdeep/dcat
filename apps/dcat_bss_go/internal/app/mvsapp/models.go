@@ -28,3 +28,31 @@ func fromDBVolume(vol mvs.DBVolume) AppVolume {
 		Description: vol.Description,
 	}
 }
+
+type AppFile struct {
+	ID       int
+	VolumeID string
+	UUID     string
+	ParentID string
+	Name     string
+	// FType       int
+	// Rights      int
+	// SOwner      string
+	// SGroup      string
+	// CTime       int
+	// ATime       int
+	// MTime       int
+	// Category    int
+	// Description string
+	// Size        int
+}
+
+func fromDBFile(model mvs.DBFile) AppFile {
+	return AppFile{
+		ID:       model.ID,
+		VolumeID: model.VolumeID,
+		UUID:     model.UUID,
+		ParentID: model.ParentID,
+		Name:     model.Name,
+	}
+}

@@ -69,6 +69,8 @@ VOLUME_TYPE = ("cd", "audio_cd", "dvd", "folder",
 
 ### Таблица Files
 
+!!! тут описано что volume_id - это цифровое значение, и в свойствах базы так и есть, но в реальности там лежит uuid
+
 ```sql
 CREATE TABLE "files" (
         "id"            INTEGER PRIMARY KEY AUTOINCREMENT,
