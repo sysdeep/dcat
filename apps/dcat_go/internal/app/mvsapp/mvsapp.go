@@ -47,12 +47,16 @@ func (m *MvsApp) GetVolumes() ([]AppVolume, error) {
 	return result, nil
 }
 
-func (m *MvsApp) GetVolumeFiles(volumeID string) ([]AppFile, error) {
+func (m *MvsApp) GetVolumeFiles(volumeID string, parentID string) ([]AppFile, error) {
 
 	result := []AppFile{}
 
-	// TODO: filter
-	dbfiles, err := m.storage.GetFiles()
+	filterParams := mvs.FilesFilter{
+		WhereVolumeID: volumeID,
+		WhereParentID: parentID,
+	}
+
+	dbfiles, err := m.storage.GetFiles(filterParams)
 	if err != nil {
 		return result, err
 	}

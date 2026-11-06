@@ -13,6 +13,9 @@ type DBVolume struct {
 	Description string    // произвольное описание
 }
 
+const FILE_TYPE_FOLDER = 0
+const FILE_TYPE_FILE = 1
+
 type DBFile struct {
 	ID          int
 	VolumeID    string // NOTE: в реальности там uuid

@@ -29,13 +29,16 @@ func fromDBVolume(vol mvs.DBVolume) AppVolume {
 	}
 }
 
+const FILE_TYPE_FOLDER = 0
+const FILE_TYPE_FILE = 1
+
 type AppFile struct {
 	ID       int
 	VolumeID string
 	UUID     string
 	ParentID string
 	Name     string
-	// FType       int
+	FType    int
 	// Rights      int
 	// SOwner      string
 	// SGroup      string
@@ -47,6 +50,14 @@ type AppFile struct {
 	// Size        int
 }
 
+func (f *AppFile) IsFolder() bool {
+	return f.FType == FILE_TYPE_FOLDER
+}
+
+func (f *AppFile) IsFile() bool {
+	return f.FType == FILE_TYPE_FILE
+}
+
 func fromDBFile(model mvs.DBFile) AppFile {
 	return AppFile{
 		ID:       model.ID,
@@ -54,5 +65,6 @@ func fromDBFile(model mvs.DBFile) AppFile {
 		UUID:     model.UUID,
 		ParentID: model.ParentID,
 		Name:     model.Name,
+		FType:    model.FType, // NOTE: 1by1
 	}
 }

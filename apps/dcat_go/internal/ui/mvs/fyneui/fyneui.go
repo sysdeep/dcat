@@ -36,15 +36,20 @@ func NewFyneUI(vp *state.VolumeProvider, mvsApp *mvsapp.MvsApp) {
 	bottomBar := newButtomBar()
 	volumesList := newVolumesList(mvsApp, appState)
 
+	exampleBase := "/home/igor/1.gcat"
 	topB := container.NewVBox(
-		widget.NewButton("open", func() {
-			err := mvsApp.Open("/home/igor/1.gcat")
-			if err != nil {
-				fmt.Println(err)
-			} else {
+		container.NewHBox(
 
-			}
-		}),
+			widget.NewLabel(exampleBase),
+			widget.NewButton("open", func() {
+				err := mvsApp.Open(exampleBase)
+				if err != nil {
+					fmt.Println(err)
+				} else {
+
+				}
+			}),
+		),
 		navBar.Widget(),
 	)
 

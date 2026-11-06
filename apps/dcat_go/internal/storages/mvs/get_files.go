@@ -1,8 +1,13 @@
 package mvs
 
-type FilesFilter struct{}
+import "strings"
 
-func (m *MVS) GetFiles() ([]DBFile, error) {
+type FilesFilter struct {
+	WhereVolumeID string
+	WhereParentID string
+}
+
+func (m *MVS) GetFiles(filter FilesFilter) ([]DBFile, error) {
 	/*
 			CREATE TABLE "files" (
 		        "id"            INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -30,11 +35,31 @@ func (m *MVS) GetFiles() ([]DBFile, error) {
 
 	query := `
 		SELECT 
-			id, volume_id, uuid, parent_id, name
-		FROM files;
+			id, volume_id, uuid, parent_id, name, type
+		FROM files
 	`
 
-	rows, err := m.db.Query(query)
+	where_query := ""
+	where_terms := []string{}
+	where_args := []any{}
+	if len(filter.WhereVolumeID) > 0 {
+		where_terms = append(where_terms, "volume_id = ?")
+		where_args = append(where_args, filter.WhereVolumeID)
+	}
+
+	if len(filter.WhereParentID) > 0 {
+		where_terms = append(where_terms, "parent_id = ?")
+		where_args = append(where_args, filter.WhereParentID)
+	}
+
+	if len(where_terms) > 0 {
+		where_query += "\nWHERE " + strings.Join(where_terms, " AND ")
+
+	}
+
+	query += where_query
+
+	rows, err := m.db.Query(query, where_args...)
 	if err != nil {
 		return result, err
 	}
@@ -46,7 +71,7 @@ func (m *MVS) GetFiles() ([]DBFile, error) {
 		// var created sql.NullTime
 		// var updated sql.NullTime
 
-		err := rows.Scan(&model.ID, &model.VolumeID, &model.UUID, &model.ParentID, &model.Name)
+		err := rows.Scan(&model.ID, &model.VolumeID, &model.UUID, &model.ParentID, &model.Name, &model.FType)
 		if err != nil {
 			return result, err
 		}

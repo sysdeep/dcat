@@ -6,9 +6,10 @@ import (
 )
 
 type AppState struct {
-	mvsApp  *mvsapp.MvsApp
-	Volumes []mvsapp.AppVolume
-	Files   *ReactiveValue[[]mvsapp.AppFile]
+	mvsApp          *mvsapp.MvsApp
+	Volumes         []mvsapp.AppVolume
+	CurrentVolumeID string
+	Files           *ReactiveValue[[]mvsapp.AppFile]
 }
 
 func newAppState(mvsApp *mvsapp.MvsApp) *AppState {
@@ -29,6 +30,7 @@ func (as *AppState) onStorageOpened() error {
 		return err
 	}
 
+	as.CurrentVolumeID = ""
 	as.Volumes = volumes
 	as.Files.Set([]mvsapp.AppFile{})
 
@@ -37,7 +39,9 @@ func (as *AppState) onStorageOpened() error {
 
 func (as *AppState) OpenVolume(volumeID string) error {
 	fmt.Println("do open volume")
-	files, err := as.mvsApp.GetVolumeFiles(volumeID)
+	as.CurrentVolumeID = volumeID
+	var parentID string = "0" // NOTE: storage arch
+	files, err := as.mvsApp.GetVolumeFiles(volumeID, parentID)
 	if err != nil {
 		return err
 	}
@@ -47,7 +51,21 @@ func (as *AppState) OpenVolume(volumeID string) error {
 	return nil
 }
 
-// reactive value
+func (as *AppState) OpenFolder(volumeID string, folderID string) error {
+	fmt.Println("do open volume folder")
+
+	as.CurrentVolumeID = volumeID
+	files, err := as.mvsApp.GetVolumeFiles(volumeID, folderID)
+	if err != nil {
+		return err
+	}
+
+	as.Files.Set(files)
+
+	return nil
+}
+
+// reactive value example -----------------------------------------------------
 
 type ReactiveValue[T any] struct {
 	value    T

@@ -16,9 +16,9 @@ import (
 )
 
 type FilesList struct {
-	list     *widget.List
-	vp       *state.VolumeProvider
-	viewList []stor.FileRecord
+	list *widget.List
+	vp   *state.VolumeProvider
+	// viewList []stor.FileRecord
 	mvsApp   *mvsapp.MvsApp
 	appState *AppState
 }
@@ -33,7 +33,7 @@ func NewFilesList(vp *state.VolumeProvider, mvsApp *mvsapp.MvsApp, appState *App
 
 	list := widget.NewList(
 		func() int {
-			return len(fl.viewList)
+			return len(appState.Files.Get())
 		},
 		func() fyne.CanvasObject {
 			i := widget.NewIcon(theme.FolderIcon())
@@ -49,10 +49,10 @@ func NewFilesList(vp *state.VolumeProvider, mvsApp *mvsapp.MvsApp, appState *App
 			label := box.Objects[1].(*widget.Label)
 
 			// 3. Обновляем текст
-			label.SetText(fl.viewList[i].Name)
+			label.SetText(appState.Files.Get()[i].Name)
 
 			usedIcon := theme.FileIcon()
-			if fl.viewList[i].FType == stor.FTYPE_DIR {
+			if appState.Files.Get()[i].IsFolder() {
 				usedIcon = theme.FolderIcon()
 			}
 			icon := box.Objects[0].(*widget.Icon)
@@ -61,9 +61,11 @@ func NewFilesList(vp *state.VolumeProvider, mvsApp *mvsapp.MvsApp, appState *App
 		})
 
 	list.OnSelected = func(id widget.ListItemID) {
-		r := fl.viewList[id]
-		if r.FType == stor.FTYPE_DIR {
-			vp.PushPath(int(r.ID))
+		record := appState.Files.Get()[id]
+		if record.IsFolder() {
+			// TODO
+			// vp.PushPath(int(.ID))
+			appState.OpenFolder(appState.CurrentVolumeID, record.UUID)
 		}
 	}
 
@@ -129,7 +131,7 @@ func (fl *FilesList) onUpdated() error {
 		files = append(files, rr)
 	}
 
-	fl.viewList = files
+	// fl.viewList = files
 	fl.list.Refresh()
 	fl.list.UnselectAll()
 
@@ -148,17 +150,17 @@ func (fl *FilesList) onFilesUpdated() {
 	fmt.Println("files list - updated files")
 	fmt.Println("===========================")
 
-	files := fl.appState.Files.Get()
+	// files := fl.appState.Files.Get()
 
-	ffrs := []stor.FileRecord{}
-	for _, ff := range files {
-		xx := stor.FileRecord{
-			Name: ff.Name,
-		}
-		ffrs = append(ffrs, xx)
-	}
+	// ffrs := []stor.FileRecord{}
+	// for _, ff := range files {
+	// 	xx := stor.FileRecord{
+	// 		Name: ff.Name,
+	// 	}
+	// 	ffrs = append(ffrs, xx)
+	// }
 
-	fl.viewList = ffrs
+	// fl.viewList = ffrs
 	fl.list.Refresh()
 	fl.list.UnselectAll()
 
