@@ -68,3 +68,14 @@ func fromDBFile(model mvs.DBFile) AppFile {
 		FType:    model.FType, // NOTE: 1by1
 	}
 }
+
+// SystemInfo -----------------------------------------------------------------
+// NOTE: expected
+// map[created:2023-10-30 17:27:24 description:init updated:2026-11-02 15:49:30 version:4]
+type SystemInfo struct {
+	DBPath      string
+	Version     string
+	Created     string
+	Updated     string
+	Description string
+}

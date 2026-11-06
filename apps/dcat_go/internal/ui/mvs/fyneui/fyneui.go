@@ -32,9 +32,9 @@ func NewFyneUI(vp *state.VolumeProvider, mvsApp *mvsapp.MvsApp) {
 
 	// components
 	navBar := newNavigation(vp, appState)
-	filesList := NewFilesList(mvsApp, appState)
-	bottomBar := newButtomBar()
-	volumesList := newVolumesList(mvsApp, appState)
+	filesList := NewFilesList(appState)
+	bottomBar := newBottomBar(mvsApp)
+	volumesList := newVolumesList(appState)
 
 	exampleBase := "/home/igor/1.gcat"
 	topB := container.NewVBox(

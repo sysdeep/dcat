@@ -11,6 +11,7 @@ type AppStateEvent int
 
 const (
 	AppStateStackChanged AppStateEvent = iota
+	AppStateVolumesChanged
 )
 
 type AppStateEventHandler func() error
@@ -45,7 +46,7 @@ func (as *AppState) onStorageOpened() error {
 	}
 
 	as.CurrentVolume = mvsapp.AppVolume{}
-	as.Volumes = volumes
+	as.setVolumes(volumes)
 	as.Files.Set([]mvsapp.AppFile{})
 
 	return nil
@@ -178,6 +179,11 @@ func (as *AppState) clearFolderStack() {
 func (as *AppState) reduceFolderStack(index int) {
 	as.FoldersStack = as.FoldersStack[0:index]
 	as.emit(AppStateStackChanged)
+}
+
+func (as *AppState) setVolumes(vs []mvsapp.AppVolume) {
+	as.Volumes = vs
+	as.emit(AppStateVolumesChanged)
 }
 
 // events ---------------------------------------------------------------------

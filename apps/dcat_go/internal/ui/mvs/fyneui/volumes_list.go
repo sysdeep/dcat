@@ -1,7 +1,6 @@
 package fyneui
 
 import (
-	"dcat/internal/app/mvsapp"
 	"fmt"
 
 	"fyne.io/fyne/v2"
@@ -10,20 +9,14 @@ import (
 	"fyne.io/fyne/v2/widget"
 )
 
-type VolumeRecord struct {
-	Name string
-}
-
 type VolumesList struct {
 	wList    *widget.List
-	mvsApp   *mvsapp.MvsApp
 	appState *AppState
 }
 
-func newVolumesList(mvsApp *mvsapp.MvsApp, appState *AppState) *VolumesList {
+func newVolumesList(appState *AppState) *VolumesList {
 
 	vl := &VolumesList{
-		mvsApp:   mvsApp,
 		appState: appState,
 	}
 
@@ -57,10 +50,10 @@ func newVolumesList(mvsApp *mvsapp.MvsApp, appState *AppState) *VolumesList {
 		})
 
 	list.OnSelected = func(id widget.ListItemID) {
-		// fmt.Println("selected volume id: ", id)
 		r := vl.appState.Volumes[id]
 		err := vl.appState.OpenVolume(r)
 		if err != nil {
+			// TODO: show error
 			fmt.Println("ERROR: ", err)
 		}
 	}
@@ -68,7 +61,7 @@ func newVolumesList(mvsApp *mvsapp.MvsApp, appState *AppState) *VolumesList {
 	vl.wList = list
 
 	// connect
-	mvsApp.Connect(mvsapp.EvOpened, vl.onStorageOpened)
+	appState.Connect(AppStateVolumesChanged, vl.onVolumesChanged)
 
 	return vl
 }
@@ -78,7 +71,7 @@ func (vl *VolumesList) Widget() *fyne.Container {
 	return content
 }
 
-func (vl *VolumesList) onStorageOpened() error {
+func (vl *VolumesList) onVolumesChanged() error {
 
 	vl.wList.Refresh()
 	vl.wList.UnselectAll()

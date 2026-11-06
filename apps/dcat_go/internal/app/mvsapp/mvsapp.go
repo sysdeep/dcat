@@ -1,6 +1,9 @@
 package mvsapp
 
-import "dcat/internal/storages/mvs"
+import (
+	"dcat/internal/storages/mvs"
+	"fmt"
+)
 
 type AppEvent int
 type AppEventHandler func() error
@@ -66,6 +69,26 @@ func (m *MvsApp) GetVolumeFiles(volumeID string, parentID string) ([]AppFile, er
 	}
 
 	return result, nil
+}
+
+func (m *MvsApp) GetSystemInfo() (SystemInfo, error) {
+	if m.storage == nil {
+		return SystemInfo{}, fmt.Errorf("Storage is not opened")
+	}
+
+	sysInfo, err := m.storage.GetSystem()
+	if err != nil {
+		return SystemInfo{}, err
+	}
+
+	return SystemInfo{
+		DBPath:      m.storage.FilePath,
+		Version:     sysInfo["version"],
+		Created:     sysInfo["created"],
+		Updated:     sysInfo["updated"],
+		Description: sysInfo["description"],
+	}, nil
+
 }
 
 // events ---------------------------------------------------------------------

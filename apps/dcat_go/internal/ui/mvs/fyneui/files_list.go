@@ -1,7 +1,6 @@
 package fyneui
 
 import (
-	"dcat/internal/app/mvsapp"
 	"fmt"
 
 	"fyne.io/fyne/v2"
@@ -12,14 +11,12 @@ import (
 
 type FilesList struct {
 	list     *widget.List
-	mvsApp   *mvsapp.MvsApp
 	appState *AppState
 }
 
-func NewFilesList(mvsApp *mvsapp.MvsApp, appState *AppState) *FilesList {
+func NewFilesList(appState *AppState) *FilesList {
 
 	fl := FilesList{
-		mvsApp:   mvsApp,
 		appState: appState,
 	}
 
@@ -64,7 +61,6 @@ func NewFilesList(mvsApp *mvsapp.MvsApp, appState *AppState) *FilesList {
 	fl.list = list
 
 	// connect
-	mvsApp.Connect(mvsapp.EvOpened, fl.onStorageOpened)
 	appState.Files.Connect(fl.onFilesUpdated)
 
 	return &fl
@@ -74,13 +70,6 @@ func (vl *FilesList) Widget() *fyne.Container {
 
 	content := container.NewStack(vl.list)
 	return content
-}
-
-func (fl *FilesList) onStorageOpened() error {
-	if len(fl.appState.Volumes) > 0 {
-		fmt.Println(fl.appState.Volumes[0])
-	}
-	return nil
 }
 
 func (fl *FilesList) onFilesUpdated() {
