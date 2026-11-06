@@ -31,8 +31,8 @@ func NewFyneUI(vp *state.VolumeProvider, mvsApp *mvsapp.MvsApp) {
 	appState := newAppState(mvsApp)
 
 	// components
-	navBar := newNavigation(vp)
-	filesList := NewFilesList(vp, mvsApp, appState)
+	navBar := newNavigation(vp, appState)
+	filesList := NewFilesList(mvsApp, appState)
 	bottomBar := newButtomBar()
 	volumesList := newVolumesList(mvsApp, appState)
 

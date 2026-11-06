@@ -59,7 +59,7 @@ func newVolumesList(mvsApp *mvsapp.MvsApp, appState *AppState) *VolumesList {
 	list.OnSelected = func(id widget.ListItemID) {
 		// fmt.Println("selected volume id: ", id)
 		r := vl.appState.Volumes[id]
-		err := vl.appState.OpenVolume(r.UUID)
+		err := vl.appState.OpenVolume(r)
 		if err != nil {
 			fmt.Println("ERROR: ", err)
 		}
