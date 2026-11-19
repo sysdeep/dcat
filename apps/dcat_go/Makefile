@@ -1,4 +1,7 @@
 
+run-pro:
+	go run ./cmd/dcat_pro
+
 
 run-example:
 	go run ./cmd/dcat_gio --volume /tmp/example-db
