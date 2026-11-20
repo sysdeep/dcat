@@ -14,3 +14,8 @@ run-fyne-bss:
 
 example-db:
 	go run ./cmd/scanner/ --scan-path /tmp/ --target-path /tmp/example-db --name "Foo"
+
+
+
+test-bssv2:
+	go test -v ./internal/bssv2/
