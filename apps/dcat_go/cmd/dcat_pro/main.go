@@ -1,9 +1,13 @@
 package main
 
 import (
+	"dcat/internal/app/proapp"
+	"dcat/internal/logger"
 	"dcat/internal/ui/pro"
-	"log"
+	"flag"
+	"fmt"
 	"os"
+	"path"
 
 	"gioui.org/app"
 	"gioui.org/unit"
@@ -11,15 +15,23 @@ import (
 
 func main() {
 
-	// var volPath string
+	var storagePath string
 
-	// flag.StringVar(&volPath, "volume", "", "path for volume")
+	flag.StringVar(&storagePath, "storage", "", "path for storage")
 
-	// flag.Parse()
+	flag.Parse()
 
-	// if volPath == "" {
-	// 	panic(fmt.Errorf("volume - required"))
-	// }
+	if storagePath == "" {
+		panic(fmt.Errorf("storage - required"))
+	}
+
+	log := logger.New()
+
+	storagePath = path.Clean(storagePath)
+
+	application := proapp.NewApp(storagePath, log)
+
+	fmt.Println(application.ReadVolumes())
 
 	// dataset
 	// vv, err := stor.Read(volPath)
@@ -29,7 +41,7 @@ func main() {
 
 	// vp := state.NewVolumeProvider(&vv)
 
-	ui := pro.NewUI()
+	ui := pro.NewUI(application, log)
 
 	// This creates a new application window and starts the UI.
 	go func() {
@@ -40,7 +52,7 @@ func main() {
 			app.MinSize(unit.Dp(800), unit.Dp(600)),
 		)
 		if err := ui.Run(w); err != nil {
-			log.Println(err)
+			log.Error(err.Error())
 			os.Exit(1)
 		}
 		os.Exit(0)

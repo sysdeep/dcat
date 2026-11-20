@@ -59,6 +59,31 @@ func Unpack(buf io.Reader) (Volume, error) {
 
 }
 
+// UnpackDescription - прочитать только описание тома без файлов
+func UnpackDescription(buf io.Reader) (VolumeDescription, error) {
+	var expected_magic = uint64(MAGIC)
+
+	// magic
+	magic, err := readUInt64(buf)
+	if err != nil {
+		return VolumeDescription{}, err
+	}
+
+	if magic != expected_magic {
+		return VolumeDescription{}, fmt.Errorf("expected magic: %#X, got: %#X", expected_magic, magic)
+	}
+
+	// format description
+	err = readFormatDescription(buf)
+	if err != nil {
+		return VolumeDescription{}, err
+	}
+
+	// volume description
+	return readVolumeDescription(buf)
+
+}
+
 func readFormatDescription(r io.Reader) error {
 	var res uint64
 	var err error

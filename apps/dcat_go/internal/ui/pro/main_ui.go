@@ -1,6 +1,7 @@
 package pro
 
 import (
+	"dcat/internal/ui/pro/appstate"
 	"dcat/internal/ui/pro/frames/files"
 	"dcat/internal/ui/pro/frames/statusbar"
 	"dcat/internal/ui/pro/frames/toolbar"
@@ -20,12 +21,12 @@ type MainUI struct {
 	statusbarFrame *statusbar.Statusbar
 }
 
-func newMainUI(th *material.Theme) *MainUI {
+func newMainUI(th *material.Theme, appState *appstate.AppState) *MainUI {
 	return &MainUI{
 		th:             th,
-		volumesFrame:   volumes.NewVolumes(th),
-		filesFrame:     files.NewFiles(th),
-		toolbarFrame:   toolbar.NewToolbar(th),
+		volumesFrame:   volumes.NewVolumes(th, appState),
+		filesFrame:     files.NewFiles(th, appState),
+		toolbarFrame:   toolbar.NewToolbar(th, appState),
 		statusbarFrame: statusbar.NewStatusbar(th),
 	}
 }

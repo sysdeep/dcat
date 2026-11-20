@@ -1,6 +1,10 @@
 package pro
 
 import (
+	"dcat/internal/app/proapp"
+	"dcat/internal/ui/pro/appstate"
+	"log/slog"
+
 	"gioui.org/app"
 	"gioui.org/font/gofont"
 	"gioui.org/io/event"
@@ -18,6 +22,8 @@ var defaultMargin = unit.Dp(10)
 type UI struct {
 	theme *material.Theme
 
+	appState *appstate.AppState
+
 	// components
 	mainLayout *layout.Flex
 	mainUI     *MainUI
@@ -33,14 +39,16 @@ type UI struct {
 	// modal      *Modal
 }
 
-func NewUI() *UI {
+func NewUI(app *proapp.App, log *slog.Logger) *UI {
 	th := material.NewTheme()
 	th.Shaper = text.NewShaper(text.WithCollection(gofont.Collection()))
 
+	appState := appstate.NewAppState(app)
 	ui := UI{
 		theme:      th,
+		appState:   appState,
 		mainLayout: &layout.Flex{},
-		mainUI:     newMainUI(th),
+		mainUI:     newMainUI(th, appState),
 	}
 
 	return &ui
@@ -49,6 +57,10 @@ func NewUI() *UI {
 // Run handles window events and renders the application.
 func (ui *UI) Run(w *app.Window) error {
 	var ops op.Ops
+
+	// TODO: error
+	// read the storage
+	ui.appState.ReadVolumes()
 
 	// listen for events happening on the window.
 	for {
