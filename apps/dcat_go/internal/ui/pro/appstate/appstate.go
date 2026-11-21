@@ -13,7 +13,8 @@ type AppState struct {
 	// state
 	Volumes       []proapp.VolumeDescription
 	CurrentVolume *proapp.Volume
-	CurrentFiles  []proapp.FileRecord
+	CurrentFiles  []proapp.FileRecord // тек. отображаемые
+	StackFiles    []proapp.FileRecord // поход в глубину
 }
 
 func NewAppState(app *proapp.App) *AppState {
@@ -21,6 +22,7 @@ func NewAppState(app *proapp.App) *AppState {
 		app:          app,
 		Volumes:      make([]proapp.VolumeDescription, 0),
 		CurrentFiles: make([]proapp.FileRecord, 0),
+		StackFiles:   make([]proapp.FileRecord, 0),
 	}
 }
 
@@ -33,6 +35,7 @@ func (as *AppState) ReadVolumes() error {
 	as.Volumes = vls
 	as.CurrentVolume = nil
 	as.CurrentFiles = make([]proapp.FileRecord, 0)
+	as.StackFiles = make([]proapp.FileRecord, 0)
 
 	return nil
 }
@@ -51,6 +54,7 @@ func (as *AppState) ReadVolume(vd proapp.VolumeDescription) error {
 		return err
 	}
 	as.CurrentFiles = startFiles
+	as.StackFiles = make([]proapp.FileRecord, 0)
 
 	return nil
 }
@@ -94,4 +98,66 @@ func (as *AppState) getFiles(PID uint64) ([]proapp.FileRecord, error) {
 	result_final = append(result_final, other...)
 
 	return result_final, nil
+}
+
+func (as *AppState) PushFolder(fr proapp.FileRecord) error {
+	as.StackFiles = append(as.StackFiles, fr)
+
+	innerFiles, err := as.getFiles(fr.ID) // 0 root, 1 - files in root
+	if err != nil {
+		return err
+	}
+
+	as.CurrentFiles = innerFiles
+	return nil
+}
+
+func (as *AppState) PopFolder() error {
+	if len(as.StackFiles) > 0 {
+		as.StackFiles = as.StackFiles[0 : len(as.StackFiles)-1]
+
+		var needId uint64 = 1 // TODO: constant
+		if len(as.StackFiles) > 0 {
+			needId = as.StackFiles[len(as.StackFiles)-1].ID
+		}
+
+		innerFiles, err := as.getFiles(needId)
+		if err != nil {
+			return err
+		}
+
+		as.CurrentFiles = innerFiles
+	}
+
+	return nil
+}
+
+func (as *AppState) DropStack() error {
+
+	startFiles, err := as.getFiles(1) // 0 root, 1 - files in root
+	if err != nil {
+		return err
+	}
+	as.CurrentFiles = startFiles
+	as.StackFiles = make([]proapp.FileRecord, 0)
+
+	return nil
+}
+
+func (as *AppState) GoToStack(index int) error {
+	as.StackFiles = as.StackFiles[0 : index+1]
+
+	var needId uint64 = 1 // TODO: constant
+	if len(as.StackFiles) > 0 {
+		needId = as.StackFiles[len(as.StackFiles)-1].ID
+	}
+
+	startFiles, err := as.getFiles(needId) // 0 root, 1 - files in root
+	if err != nil {
+		return err
+	}
+
+	as.CurrentFiles = startFiles
+	return nil
+
 }

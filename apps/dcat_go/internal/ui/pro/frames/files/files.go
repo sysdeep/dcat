@@ -3,6 +3,7 @@ package files
 import (
 	"dcat/internal/app/proapp"
 	"dcat/internal/ui/pro/appstate"
+	"fmt"
 	"image"
 
 	"gioui.org/layout"
@@ -24,6 +25,9 @@ type Files struct {
 	// listState *widget.List
 	listView *material.ListStyle
 	filesBtn []widget.Clickable
+
+	navBar     *NavBar
+	volumeInfo *VolumeInfo
 }
 
 func NewFiles(th *material.Theme, appState *appstate.AppState) *Files {
@@ -33,10 +37,12 @@ func NewFiles(th *material.Theme, appState *appstate.AppState) *Files {
 	listView := material.List(th, &listState)
 
 	return &Files{
-		th:       th,
-		appState: appState,
-		listView: &listView,
-		filesBtn: make([]widget.Clickable, 0),
+		th:         th,
+		appState:   appState,
+		listView:   &listView,
+		filesBtn:   make([]widget.Clickable, 0),
+		navBar:     NewNavBar(th, appState),
+		volumeInfo: NewVolumeInfo(th, appState),
 	}
 }
 
@@ -49,17 +55,24 @@ func (fls *Files) Layout(gtx C) D {
 
 	return layout.Flex{Axis: layout.Vertical}.Layout(gtx,
 		layout.Rigid(material.H6(fls.th, "Files frame").Layout),
+		layout.Rigid(fls.navBar.Layout),
 		layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
 
+			currentFiles := fls.appState.CurrentFiles
 			// Вызываем макет
-			return fls.listView.Layout(gtx, len(fls.appState.CurrentFiles), func(gtx layout.Context, i int) layout.Dimensions {
+			return fls.listView.Layout(gtx, len(currentFiles), func(gtx layout.Context, i int) layout.Dimensions {
 				return layout.UniformInset(4).Layout(gtx, func(gtx layout.Context) layout.Dimensions {
 
-					return fls.fileLayout(gtx, fls.appState.CurrentFiles[i], &fls.filesBtn[i])
+					if fls.filesBtn[i].Clicked(gtx) {
+						fls.onFileClicked(currentFiles[i])
+					}
+
+					return fls.fileLayout(gtx, currentFiles[i], &fls.filesBtn[i])
 
 				})
 			})
 		}),
+		layout.Rigid(fls.volumeInfo.Layout),
 	)
 
 	// return material.Body1(mui.th, "Files frame").Layout(gtx)
@@ -99,7 +112,18 @@ func (fls *Files) fileLayout(gtx C, fr proapp.FileRecord, btn *widget.Clickable)
 				return material.Body1(fls.th, fr.Name).Layout(gtx)
 			}),
 			layout.Rigid(layout.Spacer{Height: defaultMargin}.Layout),
+
+			// size
+			layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+				return material.Body2(fls.th, fmt.Sprintf("%d", fr.Size)).Layout(gtx)
+			}),
 		)
 
 	})
+}
+
+func (fls *Files) onFileClicked(fr proapp.FileRecord) {
+	if fr.FType == proapp.FTYPE_DIR {
+		fls.appState.PushFolder(fr)
+	}
 }
