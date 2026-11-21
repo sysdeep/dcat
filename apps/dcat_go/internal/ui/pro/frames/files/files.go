@@ -1,15 +1,21 @@
 package files
 
 import (
+	"dcat/internal/app/proapp"
 	"dcat/internal/ui/pro/appstate"
+	"image"
 
 	"gioui.org/layout"
+	"gioui.org/unit"
 	"gioui.org/widget"
 	"gioui.org/widget/material"
+	"golang.org/x/exp/shiny/materialdesign/icons"
 )
 
 type C = layout.Context
 type D = layout.Dimensions
+
+var defaultMargin = unit.Dp(10)
 
 type Files struct {
 	th       *material.Theme
@@ -17,6 +23,7 @@ type Files struct {
 
 	// listState *widget.List
 	listView *material.ListStyle
+	filesBtn []widget.Clickable
 }
 
 func NewFiles(th *material.Theme, appState *appstate.AppState) *Files {
@@ -29,31 +36,70 @@ func NewFiles(th *material.Theme, appState *appstate.AppState) *Files {
 		th:       th,
 		appState: appState,
 		listView: &listView,
+		filesBtn: make([]widget.Clickable, 0),
 	}
 }
 
 func (fls *Files) Layout(gtx C) D {
+
+	if len(fls.filesBtn) < len(fls.appState.CurrentFiles) {
+		need := len(fls.appState.CurrentFiles) - len(fls.filesBtn)
+		fls.filesBtn = append(fls.filesBtn, make([]widget.Clickable, need)...)
+	}
+
 	return layout.Flex{Axis: layout.Vertical}.Layout(gtx,
 		layout.Rigid(material.H6(fls.th, "Files frame").Layout),
 		layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
-			// // Создаем стиль списка из темы, передавая указатель на состояние
-			// listStyle := material.List(th, &fl.listState)
-			if fls.appState.CurrentVolume == nil {
-				return layout.Dimensions{}
-			}
-
-			// TODO: folder records
-			// копируем чтобы по нему потом пройтись согласованно, иначе в промежутке состояние меняется
-			localFiles := fls.appState.CurrentVolume.Records
 
 			// Вызываем макет
-			return fls.listView.Layout(gtx, len(localFiles), func(gtx layout.Context, i int) layout.Dimensions {
+			return fls.listView.Layout(gtx, len(fls.appState.CurrentFiles), func(gtx layout.Context, i int) layout.Dimensions {
 				return layout.UniformInset(4).Layout(gtx, func(gtx layout.Context) layout.Dimensions {
-					return NewFileRow(fls.th, localFiles[i]).Layout(gtx)
+
+					return fls.fileLayout(gtx, fls.appState.CurrentFiles[i], &fls.filesBtn[i])
+
 				})
 			})
 		}),
 	)
 
 	// return material.Body1(mui.th, "Files frame").Layout(gtx)
+}
+
+func (fls *Files) fileLayout(gtx C, fr proapp.FileRecord, btn *widget.Clickable) D {
+	// Проверяем, кликнул ли пользователь на этот элемент в текущем кадре
+	// if vr.btnClick.Clicked(gtx) && onClicked != nil {
+	// 	onClicked(vr.fr)
+	// }
+
+	mainLayout := layout.Flex{
+		Alignment: layout.Middle,
+	}
+
+	icon := icons.FileAttachment
+	if fr.FType == proapp.FTYPE_DIR {
+		icon = icons.FileFolder
+	}
+
+	// Оборачиваем всё в material.Clickable, чтобы добавить стандартный эффект наведения и клика (ripple)
+	return material.Clickable(gtx, btn, func(gtx layout.Context) layout.Dimensions {
+
+		return mainLayout.Layout(gtx,
+			// icon
+			layout.Rigid(func(gtx layout.Context) layout.Dimensions {
+				size := 16
+				gtx.Constraints = layout.Exact(image.Pt(size, size))
+				ic, _ := widget.NewIcon(icon)
+				return ic.Layout(gtx, fls.th.ContrastBg)
+			}),
+			// spacer
+			layout.Rigid(layout.Spacer{Width: defaultMargin}.Layout),
+			// name
+			layout.Flexed(2, func(gtx layout.Context) layout.Dimensions {
+				// return material.Label(th, unit.Sp(14.0), kv.Name).Layout(gtx)
+				return material.Body1(fls.th, fr.Name).Layout(gtx)
+			}),
+			layout.Rigid(layout.Spacer{Height: defaultMargin}.Layout),
+		)
+
+	})
 }
