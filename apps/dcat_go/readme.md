@@ -19,6 +19,7 @@
 
 TODO
 
+- https://github.com/gio-eui/md3-icons/tree/master - пакет иконок
 - https://github.com/qianniancn/flowui - тут полно готовых компонентов!!!!!
 - https://github.com/xmhrnx/giode.git - тоже есть
 

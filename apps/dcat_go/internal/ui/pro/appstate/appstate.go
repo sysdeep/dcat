@@ -161,3 +161,7 @@ func (as *AppState) GoToStack(index int) error {
 	return nil
 
 }
+
+func (as *AppState) GetStorageInfo() string {
+	return as.app.StoragePath
+}

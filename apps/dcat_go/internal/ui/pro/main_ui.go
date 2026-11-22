@@ -27,7 +27,7 @@ func newMainUI(th *material.Theme, appState *appstate.AppState) *MainUI {
 		volumesFrame:   volumes.NewVolumes(th, appState),
 		filesFrame:     files.NewFiles(th, appState),
 		toolbarFrame:   toolbar.NewToolbar(th, appState),
-		statusbarFrame: statusbar.NewStatusbar(th),
+		statusbarFrame: statusbar.NewStatusbar(th, appState),
 	}
 }
 

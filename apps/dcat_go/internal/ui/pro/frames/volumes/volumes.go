@@ -17,6 +17,24 @@ type D = layout.Dimensions
 
 var defaultMargin = unit.Dp(10)
 
+// TODO: подобрать иконки
+var volumeIconsMap map[int][]byte = map[int][]byte{
+	1:  icons.ImageISO,                // cd
+	2:  icons.ImageLandscape,          // dvd
+	3:  icons.ImageLeakAdd,            // bdrom
+	4:  icons.ImageLeakRemove,         // crypted
+	5:  icons.ImageLens,               // folder
+	6:  icons.ImageLinkedCamera,       // audio_cd
+	7:  icons.ImageLooks,              // hdd
+	8:  icons.ImageMonochromePhotos,   // hdd_usb
+	9:  icons.ImageMovieCreation,      // flash
+	10: icons.ImageMusicNote,          // sd
+	11: icons.ImageNature,             // floppy
+	12: icons.ImageNaturePeople,       // net
+	13: icons.ImagePalette,            // tape
+	14: icons.ImagePanoramaHorizontal, // other
+}
+
 type Volumes struct {
 	th *material.Theme
 
@@ -77,8 +95,13 @@ func (vms *Volumes) rowLayout(gtx C, vd proapp.VolumeDescription, btn *widget.Cl
 		Alignment: layout.Middle,
 	}
 
+	icon, ok := volumeIconsMap[vd.Icon]
+	if !ok {
+		icon = icons.FileAttachment
+	}
+
 	// TODO
-	icon := icons.FileAttachment
+	// icon := icons.FileAttachment
 	// if kv.Data.FType == stor.FTYPE_DIR {
 	// 	icon = icons.FileFolder
 	// }

@@ -17,12 +17,12 @@ type Volume struct {
 }
 
 type VolumeDescription struct {
-	FilePath    string
 	Created     time.Time // дата создания(unix timestamp)
 	Icon        int       // icon_id
 	Name        string    // название тома
 	ScanPath    string    // путь сканирования
 	Description string    // произвольное описание
+	FilePath    string    // app
 }
 
 type FileRecord struct {
