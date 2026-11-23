@@ -15,6 +15,9 @@ type AppState struct {
 	CurrentVolume *proapp.Volume
 	CurrentFiles  []proapp.FileRecord // тек. отображаемые
 	StackFiles    []proapp.FileRecord // поход в глубину
+
+	// add
+	ISEditModal bool
 }
 
 func NewAppState(app *proapp.App) *AppState {
@@ -164,4 +167,12 @@ func (as *AppState) GoToStack(index int) error {
 
 func (as *AppState) GetStorageInfo() string {
 	return as.app.StoragePath
+}
+
+func (as *AppState) ShowAddVolumeModal() {
+	as.ISEditModal = true
+}
+
+func (as *AppState) CloseVolumeModal() {
+	as.ISEditModal = false
 }

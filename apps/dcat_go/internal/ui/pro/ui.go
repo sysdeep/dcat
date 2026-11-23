@@ -3,6 +3,7 @@ package pro
 import (
 	"dcat/internal/app/proapp"
 	"dcat/internal/ui/pro/appstate"
+	"dcat/internal/ui/pro/frames/volume"
 	"log/slog"
 
 	"gioui.org/app"
@@ -14,6 +15,7 @@ import (
 	"gioui.org/op/clip"
 	"gioui.org/text"
 	"gioui.org/unit"
+	"gioui.org/widget"
 	"gioui.org/widget/material"
 )
 
@@ -27,6 +29,11 @@ type UI struct {
 	// components
 	mainLayout *layout.Flex
 	mainUI     *MainUI
+
+	// modal
+	volumeModal     *volume.EditVolumeModal
+	showVolumeModal bool
+	backdropBtn     widget.Clickable
 	// ff         *FilesFrame
 	// vp         *state.VolumeProvider
 	// ip         *InfoPanel
@@ -45,10 +52,12 @@ func NewUI(app *proapp.App, log *slog.Logger) *UI {
 
 	appState := appstate.NewAppState(app)
 	ui := UI{
-		theme:      th,
-		appState:   appState,
-		mainLayout: &layout.Flex{},
-		mainUI:     newMainUI(th, appState),
+		theme:           th,
+		appState:        appState,
+		mainLayout:      &layout.Flex{},
+		mainUI:          newMainUI(th, appState),
+		volumeModal:     volume.NewEditVolumeModal(th, appState, log),
+		showVolumeModal: true,
 	}
 
 	return &ui
@@ -115,101 +124,88 @@ func (ui *UI) Layout(gtx layout.Context) layout.Dimensions {
 	// 	ui.showModal = false
 	// }
 
-	return layout.Stack{}.Layout(gtx,
+	// Обрабатываем клик по фону (если нужно закрывать окно)
+	if ui.backdropBtn.Clicked(gtx) {
+		ui.showVolumeModal = false
+	}
+
+	return layout.Stack{Alignment: layout.Center}.Layout(gtx,
 
 		// main
 		layout.Stacked(ui.mainUI.Layout),
-		// layout.Stacked(func(gtx layout.Context) layout.Dimensions {
-
-		// 	// inset is used to add padding around the window border.
-		// 	inset := layout.UniformInset(defaultMargin)
-		// 	return inset.Layout(gtx, func(gtx layout.Context) layout.Dimensions {
-
-		// 		return ui.mainLayout.Layout(gtx,
-
-		// 			layout.Flexed(3, func(gtx layout.Context) layout.Dimensions {
-		// 				return ui.ff.Layout(ui.theme, gtx)
-		// 			}),
-		// 			layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
-		// 				return ui.ip.Layout(ui.theme, gtx)
-		// 			}),
-		// 			// layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
-		// 			// 	return material.Button(ui.theme, &ui.openBtn, "open").Layout(gtx)
-		// 			// }),
-		// 			// layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
-		// 			// 	return ui.modal.Layout(ui.theme, gtx)
-		// 			// }),
-		// 		)
-
-		// 	})
-
-		// }),
-
+		layout.Stacked(ui.volumeModal.Layout),
 		// статическая подложка и пример модала
 		// layout.Expanded(func(gtx C) D {
-		// 	background := color.NRGBA{R: 20, G: 20, B: 20, A: 150} // Полупрозрачный черный
-		// 	paint.FillShape(gtx.Ops, background, clip.Rect{Max: gtx.Constraints.Max}.Op())
-		// 	return layout.Dimensions{Size: gtx.Constraints.Max}
+
+		// 	return ui.backdropBtn.Layout(gtx, func(gtx C) D {
+		// 		background := color.NRGBA{R: 20, G: 20, B: 20, A: 150}
+		// 		paint.FillShape(gtx.Ops, background, clip.Rect{Max: gtx.Constraints.Max}.Op())
+		// 		return layout.Dimensions{Size: gtx.Constraints.Max}
+		// 	})
+
+		// 	// background := color.NRGBA{R: 20, G: 20, B: 20, A: 150} // Полупрозрачный черный
+		// 	// paint.FillShape(gtx.Ops, background, clip.Rect{Max: gtx.Constraints.Max}.Op())
+		// 	// return layout.Dimensions{Size: gtx.Constraints.Max}
 		// }),
-		// layout.Expanded(func(gtx C) D {
-		// 	// return layout.Center.Layout(gtx, func(gtx C) D {
-		// 	// 	return ui.modal.Layout(ui.theme, gtx)
-		// 	// })
-		// 	return ui.modal.Layout(ui.theme, gtx)
-		// }),
-		// ---
-		// layout.Expanded(func(gtx C) D {
-		// 	if !ui.showModal {
+		// // layout.Expanded(ui.volumeForm.Layout),
+		// layout.Stacked(func(gtx layout.Context) layout.Dimensions {
+		// 	// 	// TODO: is modal
+		// 	if ui.showVolumeModal == false {
 		// 		return layout.Dimensions{}
 		// 	}
-		// 	return layout.Stack{}.Layout(gtx,
-		// 		layout.Expanded(func(gtx layout.Context) layout.Dimensions {
-		// 			// Кнопка на весь экран для обработки клика "мимо окна"
-		// 			return material.Clickable(gtx, &ui.scrimClick, func(gtx layout.Context) layout.Dimensions {
-		// 				background := color.NRGBA{R: 0, G: 0, B: 0, A: 150} // Полупрозрачный черный
-		// 				paint.FillShape(gtx.Ops, background, clip.Rect{Max: gtx.Constraints.Max}.Op())
-		// 				return layout.Dimensions{Size: gtx.Constraints.Max}
-		// 			})
-		// 		}),
-		// 		// Центрирование самого тела модального окна
-		// 		layout.Expanded(func(gtx layout.Context) layout.Dimensions {
-		// 			return layout.Center.Layout(gtx, func(gtx layout.Context) layout.Dimensions {
-		// 				// Ограничиваем размеры модального окна
-		// 				gtx.Constraints.Min = image.Point{X: gtx.Dp(300), Y: gtx.Dp(150)}
-		// 				gtx.Constraints.Max = image.Point{X: gtx.Dp(400), Y: gtx.Dp(300)}
 
-		// 				// Белый фон окна с закругленными углами
-		// 				return layout.UniformInset(unit.Dp(8)).Layout(gtx, func(gtx layout.Context) layout.Dimensions {
-		// 					paint.FillShape(gtx.Ops, color.NRGBA{R: 255, G: 255, B: 255, A: 255}, clip.RRect{
-		// 						Rect: image.Rectangle{Max: gtx.Constraints.Min},
-		// 						NE:   gtx.Dp(4), NW: gtx.Dp(4), SE: gtx.Dp(4), SW: gtx.Dp(4),
-		// 					}.Op(gtx.Ops))
+		// 	return ui.volumeModal.Layout(gtx)
 
-		// 					// paint.FillShape(gtx.Ops, color.NRGBA{R: 255, G: 255, B: 255, A: 255}, clipRectangle(gtx.Constraints.Max))
+		// 	// 	return layout.Center.Layout(gtx, func(gtx layout.Context) layout.Dimensions {
+		// 	// 		gtx.Constraints.Min = image.Point{}
+		// 	// 		gtx.Constraints.Max = image.Point{X: gtx.Dp(400), Y: gtx.Dp(300)}
+		// 	// 		return ui.volumeModal.Layout(gtx)
+		// 	// 	})
 
-		// 					// Контент внутри модального окна
-		// 					return layout.UniformInset(unit.Dp(16)).Layout(gtx, func(gtx layout.Context) layout.Dimensions {
-		// 						return layout.Flex{
-		// 							Axis:      layout.Vertical,
-		// 							Alignment: layout.Middle,
-		// 							Spacing:   layout.SpaceBetween,
-		// 						}.Layout(gtx,
-		// 							layout.Rigid(func(gtx layout.Context) layout.Dimensions {
-		// 								return material.H6(ui.theme, "Модальное окно").Layout(gtx)
-		// 							}),
-		// 							layout.Rigid(func(gtx layout.Context) layout.Dimensions {
-		// 								return material.Body1(ui.theme, "Это простой пример поверх контента.").Layout(gtx)
-		// 							}),
-		// 							layout.Rigid(func(gtx layout.Context) layout.Dimensions {
-		// 								return material.Button(ui.theme, &ui.closeBtn, "Закрыть").Layout(gtx)
-		// 							}),
-		// 						)
-		// 					})
-		// 				})
-		// 			})
-		// 		}),
-		// 	)
+		// 	// 	// return layout.Stack{}.Layout(gtx,
+		// 	// 	// 	// layout.Expanded(func(gtx layout.Context) layout.Dimensions {
+		// 	// 	// 	// 	// Кнопка на весь экран для обработки клика "мимо окна"
+		// 	// 	// 	// 	return material.Clickable(gtx, &ui.scrimClick, func(gtx layout.Context) layout.Dimensions {
+		// 	// 	// 	// 		background := color.NRGBA{R: 0, G: 0, B: 0, A: 150} // Полупрозрачный черный
+		// 	// 	// 	// 		paint.FillShape(gtx.Ops, background, clip.Rect{Max: gtx.Constraints.Max}.Op())
+		// 	// 	// 	// 		return layout.Dimensions{Size: gtx.Constraints.Max}
+		// 	// 	// 	// 	})
+		// 	// 	// 	// }),
+		// 	// 	// 	// Центрирование самого тела модального окна
+		// 	// 	// 	layout.Expanded(func(gtx layout.Context) layout.Dimensions {
+		// 	// 	// 		return ui.volumeModal.Layout(gtx)
+		// 	// 	// 		// return layout.Center.Layout(gtx, func(gtx layout.Context) layout.Dimensions {
+		// 	// 	// 		// 	return ui.volumeModal.Layout(gtx)
+		// 	// 	// 		// })
+		// 	// 	// 	}),
+		// 	// 	// )
 		// }),
+		// // layout.Stacked(func(gtx layout.Context) layout.Dimensions {
+
+		// // 	// inset is used to add padding around the window border.
+		// // 	inset := layout.UniformInset(defaultMargin)
+		// // 	return inset.Layout(gtx, func(gtx layout.Context) layout.Dimensions {
+
+		// // 		return ui.mainLayout.Layout(gtx,
+
+		// // 			layout.Flexed(3, func(gtx layout.Context) layout.Dimensions {
+		// // 				return ui.ff.Layout(ui.theme, gtx)
+		// // 			}),
+		// // 			layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+		// // 				return ui.ip.Layout(ui.theme, gtx)
+		// // 			}),
+		// // 			// layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+		// // 			// 	return material.Button(ui.theme, &ui.openBtn, "open").Layout(gtx)
+		// // 			// }),
+		// // 			// layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+		// // 			// 	return ui.modal.Layout(ui.theme, gtx)
+		// // 			// }),
+		// // 		)
+
+		// // 	})
+
+		// // }),
+
 	)
 
 }
