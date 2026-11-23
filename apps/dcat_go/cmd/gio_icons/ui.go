@@ -24,7 +24,7 @@ type UI struct {
 	// components
 	mainLayout *layout.Flex
 
-	lLiss layout.List
+	listState widget.List
 }
 
 func NewUI() *UI {
@@ -35,6 +35,8 @@ func NewUI() *UI {
 		theme:      th,
 		mainLayout: &layout.Flex{},
 	}
+
+	ui.listState.Axis = layout.Vertical
 
 	return &ui
 }
@@ -87,11 +89,30 @@ func (ui *UI) Run(w *app.Window) error {
 // Layout displays the main program layout.
 func (ui *UI) Layout(gtx layout.Context) layout.Dimensions {
 
-	return ui.lLiss.Layout(gtx, len(list), func(gtx layout.Context, i int) layout.Dimensions {
-		size := 32
-		gtx.Constraints = layout.Exact(image.Pt(size, size))
-		ic, _ := widget.NewIcon(list[i].data)
-		return ic.Layout(gtx, ui.theme.ContrastBg)
-	})
+	return layout.Flex{Axis: layout.Vertical}.Layout(gtx,
+		layout.Rigid(material.H3(ui.theme, "Icons").Layout),
+		layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+
+			return material.List(ui.theme, &ui.listState).Layout(gtx, len(list), func(gtx layout.Context, i int) layout.Dimensions {
+				return ui.rowLayout(gtx, list[i])
+			})
+		}),
+	)
+
+}
+
+func (ui *UI) rowLayout(gtx layout.Context, iconData IconData) layout.Dimensions {
+	return layout.Flex{Axis: layout.Horizontal, Alignment: layout.Middle}.Layout(gtx,
+		// icon
+		layout.Rigid(func(gtx layout.Context) layout.Dimensions {
+			size := 32
+			gtx.Constraints = layout.Exact(image.Pt(size, size))
+			ic, _ := widget.NewIcon(iconData.data)
+			return ic.Layout(gtx, ui.theme.ContrastBg)
+		}),
+		layout.Rigid(layout.Spacer{Width: unit.Dp(16)}.Layout),
+		// name
+		layout.Rigid(material.Body1(ui.theme, iconData.name).Layout),
+	)
 
 }

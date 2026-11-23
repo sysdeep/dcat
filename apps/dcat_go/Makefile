@@ -24,3 +24,8 @@ test-bssv2:
 
 run-pro-create:
 	go run ./cmd/dcat_pro_cli/ --scan-path /tmp/ --target-path /tmp/pro.gz -name pro
+
+
+# utils -----------------------------------------------------------------------
+make icons:
+	go run ./cmd/gio_icons/

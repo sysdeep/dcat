@@ -3,7 +3,7 @@ package volumes
 import (
 	"dcat/internal/app/proapp"
 	"dcat/internal/ui/pro/appstate"
-	"image"
+	"dcat/internal/ui/pro/rc"
 
 	"gioui.org/layout"
 	"gioui.org/unit"
@@ -75,7 +75,7 @@ func (vms *Volumes) Layout(gtx C) D {
 
 			// Вызываем макет
 			return vms.listView.Layout(gtx, len(localVolumes), func(gtx layout.Context, i int) layout.Dimensions {
-				return layout.UniformInset(4).Layout(gtx, func(gtx layout.Context) layout.Dimensions {
+				return layout.UniformInset(2).Layout(gtx, func(gtx layout.Context) layout.Dimensions {
 
 					if vms.rowsBtn[i].Clicked(gtx) {
 						vms.onVolumeClicked(vms.appState.Volumes[i])
@@ -95,37 +95,35 @@ func (vms *Volumes) rowLayout(gtx C, vd proapp.VolumeDescription, btn *widget.Cl
 		Alignment: layout.Middle,
 	}
 
-	icon, ok := volumeIconsMap[vd.Icon]
+	img, ok := rc.VolumeImagesMap[vd.Icon]
 	if !ok {
-		icon = icons.FileAttachment
+		img = rc.VolumeImagesMap[rc.VolumeUnknown]
 	}
-
-	// TODO
-	// icon := icons.FileAttachment
-	// if kv.Data.FType == stor.FTYPE_DIR {
-	// 	icon = icons.FileFolder
-	// }
 
 	// Оборачиваем всё в material.Clickable, чтобы добавить стандартный эффект наведения и клика (ripple)
 	return material.Clickable(gtx, btn, func(gtx layout.Context) layout.Dimensions {
+		return layout.UniformInset(4).Layout(gtx, func(gtx layout.Context) layout.Dimensions {
 
-		return mainLayout.Layout(gtx,
-			// icon
-			layout.Rigid(func(gtx layout.Context) layout.Dimensions {
-				size := 16
-				gtx.Constraints = layout.Exact(image.Pt(size, size))
-				ic, _ := widget.NewIcon(icon)
-				return ic.Layout(gtx, vms.th.ContrastBg)
-			}),
-			// spacer
-			layout.Rigid(layout.Spacer{Width: defaultMargin}.Layout),
-			// name
-			layout.Flexed(2, func(gtx layout.Context) layout.Dimensions {
-				// return material.Label(th, unit.Sp(14.0), kv.Name).Layout(gtx)
-				return material.Body1(vms.th, vd.Name).Layout(gtx)
-			}),
-		)
+			return mainLayout.Layout(gtx,
 
+				// image
+				layout.Rigid(func(gtx layout.Context) layout.Dimensions {
+
+					ic := widget.Image{
+						Src: img,
+					}
+					return ic.Layout(gtx)
+				}),
+				// spacer
+				layout.Rigid(layout.Spacer{Width: unit.Dp(8)}.Layout),
+				// name
+				layout.Flexed(2, func(gtx layout.Context) layout.Dimensions {
+					// return material.Label(th, unit.Sp(14.0), kv.Name).Layout(gtx)
+					return material.Body1(vms.th, vd.Name).Layout(gtx)
+				}),
+			)
+
+		})
 	})
 }
 

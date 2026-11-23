@@ -3,14 +3,13 @@ package files
 import (
 	"dcat/internal/app/proapp"
 	"dcat/internal/ui/pro/appstate"
+	"dcat/internal/ui/pro/rc"
 	"fmt"
-	"image"
 
 	"gioui.org/layout"
 	"gioui.org/unit"
 	"gioui.org/widget"
 	"gioui.org/widget/material"
-	"golang.org/x/exp/shiny/materialdesign/icons"
 )
 
 type C = layout.Context
@@ -61,7 +60,7 @@ func (fls *Files) Layout(gtx C) D {
 			currentFiles := fls.appState.CurrentFiles
 			// Вызываем макет
 			return fls.listView.Layout(gtx, len(currentFiles), func(gtx layout.Context, i int) layout.Dimensions {
-				return layout.UniformInset(4).Layout(gtx, func(gtx layout.Context) layout.Dimensions {
+				return layout.UniformInset(2).Layout(gtx, func(gtx layout.Context) layout.Dimensions {
 
 					if fls.filesBtn[i].Clicked(gtx) {
 						fls.onFileClicked(currentFiles[i])
@@ -88,24 +87,39 @@ func (fls *Files) fileLayout(gtx C, fr proapp.FileRecord, btn *widget.Clickable)
 		Alignment: layout.Middle,
 	}
 
-	icon := icons.FileAttachment
-	if fr.FType == proapp.FTYPE_DIR {
-		icon = icons.FileFolder
+	// icon := icons.FileAttachment
+	// if fr.FType == proapp.FTYPE_DIR {
+	// 	icon = icons.FileFolder
+	// }
+
+	img, ok := rc.FileTypeImagesMap[int(fr.FType)]
+	if !ok {
+		img = rc.FileTypeImagesMap[rc.FileTypeUnknown]
 	}
 
 	// Оборачиваем всё в material.Clickable, чтобы добавить стандартный эффект наведения и клика (ripple)
 	return material.Clickable(gtx, btn, func(gtx layout.Context) layout.Dimensions {
 
 		return mainLayout.Layout(gtx,
-			// icon
+			// // icon
+			// layout.Rigid(func(gtx layout.Context) layout.Dimensions {
+			// 	size := 16
+			// 	gtx.Constraints = layout.Exact(image.Pt(size, size))
+			// 	ic, _ := widget.NewIcon(icon)
+			// 	return ic.Layout(gtx, fls.th.ContrastBg)
+			// }),
+
+			// image
 			layout.Rigid(func(gtx layout.Context) layout.Dimensions {
-				size := 16
-				gtx.Constraints = layout.Exact(image.Pt(size, size))
-				ic, _ := widget.NewIcon(icon)
-				return ic.Layout(gtx, fls.th.ContrastBg)
+
+				ic := widget.Image{
+					Src: img,
+				}
+				return ic.Layout(gtx)
 			}),
+
 			// spacer
-			layout.Rigid(layout.Spacer{Width: defaultMargin}.Layout),
+			layout.Rigid(layout.Spacer{Width: unit.Dp(4)}.Layout),
 			// name
 			layout.Flexed(2, func(gtx layout.Context) layout.Dimensions {
 				// return material.Label(th, unit.Sp(14.0), kv.Name).Layout(gtx)
