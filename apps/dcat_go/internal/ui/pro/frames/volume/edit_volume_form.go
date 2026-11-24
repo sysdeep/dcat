@@ -4,18 +4,26 @@ import (
 	"dcat/internal/app/proapp"
 	"dcat/internal/ui/pro/appstate"
 	"dcat/internal/ui/pro/rc"
+	"fmt"
 	"image/color"
 	"log/slog"
+	"sync/atomic"
 
 	"gioui.org/layout"
+	"gioui.org/op"
 	"gioui.org/unit"
 	"gioui.org/widget"
 	"gioui.org/widget/material"
+	"gioui.org/x/explorer"
 )
 
 var editorBorderColor = color.NRGBA{R: 200, B: 200, G: 200, A: 250}
 var iconBorderColor = color.NRGBA{R: 100, B: 200, G: 100, A: 250}
 var volumeIcons = []int{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13}
+
+// TODO: validation
+// TODO: progress bar
+// TODO: scanning
 
 /*
 каталог 		edit 		select_button
@@ -39,14 +47,19 @@ type EditVolumeForm struct {
 	iconsBtns         []widget.Clickable
 
 	volume proapp.Volume
+
+	// select folder
+	ex              *explorer.Explorer
+	pendingScanPath atomic.Pointer[string] // развязка от потока
 }
 
-func NewEditVolumeForm(th *material.Theme, appState *appstate.AppState, log *slog.Logger) *EditVolumeForm {
+func NewEditVolumeForm(th *material.Theme, appState *appstate.AppState, ex *explorer.Explorer, log *slog.Logger) *EditVolumeForm {
 	evf := EditVolumeForm{
 		th:        th,
 		appState:  appState,
 		log:       log,
 		iconsBtns: make([]widget.Clickable, len(volumeIcons)),
+		ex:        ex,
 	}
 
 	evf.iconsListState.Gap = 2
@@ -61,6 +74,23 @@ func NewEditVolumeForm(th *material.Theme, appState *appstate.AppState, log *slo
 }
 
 func (ev *EditVolumeForm) Layout(gtx layout.Context) layout.Dimensions {
+
+	// если горутина положила новый путь — обновляем Editor в основном потоке
+	if p := ev.pendingScanPath.Swap(nil); p != nil {
+		ev.scanPathEditor.SetText(*p)
+	}
+
+	if ev.openScanPathBtn.Clicked(gtx) {
+		go func() {
+			if path, err := ev.ex.ChooseFolder(); err == nil {
+				// сохраняем в безопасной переменной
+				ev.pendingScanPath.Store(&path)
+				fmt.Println(path)
+				gtx.Execute(op.InvalidateCmd{})
+			}
+		}()
+	}
+
 	return layout.Flex{Axis: layout.Vertical, Gap: 16}.Layout(gtx,
 		layout.Rigid(material.H3(ev.th, "Volume").Layout),
 

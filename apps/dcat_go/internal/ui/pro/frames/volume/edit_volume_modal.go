@@ -8,6 +8,7 @@ import (
 	"gioui.org/layout"
 	"gioui.org/widget"
 	"gioui.org/widget/material"
+	"gioui.org/x/explorer"
 )
 
 type EditVolumeModal struct {
@@ -22,12 +23,12 @@ type EditVolumeModal struct {
 	modalComponent *modal.Modal
 }
 
-func NewEditVolumeModal(th *material.Theme, appState *appstate.AppState, log *slog.Logger) *EditVolumeModal {
+func NewEditVolumeModal(th *material.Theme, appState *appstate.AppState, ex *explorer.Explorer, log *slog.Logger) *EditVolumeModal {
 	evm := EditVolumeModal{
 		th:       th,
 		appState: appState,
 		log:      log,
-		form:     NewEditVolumeForm(th, appState, log),
+		form:     NewEditVolumeForm(th, appState, ex, log),
 	}
 
 	modalComponent := modal.NewModal(th, evm.headerLayout, evm.bodyLayout, evm.footerLayout, evm.onClose)

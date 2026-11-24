@@ -41,11 +41,10 @@ func main() {
 
 	// vp := state.NewVolumeProvider(&vv)
 
-	ui := pro.NewUI(application, log)
-
 	// This creates a new application window and starts the UI.
 	go func() {
 		w := new(app.Window)
+		ui := pro.NewUI(w, application, log)
 		w.Option(
 			app.Title("DCat volume"),
 			app.Size(unit.Dp(1024), unit.Dp(768)),

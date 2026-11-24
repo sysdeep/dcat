@@ -16,6 +16,7 @@ import (
 	"gioui.org/text"
 	"gioui.org/unit"
 	"gioui.org/widget/material"
+	"gioui.org/x/explorer"
 )
 
 var defaultMargin = unit.Dp(10)
@@ -25,6 +26,7 @@ type SecondaryLayout interface {
 }
 
 type UI struct {
+	w     *app.Window
 	theme *material.Theme
 
 	appState *appstate.AppState
@@ -36,9 +38,11 @@ type UI struct {
 	modals []SecondaryLayout
 
 	log *slog.Logger
+
+	expl *explorer.Explorer
 }
 
-func NewUI(app *proapp.App, log *slog.Logger) *UI {
+func NewUI(w *app.Window, app *proapp.App, log *slog.Logger) *UI {
 	th := material.NewTheme()
 	th.Shaper = text.NewShaper(text.WithCollection(gofont.Collection()))
 
@@ -46,6 +50,7 @@ func NewUI(app *proapp.App, log *slog.Logger) *UI {
 		theme:      th,
 		mainLayout: &layout.Flex{},
 		log:        log,
+		expl:       explorer.NewExplorer(w),
 	}
 
 	appState := appstate.NewAppState(app, &ui)
@@ -129,7 +134,7 @@ func (ui *UI) Layout(gtx layout.Context) layout.Dimensions {
 }
 
 func (ui *UI) ShowAddVolumeModal() {
-	m := volume.NewEditVolumeModal(ui.theme, ui.appState, ui.log)
+	m := volume.NewEditVolumeModal(ui.theme, ui.appState, ui.expl, ui.log)
 	ui.modals = append(ui.modals, m)
 }
 
