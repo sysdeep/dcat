@@ -7,6 +7,11 @@ import (
 	"strings"
 )
 
+type UIController interface {
+	ShowAddVolumeModal()
+	HideModal()
+}
+
 type AppState struct {
 	app *proapp.App
 
@@ -17,15 +22,17 @@ type AppState struct {
 	StackFiles    []proapp.FileRecord // поход в глубину
 
 	// add
-	ISEditModal bool
+	uiCtrl UIController
 }
 
-func NewAppState(app *proapp.App) *AppState {
+func NewAppState(app *proapp.App, uiCtrl UIController) *AppState {
 	return &AppState{
 		app:          app,
 		Volumes:      make([]proapp.VolumeDescription, 0),
 		CurrentFiles: make([]proapp.FileRecord, 0),
 		StackFiles:   make([]proapp.FileRecord, 0),
+
+		uiCtrl: uiCtrl,
 	}
 }
 
@@ -170,9 +177,9 @@ func (as *AppState) GetStorageInfo() string {
 }
 
 func (as *AppState) ShowAddVolumeModal() {
-	as.ISEditModal = true
+	as.uiCtrl.ShowAddVolumeModal()
 }
 
 func (as *AppState) CloseVolumeModal() {
-	as.ISEditModal = false
+	as.uiCtrl.HideModal()
 }
