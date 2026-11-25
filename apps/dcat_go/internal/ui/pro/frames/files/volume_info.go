@@ -6,6 +6,7 @@ import (
 	"image/color"
 
 	"gioui.org/layout"
+	"gioui.org/op"
 	"gioui.org/unit"
 	"gioui.org/widget"
 	"gioui.org/widget/material"
@@ -14,6 +15,9 @@ import (
 type VolumeInfo struct {
 	th       *material.Theme
 	appState *appstate.AppState
+
+	editVolumeBtn   widget.Clickable
+	deleteVolumeBtn widget.Clickable
 }
 
 func NewVolumeInfo(th *material.Theme, appState *appstate.AppState) *VolumeInfo {
@@ -25,6 +29,12 @@ func NewVolumeInfo(th *material.Theme, appState *appstate.AppState) *VolumeInfo 
 
 func (vi *VolumeInfo) Layout(gtx C) D {
 	if vi.appState.CurrentVolume == nil {
+		return layout.Dimensions{}
+	}
+
+	if vi.deleteVolumeBtn.Clicked(gtx) {
+		vi.appState.RemoveVolume(vi.appState.CurrentVolume.Description)
+		gtx.Execute(op.InvalidateCmd{})
 		return layout.Dimensions{}
 	}
 
@@ -41,6 +51,12 @@ func (vi *VolumeInfo) Layout(gtx C) D {
 				return layout.Flex{Axis: layout.Vertical}.Layout(gtx,
 					layout.Rigid(material.Body1(vi.th, fmt.Sprintf("created: %s", vi.appState.CurrentVolume.Description.Created.String())).Layout),
 					layout.Rigid(material.Body1(vi.th, fmt.Sprintf("icon: %d", vi.appState.CurrentVolume.Description.Icon)).Layout),
+				)
+			}),
+			layout.Flexed(10, func(gtx layout.Context) layout.Dimensions {
+				return layout.Flex{Axis: layout.Horizontal, Gap: 8, Spacing: layout.SpaceStart}.Layout(gtx,
+					layout.Rigid(material.Button(vi.th, &vi.deleteVolumeBtn, "Delete").Layout),
+					layout.Rigid(material.Button(vi.th, &vi.editVolumeBtn, "Edit").Layout),
 				)
 			}),
 		)

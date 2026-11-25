@@ -65,7 +65,7 @@ func (evm *EditVolumeModal) Layout(gtx layout.Context) layout.Dimensions {
 		model := evm.form.GetModel()
 		fmt.Println(model)
 
-		go evm.evs.MakeVolume(model)
+		// go evm.evs.MakeVolume(model)
 
 	}
 

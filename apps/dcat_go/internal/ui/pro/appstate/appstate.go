@@ -69,6 +69,16 @@ func (as *AppState) ReadVolume(vd proapp.VolumeDescription) error {
 	return nil
 }
 
+func (as *AppState) RemoveVolume(vd proapp.VolumeDescription) error {
+	if err := as.app.RemoveVolume(vd.FilePath); err != nil {
+		return err
+	}
+	if err := as.ReadVolumes(); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (as *AppState) getFiles(PID uint64) ([]proapp.FileRecord, error) {
 	result := make([]proapp.FileRecord, 0)
 	if as.CurrentVolume == nil {

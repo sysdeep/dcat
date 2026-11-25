@@ -136,7 +136,7 @@ func (ui *UI) Layout(gtx layout.Context) layout.Dimensions {
 }
 
 func (ui *UI) ShowAddVolumeModal() {
-	s := volume.NewVolumeService(ui.app, ui.HideModal)
+	s := volume.NewVolumeService(ui.app, ui.appState, ui.HideModal)
 	m := volume.NewAddVolumeModal(ui.theme, s, ui.expl, ui.log)
 	ui.modals = append(ui.modals, m)
 }

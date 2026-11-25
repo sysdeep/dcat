@@ -92,7 +92,6 @@ func (ev *EditVolumeForm) Layout(gtx layout.Context) layout.Dimensions {
 	}
 
 	return layout.Flex{Axis: layout.Vertical, Gap: 16}.Layout(gtx,
-		layout.Rigid(material.H3(ev.th, "Volume").Layout),
 
 		// scan path
 		layout.Rigid(func(gtx layout.Context) layout.Dimensions {

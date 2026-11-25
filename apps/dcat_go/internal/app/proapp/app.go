@@ -48,6 +48,10 @@ func (app *App) ReadVolume(filePath string) (Volume, error) {
 	return ReadVolumeFile(filePath)
 }
 
+func (app *App) RemoveVolume(filePath string) error {
+	return os.Remove(filePath)
+}
+
 func (app *App) WriteVolume(filePath string, vol Volume) error {
 	return WriteVolumeFile(filePath, vol)
 }
