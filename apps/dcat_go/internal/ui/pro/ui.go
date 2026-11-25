@@ -30,6 +30,7 @@ type UI struct {
 	theme *material.Theme
 
 	appState *appstate.AppState
+	app      *proapp.App
 
 	// components
 	mainLayout *layout.Flex
@@ -49,6 +50,7 @@ func NewUI(w *app.Window, app *proapp.App, log *slog.Logger) *UI {
 	ui := UI{
 		theme:      th,
 		mainLayout: &layout.Flex{},
+		app:        app,
 		log:        log,
 		expl:       explorer.NewExplorer(w),
 	}
@@ -134,7 +136,8 @@ func (ui *UI) Layout(gtx layout.Context) layout.Dimensions {
 }
 
 func (ui *UI) ShowAddVolumeModal() {
-	m := volume.NewEditVolumeModal(ui.theme, ui.appState, ui.expl, ui.log)
+	s := volume.NewVolumeService(ui.app, ui.HideModal)
+	m := volume.NewAddVolumeModal(ui.theme, s, ui.expl, ui.log)
 	ui.modals = append(ui.modals, m)
 }
 

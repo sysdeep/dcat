@@ -1,8 +1,8 @@
 package volume
 
 import (
-	"dcat/internal/ui/pro/appstate"
 	"dcat/internal/ui/pro/components/modal"
+	"fmt"
 	"log/slog"
 
 	"gioui.org/layout"
@@ -12,23 +12,24 @@ import (
 )
 
 type EditVolumeModal struct {
-	th       *material.Theme
-	appState *appstate.AppState
-	log      *slog.Logger
+	th  *material.Theme
+	log *slog.Logger
 
 	form     *EditVolumeForm
 	closeBtn widget.Clickable
 	saveBtn  widget.Clickable
 
 	modalComponent *modal.Modal
+
+	evs VolumeService
 }
 
-func NewEditVolumeModal(th *material.Theme, appState *appstate.AppState, ex *explorer.Explorer, log *slog.Logger) *EditVolumeModal {
+func NewEditVolumeModal(th *material.Theme, evs VolumeService, ex *explorer.Explorer, log *slog.Logger) *EditVolumeModal {
 	evm := EditVolumeModal{
-		th:       th,
-		appState: appState,
-		log:      log,
-		form:     NewEditVolumeForm(th, appState, ex, log),
+		th:   th,
+		log:  log,
+		evs:  evs,
+		form: NewEditVolumeForm(th, ex, log),
 	}
 
 	modalComponent := modal.NewModal(th, evm.headerLayout, evm.bodyLayout, evm.footerLayout, evm.onClose)
@@ -54,10 +55,20 @@ func (evm *EditVolumeModal) footerLayout(gtx layout.Context) layout.Dimensions {
 }
 
 func (evm *EditVolumeModal) onClose() {
-	evm.appState.CloseVolumeModal()
+	evm.evs.CloseVolumeModal()
 }
 
 func (evm *EditVolumeModal) Layout(gtx layout.Context) layout.Dimensions {
+
+	if evm.saveBtn.Clicked(gtx) {
+
+		model := evm.form.GetModel()
+		fmt.Println(model)
+
+		go evm.evs.MakeVolume(model)
+
+	}
+
 	if evm.closeBtn.Clicked(gtx) {
 		evm.onClose()
 		return layout.Dimensions{}

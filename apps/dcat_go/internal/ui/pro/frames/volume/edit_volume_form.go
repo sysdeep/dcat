@@ -2,7 +2,6 @@ package volume
 
 import (
 	"dcat/internal/app/proapp"
-	"dcat/internal/ui/pro/appstate"
 	"dcat/internal/ui/pro/rc"
 	"fmt"
 	"image/color"
@@ -35,9 +34,9 @@ progressbar
 запуск 						закрыть
 */
 type EditVolumeForm struct {
-	th       *material.Theme
-	appState *appstate.AppState
-	log      *slog.Logger
+	th *material.Theme
+	// appState *appstate.AppState
+	log *slog.Logger
 
 	scanPathEditor    widget.Editor
 	openScanPathBtn   widget.Clickable
@@ -46,17 +45,18 @@ type EditVolumeForm struct {
 	iconsListState    widget.List
 	iconsBtns         []widget.Clickable
 
-	volume proapp.Volume
+	// volumeDescription proapp.VolumeDescription
+	iconId int
 
 	// select folder
 	ex              *explorer.Explorer
 	pendingScanPath atomic.Pointer[string] // развязка от потока
 }
 
-func NewEditVolumeForm(th *material.Theme, appState *appstate.AppState, ex *explorer.Explorer, log *slog.Logger) *EditVolumeForm {
+func NewEditVolumeForm(th *material.Theme, ex *explorer.Explorer, log *slog.Logger) *EditVolumeForm {
 	evf := EditVolumeForm{
-		th:        th,
-		appState:  appState,
+		th: th,
+		// appState:  appState,
 		log:       log,
 		iconsBtns: make([]widget.Clickable, len(volumeIcons)),
 		ex:        ex,
@@ -169,7 +169,7 @@ func (ev *EditVolumeForm) iconsLayout(gtx layout.Context) layout.Dimensions {
 		imgID := volumeIcons[i]
 
 		if ev.iconsBtns[i].Clicked(gtx) {
-			ev.volume.Description.Icon = imgID
+			ev.iconId = imgID
 		}
 
 		img := rc.VolumeImagesMap[imgID]
@@ -177,7 +177,7 @@ func (ev *EditVolumeForm) iconsLayout(gtx layout.Context) layout.Dimensions {
 			Src: img,
 		}
 
-		if imgID == ev.volume.Description.Icon {
+		if imgID == ev.iconId {
 			return widget.Border{Color: iconBorderColor, Width: unit.Dp(1), CornerRadius: unit.Dp(4)}.Layout(gtx, func(gtx layout.Context) layout.Dimensions {
 				return layout.UniformInset(unit.Dp(8)).Layout(gtx, ic.Layout)
 			})
@@ -188,4 +188,17 @@ func (ev *EditVolumeForm) iconsLayout(gtx layout.Context) layout.Dimensions {
 		})
 
 	})
+}
+
+func (ev *EditVolumeForm) GetModel() proapp.VolumeDescription {
+	return proapp.VolumeDescription{
+		Icon:        ev.iconId,
+		Name:        ev.nameEditor.Text(),
+		ScanPath:    ev.scanPathEditor.Text(),
+		Description: ev.descriptionEditor.Text(),
+
+		//
+		// Created: ,
+		// FilePath: ,
+	}
 }
