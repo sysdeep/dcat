@@ -28,7 +28,7 @@ func (evs VolumeService) CloseVolumeModal() {
 	evs.closeModalCb()
 }
 
-func (evs VolumeService) Refresh() {
+func (evs VolumeService) RefreshAndClose() {
 	evs.appState.ReadVolumes()
 	evs.closeModalCb()
 }
@@ -55,6 +55,28 @@ func (evs VolumeService) MakeVolume(vd proapp.VolumeDescription, ch chan interfa
 	}
 
 	err = proapp.WriteVolumeFile(targetFilePath, writeModel)
+	if err != nil {
+		fmt.Println(err)
+		ch <- ProcessErrorMsg{Error: err}
+		return
+	}
+
+	ch <- ProcessEndMsg{}
+}
+
+func (evs VolumeService) UpdateVolume(vd proapp.VolumeDescription, ch chan interface{}) {
+	ch <- ProcessStartMsg{}
+
+	vol, err := proapp.ReadVolumeFile(vd.FilePath)
+	if err != nil {
+		fmt.Println(err)
+		ch <- ProcessErrorMsg{Error: err}
+		return
+	}
+
+	vol.Description = vd
+
+	err = proapp.WriteVolumeFile(vd.FilePath, vol)
 	if err != nil {
 		fmt.Println(err)
 		ch <- ProcessErrorMsg{Error: err}

@@ -9,7 +9,7 @@ import (
 
 type UIController interface {
 	ShowAddVolumeModal()
-	HideModal()
+	ShowEditVolumeModal(vd proapp.VolumeDescription)
 }
 
 type AppState struct {
@@ -190,6 +190,6 @@ func (as *AppState) ShowAddVolumeModal() {
 	as.uiCtrl.ShowAddVolumeModal()
 }
 
-func (as *AppState) CloseVolumeModal() {
-	as.uiCtrl.HideModal()
+func (as *AppState) ShowEditVolumeModal(vd proapp.VolumeDescription) {
+	as.uiCtrl.ShowEditVolumeModal(vd)
 }

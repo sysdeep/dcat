@@ -9,7 +9,6 @@ import (
 	"gioui.org/app"
 	"gioui.org/font/gofont"
 	"gioui.org/io/event"
-	"gioui.org/io/key"
 	"gioui.org/layout"
 	"gioui.org/op"
 	"gioui.org/op/clip"
@@ -71,7 +70,7 @@ func (ui *UI) Run(w *app.Window) error {
 	ui.appState.ReadVolumes()
 
 	// Debug
-	ui.ShowAddVolumeModal()
+	// ui.ShowAddVolumeModal()
 
 	// listen for events happening on the window.
 	for {
@@ -87,20 +86,20 @@ func (ui *UI) Run(w *app.Window) error {
 			event.Op(gtx.Ops, w)
 
 			// check for presses of the escape key and close the window if we find them.
-			for {
-				event, ok := gtx.Event(key.Filter{
-					Name: key.NameEscape,
-				})
-				if !ok {
-					break
-				}
-				switch event := event.(type) {
-				case key.Event:
-					if event.Name == key.NameEscape {
-						return nil
-					}
-				}
-			}
+			// for {
+			// 	event, ok := gtx.Event(key.Filter{
+			// 		Name: key.NameEscape,
+			// 	})
+			// 	if !ok {
+			// 		break
+			// 	}
+			// 	switch event := event.(type) {
+			// 	case key.Event:
+			// 		if event.Name == key.NameEscape {
+			// 			return nil
+			// 		}
+			// 	}
+			// }
 			// render and handle UI.
 			ui.Layout(gtx)
 			area.Pop()
@@ -138,6 +137,12 @@ func (ui *UI) Layout(gtx layout.Context) layout.Dimensions {
 func (ui *UI) ShowAddVolumeModal() {
 	s := volume.NewVolumeService(ui.app, ui.appState, ui.HideModal)
 	m := volume.NewAddVolumeModal(ui.theme, s, ui.expl, ui.log)
+	ui.modals = append(ui.modals, m)
+}
+
+func (ui *UI) ShowEditVolumeModal(vd proapp.VolumeDescription) {
+	s := volume.NewVolumeService(ui.app, ui.appState, ui.HideModal)
+	m := volume.NewEditVolumeModal(ui.theme, s, vd, ui.log)
 	ui.modals = append(ui.modals, m)
 }
 

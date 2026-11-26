@@ -41,11 +41,12 @@ type AddVolumeModal struct {
 }
 
 func NewAddVolumeModal(th *material.Theme, service VolumeService, ex *explorer.Explorer, log *slog.Logger) *AddVolumeModal {
+	isNew := true
 	evm := AddVolumeModal{
 		th:      th,
 		log:     log,
 		service: service,
-		form:    NewEditVolumeForm(th, ex, log),
+		form:    NewEditVolumeForm(th, isNew, ex, proapp.VolumeDescription{}, log),
 	}
 
 	modalComponent := modal.NewModal(th, evm.headerLayout, evm.bodyLayout, evm.footerLayout, evm.onClose)
@@ -91,7 +92,7 @@ func (avm *AddVolumeModal) Layout(gtx layout.Context) layout.Dimensions {
 		avm.currentProcess = ""
 	case ProcessingFinished:
 		avm.currentProcess = "finished"
-		avm.service.Refresh()
+		avm.service.RefreshAndClose()
 	}
 
 	if avm.saveBtn.Clicked(gtx) {

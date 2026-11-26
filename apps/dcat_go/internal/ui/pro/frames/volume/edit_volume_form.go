@@ -34,8 +34,9 @@ progressbar
 запуск 						закрыть
 */
 type EditVolumeForm struct {
-	th *material.Theme
-	// appState *appstate.AppState
+	th    *material.Theme
+	isNew bool
+
 	log *slog.Logger
 
 	scanPathEditor    widget.Editor
@@ -53,11 +54,12 @@ type EditVolumeForm struct {
 	pendingScanPath atomic.Pointer[string] // развязка от потока
 }
 
-func NewEditVolumeForm(th *material.Theme, ex *explorer.Explorer, log *slog.Logger) *EditVolumeForm {
+func NewEditVolumeForm(th *material.Theme, isNew bool, ex *explorer.Explorer,
+	initialVD proapp.VolumeDescription, log *slog.Logger) *EditVolumeForm {
 	evf := EditVolumeForm{
-		th: th,
-		// appState:  appState,
+		th:        th,
 		log:       log,
+		isNew:     isNew,
 		iconsBtns: make([]widget.Clickable, len(volumeIcons)),
 		ex:        ex,
 	}
@@ -69,6 +71,12 @@ func NewEditVolumeForm(th *material.Theme, ex *explorer.Explorer, log *slog.Logg
 	evf.nameEditor.SingleLine = true
 	evf.descriptionEditor.SingleLine = false
 	evf.descriptionEditor.Submit = false
+
+	if !isNew {
+		evf.nameEditor.SetText(initialVD.Name)
+		evf.descriptionEditor.SetText(initialVD.Description)
+		evf.iconId = initialVD.Icon
+	}
 
 	return &evf
 }
@@ -95,6 +103,10 @@ func (ev *EditVolumeForm) Layout(gtx layout.Context) layout.Dimensions {
 
 		// scan path
 		layout.Rigid(func(gtx layout.Context) layout.Dimensions {
+			if !ev.isNew {
+				return layout.Dimensions{}
+			}
+
 			return layout.Flex{Alignment: layout.Middle, Gap: 16}.Layout(gtx,
 				// label
 				layout.Flexed(2, material.Body1(ev.th, "Каталог").Layout),
@@ -140,9 +152,9 @@ func (ev *EditVolumeForm) Layout(gtx layout.Context) layout.Dimensions {
 		}),
 
 		// progress
-		layout.Rigid(func(gtx layout.Context) layout.Dimensions {
-			return material.ProgressBar(ev.th, 0.34).Layout(gtx)
-		}),
+		// layout.Rigid(func(gtx layout.Context) layout.Dimensions {
+		// 	return material.ProgressBar(ev.th, 0.34).Layout(gtx)
+		// }),
 	)
 }
 

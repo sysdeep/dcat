@@ -38,6 +38,10 @@ func (vi *VolumeInfo) Layout(gtx C) D {
 		return layout.Dimensions{}
 	}
 
+	if vi.editVolumeBtn.Clicked(gtx) {
+		vi.appState.ShowEditVolumeModal(vi.appState.CurrentVolume.Description)
+	}
+
 	return widget.Border{Color: color.NRGBA{R: 200, B: 200, G: 200, A: 250}, Width: unit.Dp(0.8), CornerRadius: unit.Dp(5)}.Layout(gtx, func(gtx layout.Context) layout.Dimensions {
 		return layout.Flex{Axis: layout.Horizontal}.Layout(gtx,
 			layout.Rigid(func(gtx layout.Context) layout.Dimensions {

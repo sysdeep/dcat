@@ -1,14 +1,15 @@
 package volume
 
 import (
+	"dcat/internal/app/proapp"
 	"dcat/internal/ui/pro/components/modal"
-	"fmt"
 	"log/slog"
+	"sync/atomic"
 
 	"gioui.org/layout"
+	"gioui.org/op"
 	"gioui.org/widget"
 	"gioui.org/widget/material"
-	"gioui.org/x/explorer"
 )
 
 type EditVolumeModal struct {
@@ -21,15 +22,22 @@ type EditVolumeModal struct {
 
 	modalComponent *modal.Modal
 
-	evs VolumeService
+	service   VolumeService
+	initialVD proapp.VolumeDescription
+
+	currentProcess         string
+	currentProcessingState int
+	processingError        atomic.Pointer[ProcessErrorMsg]
 }
 
-func NewEditVolumeModal(th *material.Theme, evs VolumeService, ex *explorer.Explorer, log *slog.Logger) *EditVolumeModal {
+func NewEditVolumeModal(th *material.Theme, service VolumeService, vd proapp.VolumeDescription, log *slog.Logger) *EditVolumeModal {
+	isNew := false
 	evm := EditVolumeModal{
-		th:   th,
-		log:  log,
-		evs:  evs,
-		form: NewEditVolumeForm(th, ex, log),
+		th:        th,
+		log:       log,
+		service:   service,
+		initialVD: vd,
+		form:      NewEditVolumeForm(th, isNew, nil, vd, log),
 	}
 
 	modalComponent := modal.NewModal(th, evm.headerLayout, evm.bodyLayout, evm.footerLayout, evm.onClose)
@@ -40,7 +48,7 @@ func NewEditVolumeModal(th *material.Theme, evs VolumeService, ex *explorer.Expl
 }
 
 func (evm *EditVolumeModal) headerLayout(gtx layout.Context) layout.Dimensions {
-	return material.H4(evm.th, "Добавление тома").Layout(gtx)
+	return material.H4(evm.th, "Редактирование тома").Layout(gtx)
 }
 
 func (evm *EditVolumeModal) bodyLayout(gtx layout.Context) layout.Dimensions {
@@ -55,17 +63,33 @@ func (evm *EditVolumeModal) footerLayout(gtx layout.Context) layout.Dimensions {
 }
 
 func (evm *EditVolumeModal) onClose() {
-	evm.evs.CloseVolumeModal()
+	evm.service.CloseVolumeModal()
 }
 
 func (evm *EditVolumeModal) Layout(gtx layout.Context) layout.Dimensions {
 
+	// TODO
+	switch evm.currentProcessingState {
+	case ProcessingStarted:
+		evm.currentProcess = "start"
+	case ProcessingError:
+		evm.currentProcess = "error"
+	case ProcessingNone:
+		evm.currentProcess = ""
+	case ProcessingFinished:
+		evm.currentProcess = "finished"
+		evm.service.RefreshAndClose()
+	}
+
 	if evm.saveBtn.Clicked(gtx) {
 
 		model := evm.form.GetModel()
-		fmt.Println(model)
+		result := evm.initialVD
+		result.Name = model.Name
+		result.Description = model.Description
+		result.Icon = model.Icon
 
-		// go evm.evs.MakeVolume(model)
+		evm.startUpdating(gtx, result)
 
 	}
 
@@ -76,4 +100,36 @@ func (evm *EditVolumeModal) Layout(gtx layout.Context) layout.Dimensions {
 
 	return evm.modalComponent.Layout(gtx)
 
+}
+
+func (evm *EditVolumeModal) startUpdating(gtx layout.Context, vd proapp.VolumeDescription) {
+
+	evm.currentProcessingState = ProcessingNone
+
+	ch := make(chan interface{})
+
+	go func() {
+		for {
+			msg := <-ch
+
+			switch v := msg.(type) {
+			case ProcessStartMsg:
+				evm.currentProcessingState = ProcessingStarted
+			case ProcessEndMsg:
+				evm.currentProcessingState = ProcessingFinished
+				close(ch)
+				return
+			case ProcessErrorMsg:
+				evm.currentProcessingState = ProcessingError
+				evm.processingError.Store(&v)
+				close(ch)
+				return
+			}
+
+			gtx.Execute(op.InvalidateCmd{})
+
+		}
+	}()
+
+	go evm.service.UpdateVolume(vd, ch)
 }
