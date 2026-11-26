@@ -54,7 +54,7 @@ func NewUI(w *app.Window, app *proapp.App, log *slog.Logger) *UI {
 		expl:       explorer.NewExplorer(w),
 	}
 
-	appState := appstate.NewAppState(app, &ui)
+	appState := appstate.NewAppState(app, &ui, log)
 	ui.appState = appState
 	ui.mainUI = newMainUI(th, appState)
 

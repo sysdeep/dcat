@@ -3,8 +3,10 @@ package appstate
 import (
 	"dcat/internal/app/proapp"
 	"fmt"
+	"log/slog"
 	"slices"
 	"strings"
+	"time"
 )
 
 type UIController interface {
@@ -14,6 +16,7 @@ type UIController interface {
 
 type AppState struct {
 	app *proapp.App
+	log *slog.Logger
 
 	// state
 	Volumes       []proapp.VolumeDescription
@@ -25,9 +28,10 @@ type AppState struct {
 	uiCtrl UIController
 }
 
-func NewAppState(app *proapp.App, uiCtrl UIController) *AppState {
+func NewAppState(app *proapp.App, uiCtrl UIController, log *slog.Logger) *AppState {
 	return &AppState{
 		app:          app,
+		log:          log,
 		Volumes:      make([]proapp.VolumeDescription, 0),
 		CurrentFiles: make([]proapp.FileRecord, 0),
 		StackFiles:   make([]proapp.FileRecord, 0),
@@ -51,7 +55,7 @@ func (as *AppState) ReadVolumes() error {
 }
 
 func (as *AppState) ReadVolume(vd proapp.VolumeDescription) error {
-	fmt.Println("read voleme: " + vd.FilePath)
+	t1 := time.Now()
 	vol, err := as.app.ReadVolume(vd.FilePath)
 	if err != nil {
 		return err
@@ -66,6 +70,7 @@ func (as *AppState) ReadVolume(vd proapp.VolumeDescription) error {
 	as.CurrentFiles = startFiles
 	as.StackFiles = make([]proapp.FileRecord, 0)
 
+	as.log.Debug(fmt.Sprintf("Read volume %s - %s s elapsed", vd.FilePath, time.Since(t1)))
 	return nil
 }
 
