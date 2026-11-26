@@ -52,29 +52,32 @@ func (fls *Files) Layout(gtx C) D {
 		fls.filesBtn = append(fls.filesBtn, make([]widget.Clickable, need)...)
 	}
 
-	return layout.Flex{Axis: layout.Vertical}.Layout(gtx,
-		layout.Rigid(material.H6(fls.th, "Files frame").Layout),
-		layout.Rigid(fls.navBar.Layout),
-		layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+	return layout.UniformInset(unit.Dp(8)).Layout(gtx, func(gtx layout.Context) layout.Dimensions {
 
-			currentFiles := fls.appState.CurrentFiles
-			// Вызываем макет
-			return fls.listView.Layout(gtx, len(currentFiles), func(gtx layout.Context, i int) layout.Dimensions {
-				return layout.UniformInset(2).Layout(gtx, func(gtx layout.Context) layout.Dimensions {
+		return layout.Flex{Axis: layout.Vertical}.Layout(gtx,
+			layout.Rigid(material.H6(fls.th, "Files frame").Layout),
+			layout.Rigid(fls.navBar.Layout),
+			layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
 
-					if fls.filesBtn[i].Clicked(gtx) {
-						fls.onFileClicked(currentFiles[i])
-					}
+				currentFiles := fls.appState.CurrentFiles
+				// Вызываем макет
+				return fls.listView.Layout(gtx, len(currentFiles), func(gtx layout.Context, i int) layout.Dimensions {
+					return layout.UniformInset(2).Layout(gtx, func(gtx layout.Context) layout.Dimensions {
 
-					return fls.fileLayout(gtx, currentFiles[i], &fls.filesBtn[i])
+						if fls.filesBtn[i].Clicked(gtx) {
+							fls.onFileClicked(currentFiles[i])
+						}
 
+						return fls.fileLayout(gtx, currentFiles[i], &fls.filesBtn[i])
+
+					})
 				})
-			})
-		}),
-		layout.Rigid(fls.volumeInfo.Layout),
-	)
+			}),
+			layout.Rigid(layout.Spacer{Height: unit.Dp(16)}.Layout),
+			layout.Rigid(fls.volumeInfo.Layout),
+		)
+	})
 
-	// return material.Body1(mui.th, "Files frame").Layout(gtx)
 }
 
 func (fls *Files) fileLayout(gtx C, fr proapp.FileRecord, btn *widget.Clickable) D {

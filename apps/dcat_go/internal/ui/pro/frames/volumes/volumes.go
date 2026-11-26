@@ -6,6 +6,8 @@ import (
 	"dcat/internal/ui/pro/rc"
 
 	"gioui.org/layout"
+	"gioui.org/op/clip"
+	"gioui.org/op/paint"
 	"gioui.org/unit"
 	"gioui.org/widget"
 	"gioui.org/widget/material"
@@ -66,27 +68,30 @@ func (vms *Volumes) Layout(gtx C) D {
 		vms.rowsBtn = append(vms.rowsBtn, make([]widget.Clickable, need)...)
 	}
 
-	return layout.Flex{Axis: layout.Vertical}.Layout(gtx,
-		layout.Rigid(material.H6(vms.th, "Volumes frame").Layout),
-		layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
+	return layout.UniformInset(unit.Dp(8)).Layout(gtx, func(gtx layout.Context) layout.Dimensions {
 
-			// копируем чтобы по нему потом пройтись согласованно, иначе в промежутке состояние меняется
-			localVolumes := vms.appState.Volumes
+		return layout.Flex{Axis: layout.Vertical}.Layout(gtx,
+			layout.Rigid(material.H6(vms.th, "Volumes frame").Layout),
+			layout.Flexed(1, func(gtx layout.Context) layout.Dimensions {
 
-			// Вызываем макет
-			return vms.listView.Layout(gtx, len(localVolumes), func(gtx layout.Context, i int) layout.Dimensions {
-				return layout.UniformInset(2).Layout(gtx, func(gtx layout.Context) layout.Dimensions {
+				// копируем чтобы по нему потом пройтись согласованно, иначе в промежутке состояние меняется
+				localVolumes := vms.appState.Volumes
 
-					if vms.rowsBtn[i].Clicked(gtx) {
-						vms.onVolumeClicked(vms.appState.Volumes[i])
-					}
+				// Вызываем макет
+				return vms.listView.Layout(gtx, len(localVolumes), func(gtx layout.Context, i int) layout.Dimensions {
+					return layout.UniformInset(2).Layout(gtx, func(gtx layout.Context) layout.Dimensions {
 
-					return vms.rowLayout(gtx, vms.appState.Volumes[i], &vms.rowsBtn[i])
+						if vms.rowsBtn[i].Clicked(gtx) {
+							vms.onVolumeClicked(vms.appState.Volumes[i])
+						}
+
+						return vms.rowLayout(gtx, vms.appState.Volumes[i], &vms.rowsBtn[i])
+					})
 				})
-			})
-		}),
-	)
+			}),
+		)
 
+	})
 }
 
 func (vms *Volumes) rowLayout(gtx C, vd proapp.VolumeDescription, btn *widget.Clickable) D {
@@ -100,31 +105,48 @@ func (vms *Volumes) rowLayout(gtx C, vd proapp.VolumeDescription, btn *widget.Cl
 		img = rc.VolumeImagesMap[rc.VolumeUnknown]
 	}
 
-	// Оборачиваем всё в material.Clickable, чтобы добавить стандартный эффект наведения и клика (ripple)
-	return material.Clickable(gtx, btn, func(gtx layout.Context) layout.Dimensions {
-		return layout.UniformInset(4).Layout(gtx, func(gtx layout.Context) layout.Dimensions {
+	isSelected := vms.appState.CurrentVolume != nil && vd.FilePath == vms.appState.CurrentVolume.Description.FilePath
 
-			return mainLayout.Layout(gtx,
+	return layout.Stack{}.Layout(gtx,
+		layout.Expanded(func(gtx layout.Context) layout.Dimensions {
+			if isSelected {
+				backgroundColor := vms.th.ContrastBg
+				paint.FillShape(gtx.Ops, backgroundColor, clip.Rect{Max: gtx.Constraints.Min}.Op())
+			}
+			return layout.Dimensions{Size: gtx.Constraints.Min}
+		}),
+		layout.Stacked(func(gtx layout.Context) layout.Dimensions {
+			// Оборачиваем всё в material.Clickable, чтобы добавить стандартный эффект наведения и клика (ripple)
+			return material.Clickable(gtx, btn, func(gtx layout.Context) layout.Dimensions {
+				return layout.UniformInset(4).Layout(gtx, func(gtx layout.Context) layout.Dimensions {
 
-				// image
-				layout.Rigid(func(gtx layout.Context) layout.Dimensions {
+					return mainLayout.Layout(gtx,
 
-					ic := widget.Image{
-						Src: img,
-					}
-					return ic.Layout(gtx)
-				}),
-				// spacer
-				layout.Rigid(layout.Spacer{Width: unit.Dp(8)}.Layout),
-				// name
-				layout.Flexed(2, func(gtx layout.Context) layout.Dimensions {
-					// return material.Label(th, unit.Sp(14.0), kv.Name).Layout(gtx)
-					return material.Body1(vms.th, vd.Name).Layout(gtx)
-				}),
-			)
+						// image
+						layout.Rigid(func(gtx layout.Context) layout.Dimensions {
 
-		})
-	})
+							ic := widget.Image{
+								Src: img,
+							}
+							return ic.Layout(gtx)
+						}),
+						// spacer
+						layout.Rigid(layout.Spacer{Width: unit.Dp(8)}.Layout),
+						// name
+						layout.Flexed(2, func(gtx layout.Context) layout.Dimensions {
+							w := material.Body1(vms.th, vd.Name)
+							if isSelected {
+								w.Color = vms.th.ContrastFg
+							}
+							return w.Layout(gtx)
+						}),
+					)
+
+				})
+			})
+		}),
+	)
+
 }
 
 func (vms *Volumes) onVolumeClicked(vd proapp.VolumeDescription) {
