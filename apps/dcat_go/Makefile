@@ -26,6 +26,11 @@ run-pro-create:
 	go run ./cmd/dcat_pro_cli/ --scan-path /tmp/ --target-path /tmp/pro.gz -name pro
 
 
+run-pro-sqlite:
+	go run ./cmd/dcat_pro_sqlite/ --scan-path /tmp/ --target-path /tmp/pro.sqlite -name pro
+
+
+
 # utils -----------------------------------------------------------------------
 make icons:
 	go run ./cmd/gio_icons/

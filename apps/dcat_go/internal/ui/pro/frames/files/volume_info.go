@@ -62,6 +62,12 @@ func (vi *VolumeInfo) Layout(gtx C) D {
 							layout.Rigid(material.Body1(vi.th, fmt.Sprintf("icon: %d", vi.appState.CurrentVolume.Description.Icon)).Layout),
 						)
 					}),
+					layout.Rigid(layout.Spacer{Width: defaultMargin}.Layout),
+					layout.Rigid(func(gtx layout.Context) layout.Dimensions {
+						return layout.Flex{Axis: layout.Vertical}.Layout(gtx,
+							layout.Rigid(material.Body1(vi.th, fmt.Sprintf("scan path: %s", vi.appState.CurrentVolume.Description.ScanPath)).Layout),
+						)
+					}),
 					layout.Flexed(10, func(gtx layout.Context) layout.Dimensions {
 						return layout.Flex{Axis: layout.Horizontal, Gap: 8, Spacing: layout.SpaceStart}.Layout(gtx,
 							layout.Rigid(material.Button(vi.th, &vi.deleteVolumeBtn, "Delete").Layout),
